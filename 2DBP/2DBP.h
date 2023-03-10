@@ -164,7 +164,7 @@ void DisplayDualMasterProblem(All_Values& Values, All_Lists& Lists);
 void DisplayMasterProblemResult(
 	All_Values& Values, All_Lists& Lists,
 	IloEnv& Env_MP, IloObjective& Obj_MP, IloCplex& Cplex_MP,
-	IloRangeArray& Cons_List_MP, IloNumVarArray& Vars_List_MP);
+	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP);
 
 // 终端输出子问题模型
 void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP);
@@ -179,18 +179,31 @@ void DisplaySubProblemResult(
 void CuttingHeuristic(All_Values& Values, All_Lists& Lists);
 
 // 生成+求解初始主问题
-void SolveFirstMasterProblem(
+void RootNodeFirstMasterProblem(
 	All_Values& Values, All_Lists& Lists,
 	IloEnv& Env_MP, IloModel& Model_MP, IloObjective& Obj_MP,
-	IloRangeArray& Cons_List_MP, IloNumVarArray& Vars_List_MP);
+	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP);
+
+void NewNodeFirstMasterProblem(
+	All_Values& Values, All_Lists& Lists,
+	IloEnv& Env_MP, IloModel& Model_MP, IloObjective& Obj_MP,
+	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP);
 
 // 生成+求解子问题
 int SolveSubProblem(All_Values& Values, All_Lists& Lists);
 
 // 生成+求解新的主问题
-void SolveNewMasterProblem(
+void SolveUpdateMasterProblem(
 	All_Values& Values, All_Lists& Lists,
 	IloEnv& Env_MP, IloModel& Model_MP, IloObjective& Obj_MP,
-	IloRangeArray& Cons_List_MP, IloNumVarArray& Vars_List_MP, int Final_Solve);
+	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP, int Final_Solve);
+
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists);
+
+void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists);
+
+int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists);
+
+int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val, int OSP_iter);
 
 
