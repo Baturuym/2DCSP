@@ -15,37 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="2DBP.h">
+    <ClInclude Include="2DCG.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ReadData.cpp">
+    <ClCompile Include="read_data.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="InitRoodNodeMatrix.cpp">
+    <ClCompile Include="primal_heuristic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MasterProblem.cpp">
+    <ClCompile Include="first_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="UpdateProblem.cpp">
+    <ClCompile Include="update_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubProblem.cpp">
+    <ClCompile Include="sub_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SolveOneNode.cpp">
+    <ClCompile Include="column_generation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="BranchandPrice.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ColumnGeneration.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cutdata1207.txt">
+      <Filter>资源文件</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
-// 2023-03-10 BP for 2D-CSP
-#include "2DBP.h"
+// 2023-03-10 CG for 2D-CSP
+#include "2DCG.h"
 using namespace std;
 
 void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
@@ -313,25 +313,26 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 		stock_index = stock_index + 1;
 	}
 
-	size_t stg1_cols_num = Lists.stg1_patterns_list.size();
-	size_t stg2_cols_num = Lists.stg2_patterns_list.size();
+	int stg1_cols_num = Lists.stg1_patterns_list.size();
+	int stg2_cols_num = Lists.stg2_patterns_list.size();
 
 	// 所有列
 	for (int col = 0; col < stg1_cols_num + stg2_cols_num; col++)
 	{
-		vector<int>temp_col;
+		vector<double>temp_col;
 		for (int row = 0; row < item_types_num + strip_types_num; row++)
 		{
 			if (col < stg1_cols_num) // 第一阶段列
 			{
 				if (row < item_types_num) // 子板行
 				{
-					int temp_val = 0; // 系数为0
+					double temp_val = 0; // 系数为0
 					temp_col.push_back(temp_val);
 				}
 				if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
 				{
-					int temp_val = Lists.stg1_patterns_list[col].strip_types_list[row - item_types_num].count; // 系数为中间板种类使用次数
+					int pos = row - item_types_num;
+					double temp_val = Lists.stg1_patterns_list[col].strip_types_list[pos].count; // 系数为中间板种类使用次数
 					temp_col.push_back(temp_val);
 				}
 			}
@@ -339,22 +340,24 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 			{
 				if (row < item_types_num) // 子板行
 				{
-					int temp_val = 
-						Lists.stg2_patterns_list[col - stg1_cols_num].item_types_list[row].count; // 字数为子板种类使用次数
+					int pos = col - stg1_cols_num;
+					double temp_val = Lists.stg2_patterns_list[pos].item_types_list[row].count; // 字数为子板种类使用次数
 					temp_col.push_back(temp_val);
 				}
+
 				if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
 				{
-					if (Lists.stg2_patterns_list[col - stg1_cols_num].type ==
-						row - item_types_num + 1) // 中间板种类和子板种类对应
+					int pos = col - stg1_cols_num;
+					int type_idx = row - item_types_num + 1;
+
+					if (Lists.stg2_patterns_list[pos].type == type_idx) // 中间板种类和子板种类对应
 					{
-						int temp_val = -1; // 系数为-1
+						double temp_val = -1; // 系数为-1
 						temp_col.push_back(temp_val);
 					}
-					if (Lists.stg2_patterns_list[col - stg1_cols_num].type !=
-						row - item_types_num + 1) // 中间板种类和子板种类不对应
+					else // 中间板种类和子板种类不对应
 					{
-						int temp_val = 0; // 系数为0
+						double temp_val = 0; // 系数为0
 						temp_col.push_back(temp_val);
 					}
 				}
@@ -366,17 +369,18 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 	// 第一阶段列
 	for (int col = 0; col < stg1_cols_num; col++)
 	{
-		vector<int>temp_col;
+		vector<double>temp_col;
 		for (int row = 0; row < item_types_num + strip_types_num; row++)
 		{
 			if (row < item_types_num) // 子板行
 			{
-				int temp_val = 0;
+				double temp_val = 0;
 				temp_col.push_back(temp_val);
 			}
 			if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
 			{
-				int temp_val = Lists.stg1_patterns_list[col].strip_types_list[row - item_types_num].count;
+				int pos = row - item_types_num;
+				double temp_val = Lists.stg1_patterns_list[col].strip_types_list[pos].count;
 				temp_col.push_back(temp_val);
 			}
 		}
@@ -386,24 +390,25 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 	// 第二阶段列
 	for (int col = 0; col < stg2_cols_num; col++)
 	{
-		vector<int>temp_col;
+		vector<double>temp_col;
 		for (int row = 0; row < item_types_num + strip_types_num; row++)
 		{
 			if (row < item_types_num) // 子板行
 			{
-				int temp_val = Lists.stg2_patterns_list[col].item_types_list[row].count;
+				double temp_val = Lists.stg2_patterns_list[col].item_types_list[row].count;
 				temp_col.push_back(temp_val);
 			}
 			if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
 			{
-				if (Lists.stg2_patterns_list[col].type == row - item_types_num + 1)
+				int type_idx = row - item_types_num + 1;
+				if (Lists.stg2_patterns_list[col].type == type_idx)
 				{
-					int temp_val = -1;
+					double temp_val = -1;
 					temp_col.push_back(temp_val);
 				}
-				if (Lists.stg2_patterns_list[col].type != row - item_types_num + 1)
+				else
 				{
-					int temp_val = 0;
+					double temp_val = 0;
 					temp_col.push_back(temp_val);
 				}
 			}

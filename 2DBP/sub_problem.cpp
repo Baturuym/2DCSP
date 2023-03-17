@@ -1,13 +1,12 @@
-// 2023-03-10 BP for 2D-CSP
-#include "2DBP.h"
+// 2023-03-10 CG for 2D-CSP
+#include "2DCG.h"
 using namespace std;
-
 
 int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 {
-	size_t stg0_cols_num = Lists.stg0_cols_list.size();
-	size_t stg1_cols_num = Lists.stg1_cols_list.size();
-	size_t stg2_cols_num = Lists.stg2_cols_list.size();
+	int stg0_cols_num = Lists.stg0_cols_list.size();
+	int stg1_cols_num = Lists.stg1_cols_list.size();
+	int stg2_cols_num = Lists.stg2_cols_list.size();
 
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
@@ -18,112 +17,121 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 	IloModel Mode_OSP(Env_OSP); // Outer SP模型
 	IloNumVarArray Vars_OSP(Env_OSP); // Outer SP决策变量
 
-	float var_min = 0; // Outer SP决策变量下界
-	float var_max = IloInfinity; // Outer SP决策变量上界
+	// var >= 0
+	IloNum var_min = 0; // var LB
+	IloNum var_max = IloInfinity; // var UB
 
-	for (int i = 0; i < strip_types_num; i++) // 一列一列，各个中间板种类对应的Outer SP决策变量
+	for (int k = 0; k < strip_types_num; k++) // 一列一列，各个中间板种类对应的Outer SP决策变量
 	{
-		IloNumVar var(Env_OSP, var_min, var_max, ILOINT); // Outer SP决策变量
-		Vars_OSP.add(var); // 加入Outer SP决策变量list
+		IloNumVar var(Env_OSP, var_min, var_max, ILOINT); //
+		Vars_OSP.add(var); // 
 	}
 
-	// Outer SP的目标函数
+	// Outer SP obj
 	IloExpr obj_sum(Env_OSP);
-	for (int i = 0; i < strip_types_num; i++) // 中间板种类
+	for (int k = 0; k < strip_types_num; k++) // 中间板种类
 	{
-		obj_sum += Lists.dual_prices_list[i + item_types_num] * Vars_OSP[i]; // 连加 *决策变量 w_i * C_i
+		int pos = k + item_types_num;
+		obj_sum += Lists.dual_prices_list[pos] * Vars_OSP[k]; // 连加 *决策变量 w_i * C_i
 	}
 
-	IloObjective Obj_OSP = IloMaximize(Env_OSP, obj_sum); // 生成目标函数（求最大值）
-	Mode_OSP.add(Obj_OSP); // 目标函数add()进模型
+	IloObjective Obj_OSP = IloMaximize(Env_OSP, obj_sum); // 
+	Mode_OSP.add(Obj_OSP); // 
 
-	// Outer SP的约束
+	// Outer SP cons
 	IloExpr con_sum(Env_OSP);
 	for (int i = 0; i < strip_types_num; i++)
 	{
 		con_sum += Lists.item_types_list[i].width * Vars_OSP[i]; // y_i * C_i
 	}
-	// 一张母板上所有中间板的宽度之和必须小于母板宽度
+
+	// con <= stock width
 	Mode_OSP.add(con_sum <= Values.stock_width);
 	con_sum.end();
 
 	printf("\n---------Start the CPLEX solving of Outer SP---------\n");
 	IloCplex Cplex_OSP(Env_OSP);
 	Cplex_OSP.extract(Mode_OSP);
-	Cplex_OSP.exportModel("Outer SP.lp"); // 输出Outer SP的lp文件
-	int OSP_flag = Cplex_OSP.solve(); // 求解Outer SP
+	Cplex_OSP.exportModel("Outer SP.lp"); // 
+	bool OSP_flag = Cplex_OSP.solve(); // 
 	printf("---------Finish the CPLEX solving of Outer SP---------\n\n");
 
 	if (OSP_flag == 0)
+	{
 		printf("Outer SP has NO feasible solution ......\n");
+	}
 	else
+	{
 		printf("Outer SP has feasible solution !!!\n");
-	cout << endl;
 
-	printf("obj_OSP = %f\n", Cplex_OSP.getValue(Obj_OSP));
+		printf("obj_OSP = %f\n", Cplex_OSP.getValue(Obj_OSP));
 
-	cout << endl;
+		double OSP_obj_val = 0;
+		vector<double> OSP_solns_list;
+		vector<double> OSP_new_col; // 求解Outer SP获得的新列
 
-	int OSP_obj_val = 0;
-	vector<int> OSP_solns_list;
-	vector<int> OSP_new_col; // 求解Outer SP获得的新列
-
-	for (int col = 0; col < item_types_num; col++) // 一个一个，每个Outer SP决策变量值
-	{
-		int soln_val = Cplex_OSP.getValue(Vars_OSP[col]);
-		OSP_obj_val = OSP_obj_val + soln_val; // 得到最终Outer SP目标函数值
-		OSP_solns_list.push_back(soln_val);
-	}
-
-	// 如果Outer SP求出了削减费用
-	// 则求解Outer SP获得的新列加入当前MP，不用求解Inner SP
-	if (OSP_obj_val > 1)
-	{
-		printf("Outer SP has NEGATIVE reduced cost !!!\n");
-		printf("Outer SP New Column：\n");
-
-		for (int k = 0; k < item_types_num; k++) // 一行一行，子板行
+		printf("");
+		for (int col = 0; col < item_types_num; col++) // 
 		{
-			OSP_new_col.push_back(0); // 值为0
-			printf("%d\n", OSP_new_col[k]);
-		}
-		for (int k = 0; k < strip_types_num; k++) // 一行一行，中间板行
-		{
-			int soln_val = Cplex_OSP.getValue(Vars_OSP[k]);
-			OSP_new_col.push_back(soln_val); // 值为第一阶段决策变量值
-			printf("%d\n", OSP_new_col[k + strip_types_num]);
+			double soln_val = Cplex_OSP.getValue(Vars_OSP[col]);
+			OSP_obj_val = OSP_obj_val + soln_val; // 得到最终Outer SP目标函数值
+			OSP_solns_list.push_back(soln_val);
 		}
 
-		// 插在当前第一阶段列的后面
-		Lists.stg0_cols_list.insert(Lists.stg0_cols_list.begin() + Lists.stg1_cols_list.size(), OSP_new_col); // 新第一阶段列加入所有列vector
-		Lists.stg1_cols_list.push_back(OSP_new_col); // 新第一阶段列加入第一阶段列vector
-		Lists.new_cols_list.push_back(OSP_new_col); // 新第一阶段列加入当前新列vector
-
-		OSP_new_col.clear();
-
-		final_return = 0;
-	}
-
-	// 如果Outer SP未能求出削减费用
-	// 则继续求解这张中间板对应的Inner SP，看能否求出新列
-	if (OSP_obj_val <= 1)
-	{
-		printf("Outer SP has POSITIVE reduced cost ......\n");
-		printf("Procceed to solve Inner SP\n");
-
-		// 当前Outer SP对应的Inner SP
-		// 两层嵌套子问题，内层
-		int OSP_solns_num = Vars_OSP.getSize(); // 循环的次数：每个第一阶段列都对应一组Inner SP，数量是子板种类数量
-		for (int OSP_iter = 0; OSP_iter < OSP_solns_num; OSP_iter++) // 
+		// 如果Outer SP求出了削减费用
+		// 则求解Outer SP获得的新列加入当前MP，不用求解Inner SP
+		if (OSP_obj_val > 1)
 		{
-			int soln_val = OSP_solns_list[OSP_iter];
-			final_return = SolveInnerSubProblem(Values, Lists, soln_val, OSP_iter);
+			printf("Outer SP has NEGATIVE reduced cost !!!\n");
+			printf("Outer SP New Column：\n");
+
+			for (int k = 0; k < item_types_num; k++) // 一行一行，子板行
+			{
+				OSP_new_col.push_back(0); // 值为0
+				printf("%f\n", OSP_new_col[k]);
+			}
+			for (int k = 0; k < strip_types_num; k++) // 一行一行，中间板行
+			{
+				double soln_val = Cplex_OSP.getValue(Vars_OSP[k]);
+				OSP_new_col.push_back(soln_val); // 值为第一阶段决策变量值
+				printf("%f\n", OSP_new_col[k + strip_types_num]);
+			}
+
+			// 插在当前第一阶段列的后面
+			Lists.stg0_cols_list.insert(Lists.stg0_cols_list.begin() + Lists.stg1_cols_list.size(), OSP_new_col); // 新第一阶段列加入所有列vector
+			Lists.stg1_cols_list.push_back(OSP_new_col); // 新第一阶段列加入第一阶段列vector
+			Lists.new_cols_list.push_back(OSP_new_col); // 新第一阶段列加入当前新列vector
+
+			OSP_new_col.clear();
+
+			final_return = 0;
+		}
+
+		// 如果Outer SP未能求出削减费用
+		// 则继续求解这张中间板对应的Inner SP，看能否求出新列
+		if (OSP_obj_val <= 1)
+		{
+			printf("Outer SP has POSITIVE reduced cost ......\n");
+			printf("Procceed to solve Inner SP\n");
+
+			// 当前Outer SP对应的Inner SP
+			// 两层嵌套子问题，内层
+			int OSP_solns_num = Vars_OSP.getSize(); // 循环的次数：每个第一阶段列都对应一组Inner SP，数量是子板种类数量
+			for (int OSP_iter = 0; OSP_iter < OSP_solns_num; OSP_iter++) // 
+			{
+				double soln_val = OSP_solns_list[OSP_iter];
+				final_return = SolveInnerSubProblem(Values, Lists, soln_val, OSP_iter);
+			}
 		}
 	}
+		
+	
+
+	
 	return final_return; // 函数最终的返回值
 }
 
-int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val, int OSP_iter)
+int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, double OSP_soln_val, int OSP_iter)
 {
 	int final_return = -1;
 
@@ -134,8 +142,8 @@ int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val,
 	IloModel Model_ISP(Env_ISP); // Inner SP模型
 	IloNumVarArray Vars_ISP(Env_ISP); // Inner SP
 
-	float  var_min = 0; // Inner SP决策变量下界=0
-	float  var_max = IloInfinity; // Inner SP决策变量上界=正无穷
+	IloNum  var_min = 0; // Inner SP决策变量下界=0
+	IloNum  var_max = IloInfinity; // Inner SP决策变量上界=正无穷
 
 	for (int k = 0; k < item_types_num; k++) // 一个子管种类，对应一个Inner SP决策变量
 	{
@@ -170,17 +178,17 @@ int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val,
 	Cplex_ISP.solve(); // 求解Inner SP
 	printf("---------Finish the CPLEX solving of SP2_%d---------\n\n", OSP_iter + 1);
 
-	vector<int> ISP_solns_list;
-	int ISP_obj_val = 0;
+	vector<double> ISP_solns_list;
+	double ISP_obj_val = 0;
 
 	for (int k = 0; k < item_types_num; k++)
 	{
-		int soln_val = Cplex_ISP.getValue(Vars_ISP[k]);
+		double soln_val = Cplex_ISP.getValue(Vars_ISP[k]);
 		ISP_obj_val = ISP_obj_val + soln_val; // 输出最终的决策变量值
 		ISP_solns_list.push_back(soln_val);
 	}
 
-	vector<int> ISP_new_col; // 求解Inner SP获得的新列
+	vector<double> ISP_new_col; // 求解Inner SP获得的新列
 
 	// Inner SP的目标函数值 > 对应的Outer SP决策变量值
 	if (ISP_obj_val > OSP_soln_val)
@@ -190,7 +198,7 @@ int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val,
 		// 一行一行确定Inner SP新列
 		for (int ISP_iter = 0; ISP_iter < item_types_num; ISP_iter++) // 一行一行，子板行
 		{
-			int soln_val = Cplex_ISP.getValue(Vars_ISP[ISP_iter]);
+			double soln_val = Cplex_ISP.getValue(Vars_ISP[ISP_iter]);
 			ISP_new_col.push_back(soln_val); // 值为Inner SP决策变量值
 		}
 
@@ -209,7 +217,7 @@ int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val,
 		printf("\nSP2 %d New Column:\n", OSP_iter + 1);
 		for (int k = 0; k < item_types_num + strip_types_num; k++) // 输出Inner SP的新列
 		{
-			printf("%d\n", ISP_new_col[k]);
+			printf("%f\n", ISP_new_col[k]);
 		}
 		final_return = 0; // 求解Inner SP得到负费用列，返回0
 	}
@@ -225,5 +233,8 @@ int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val,
 	Lists.stg0_cols_list.insert(Lists.stg0_cols_list.end(), ISP_new_col); // Inner SP新列加入所有列的vector，放在最末尾
 	Lists.stg2_cols_list.push_back(ISP_new_col); // Inner SP新列加入第二阶段列的vector
 	Lists.new_cols_list.push_back(ISP_new_col); // Inner SP新列加入当前新生成列vector
+
 	ISP_new_col.clear(); // 清空Inner SP新列
+
+	return 0;
 }

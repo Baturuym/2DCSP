@@ -24,7 +24,7 @@ struct ItemTypeProperties
 {
 	int type = -1;
 	int count = 0;
-	int demand = -1;
+	double demand = -1;
 	int length = -1;
 	int width = -1;
 };
@@ -137,73 +137,59 @@ struct All_Lists
 
 	vector<ItemTypeProperties> item_types_list;
 
-	vector<vector<int>> stg0_cols_list; // 存储系数矩阵的所有列
-	vector<vector<int>> stg1_cols_list; // 存储第一阶段方案的所有列
-	vector<vector<int>> stg2_cols_list; // 存储第二阶段方案的所有列
-	vector<vector<int>> new_cols_list; // 存储要加入MP的新列
+	vector<vector<double>> stg0_cols_list; // 存储系数矩阵的所有列
+	vector<vector<double>> stg1_cols_list; // 存储第一阶段方案的所有列
+	vector<vector<double>> stg2_cols_list; // 存储第二阶段方案的所有列
+	vector<vector<double>> new_cols_list; // 存储要加入MP的新列
 
-	vector<float>dual_prices_list;
+	vector<double>dual_prices_list;
 
 };
 
 ///////////////////////////函数声明////////////////////////////////
 
-// 分割字符串
 void SplitString(const string& s, vector<string>& v, const string& c);
 
-// 读取数据
 void ReadData(All_Values& Values, All_Lists& Lists);
 
-// 终端输出主问题模型
-void DisplayMasterProblem(All_Values& Values, All_Lists& Lists);
-
-// 终端输出对偶主问题模型
-void DisplayDualMasterProblem(All_Values& Values, All_Lists& Lists);
-
-// 终端输出主问题求解结果
-void DisplayMasterProblemResult(
-	All_Values& Values, All_Lists& Lists,
-	IloEnv& Env_MP, IloObjective& Obj_MP, IloCplex& Cplex_MP,
-	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP);
-
-// 终端输出子问题模型
-void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP);
-
-// 终端输出子问题求解结果
-void DisplaySubProblemResult(
-	All_Values& Values, All_Lists& Lists,
-	IloEnv& Env_SP, IloObjective& Obj_SP, IloCplex& Cplex_MP,
-	IloNumVarArray& List_of_Vars_SP, int Name_SP);
-
-// 初始启发式
 void CuttingHeuristic(All_Values& Values, All_Lists& Lists);
 
-// 生成+求解初始主问题
-void RootNodeFirstMasterProblem(
-	All_Values& Values, All_Lists& Lists,
-	IloEnv& Env_MP, IloModel& Model_MP, IloObjective& Obj_MP,
-	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP);
+void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 
-void NewNodeFirstMasterProblem(
-	All_Values& Values, All_Lists& Lists,
-	IloEnv& Env_MP, IloModel& Model_MP, IloObjective& Obj_MP,
-	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP);
-
-// 生成+求解子问题
-int SolveSubProblem(All_Values& Values, All_Lists& Lists);
-
-// 生成+求解新的主问题
-void SolveUpdateMasterProblem(
-	All_Values& Values, All_Lists& Lists,
-	IloEnv& Env_MP, IloModel& Model_MP, IloObjective& Obj_MP,
-	IloRangeArray& Cons_MP, IloNumVarArray& Vars_MP, int Final_Solve);
-
-void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists);
-
-void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists);
+void SolveFirstMasterProblem(
+	All_Values& Values, 
+	All_Lists& Lists,
+	IloEnv& Env_MP, 
+	IloModel& Model_MP, 
+	IloObjective& Obj_MP,
+	IloRangeArray& Cons_MP, 
+	IloNumVarArray& Vars_MP);
 
 int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists);
 
-int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, int OSP_soln_val, int OSP_iter);
+int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists, double OSP_soln_val, int OSP_iter);
+
+// 生成+求解新的主问题
+void SolveUpdateMasterProblem(
+	All_Values& Values, 
+	All_Lists& Lists,
+	IloEnv& Env_MP, 
+	IloModel& Model_MP, 
+	IloObjective& Obj_MP,
+	IloRangeArray& Cons_MP, 
+	IloNumVarArray& Vars_MP);
+
+void SolveFinalMasterProblem(
+	All_Values& Values,
+	All_Lists& Lists,
+	IloEnv& Env_MP,
+	IloModel& Model_MP,
+	IloObjective& Obj_MP,
+	IloRangeArray& Cons_MP,
+	IloNumVarArray& Vars_MP);
+
+
+
+
 
 

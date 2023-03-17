@@ -1,5 +1,5 @@
-// 2023-03-10 BP for 2D-CSP
-#include "2DBP.h"
+// 2023-03-10 CG for 2D-CSP
+#include "2DCG.h"
 using namespace std;
 
 void SplitString(const string& s, vector<string>& v, const string& c)
@@ -27,7 +27,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 	vector<string> data_inline, data_inline1, data_inline2;//读取本地行中的数据
 
 	s_in.str("");
-	s_in << "D:/CuttingTXT/cutdata1207.txt";
+	s_in << "C:/Users/YMZhao/Desktop/2DBP/2DBP/cutdata1207.txt";
 	//s_in << "D:/CuttingTXT/cutdata11251.txt";
 	in_str = s_in.str();
 
@@ -50,7 +50,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 		Values.stock_length = atoi(data_inline[0].c_str()); // 母板长度
 		Values.stock_width = atoi(data_inline[1].c_str()); // 母板宽度
 
-		for (size_t i = 0; i < Values.stocks_num; i++)
+		for (int i = 0; i < Values.stocks_num; i++)
 		{
 			StockProperties this_stock;
 			this_stock.length = Values.stock_length;
@@ -64,7 +64,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 		int item_index = 1;
 		int item_types_num = Values.item_types_num;
 
-		for (size_t i = 0; i < item_types_num; i++) // 所有子板行
+		for (int i = 0; i < item_types_num; i++) // 所有子板行
 		{
 			getline(fin, line);
 			SplitString(line, data_inline, "\t");
@@ -100,7 +100,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 
 	// 所有子板按照宽度从宽到窄排序
 	ItemProperties  VP;
-	size_t all_items_list_size = Lists.all_items_list.size();
+	int all_items_list_size = Lists.all_items_list.size();
 	for (int i = 0; i < all_items_list_size - 1; i++)
 	{
 		for (int j = i + 1; j < all_items_list_size; j++)

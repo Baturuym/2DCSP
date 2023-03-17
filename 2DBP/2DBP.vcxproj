@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;IL_STD</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\cplex\include;C:\Program Files\IBM\ILOG\CPLEX_Studio_Community201\concert\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,18 +131,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="2DBP.h" />
+    <ClInclude Include="2DCG.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BranchandPrice.cpp" />
-    <ClCompile Include="ColumnGeneration.cpp" />
-    <ClCompile Include="InitRoodNodeMatrix.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MasterProblem.cpp" />
-    <ClCompile Include="SubProblem.cpp" />
-    <ClCompile Include="UpdateProblem.cpp" />
-    <ClCompile Include="ReadData.cpp" />
-    <ClCompile Include="SolveOneNode.cpp" />
+    <ClCompile Include="column_generation.cpp" />
+    <ClCompile Include="primal_heuristic.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="first_master_problem.cpp" />
+    <ClCompile Include="sub_problem.cpp" />
+    <ClCompile Include="update_master_problem.cpp" />
+    <ClCompile Include="read_data.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cutdata1207.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
