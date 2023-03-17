@@ -1,1 +1,1 @@
-# 2DBP
+# 2D Cutting Stock Column Generation
