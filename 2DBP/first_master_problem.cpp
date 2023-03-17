@@ -91,23 +91,22 @@ void SolveFirstMasterProblem(
 		CplexCol.end();
 	}
 
-	printf("\n--------Start the CPLEX solving of the FIRST MP--------\n");
+	printf("\n///////////////////////////////// Start the CPLEX solving of the FIRST MP /////////////////////////////////\n");
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("The First Master Problem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("---------Finish the CPLEX solving of the FIRST MP---------\n\n");
+	printf("\n///////////////////////////////// Finish the CPLEX solving of the FIRST MP /////////////////////////////////\n\n");
 
 	int fsb_num = 0;
 	int int_num = 0;
-
 	if (MP_flag == 0)
 	{
-		printf("The FIRST MP has NO feasible solution\n");
+		printf("\n	The FIRST MP has NO feasible solution\n");
 	}
 	else
 	{
-		printf("The FIRST MP has feasible solution\n");
+		printf("\n	The FIRST MP has feasible solution\n");
 
 		printf("\n	Solns of Y:\n\n");
 		for (int col = 0; col < stg1_cols_num; col++)
@@ -157,12 +156,6 @@ void SolveFirstMasterProblem(
 			}
 		}
 
-		Lists.dual_prices_list.clear();
-		for (int row = 0; row < all_rows_num; row++)
-		{
-			double dual_val = MP_cplex.getDual((Cons_MP)[row]);
-			Lists.dual_prices_list.push_back(dual_val);
-		}
 
 		printf("\n	DUAL PRICES: \n\n");
 		Lists.dual_prices_list.clear();
