@@ -3,12 +3,12 @@
 using namespace std;
 
 void SolveUpdateMasterProblem(
-	All_Values& Values, 
+	All_Values& Values,
 	All_Lists& Lists,
-	IloEnv& Env_MP, 
-	IloModel& Model_MP, 
+	IloEnv& Env_MP,
+	IloModel& Model_MP,
 	IloObjective& Obj_MP,
-	IloRangeArray& Cons_MP, 
+	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP)
 {
 	int stg0_cols_num = Lists.stg0_cols_list.size();
@@ -21,7 +21,7 @@ void SolveUpdateMasterProblem(
 	int all_rows_num = item_types_num + strip_types_num;
 	int all_cols_num = stg1_cols_num + stg2_cols_num;
 
-	// 加求解Outer SP和Inner SP生成的新列
+	// 加求解Outer-SP和Inner SP生成的新列
 	int new_cols_num = Lists.new_cols_list.size();
 	for (int col = 0; col < new_cols_num; col++) // 
 	{
@@ -42,12 +42,12 @@ void SolveUpdateMasterProblem(
 
 		CplexCol.end();
 	}
-	
+
 
 	printf("\n\n///////////////////////////////// Start the CPLEX solving of the NEW MP /////////////////////////////////\n");
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
-	MP_cplex.exportModel(" New MP.lp"); // 输出当前MP的模型 
+	MP_cplex.exportModel("Update Master Problem.lp"); // 输出当前MP的模型 
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////////////////////// Finish the CPLEX solving of the NEW MP /////////////////////////////////\n\n");
 
@@ -153,7 +153,7 @@ void SolveFinalMasterProblem(
 	for (int col = 0; col < stg1_cols_num; col++)
 	{
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0) 
+		if (soln_val > 0)
 		{
 			fsb_num++;
 			int soln_int_val = int(soln_val);
@@ -176,7 +176,7 @@ void SolveFinalMasterProblem(
 	for (int col = stg1_cols_num; col < stg1_cols_num + stg2_cols_num; col++)
 	{
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0) 
+		if (soln_val > 0)
 		{
 			fsb_num++;
 			int soln_int_val = int(soln_val);
