@@ -1,4 +1,5 @@
-
+// Yuming Zhao: https://github.com/Baturuym
+// 
 // 2022-10-21
 // 头文件，包含所有的结构体和函数的声明
 
@@ -132,14 +133,14 @@ struct All_Lists
 	vector<StripProperties> all_strips_list;
 	vector<StockProperties> occupied_stocks_list;
 
-	vector<StockProperties> stg1_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<StripProperties> stg2_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<StockProperties> strip_col_ptns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<StripProperties> item_col_ptns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
 	vector<ItemTypeProperties> item_types_list;
 
-	vector<vector<double>> stg0_cols_list; // 存储系数矩阵的所有列
-	vector<vector<double>> stg1_cols_list; // 存储第一阶段方案的所有列
-	vector<vector<double>> stg2_cols_list; // 存储第二阶段方案的所有列
+	vector<vector<double>> model_matrix; // 存储系数矩阵的所有列
+	vector<vector<double>> strip_cols_list; // 存储第一阶段方案的所有列
+	vector<vector<double>> item_cols_list; // 存储第二阶段方案的所有列
 	vector<vector<double>> new_cols_list; // 存储要加入MP的新列
 
 	vector<double>dual_prices_list;
@@ -152,7 +153,7 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 void ReadData(All_Values& Values, All_Lists& Lists);
 
-void CuttingHeuristic(All_Values& Values, All_Lists& Lists);
+void InitModelMatrix(All_Values& Values, All_Lists& Lists);
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 

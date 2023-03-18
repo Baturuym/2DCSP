@@ -2,15 +2,15 @@
 \Problem name: IloCplex
 
 Maximize
- obj1: 0.2 x1 + 0.8 x2 + 0.8 x3
+ obj1: 0.2 G_1 + 0.8 G_4 + 0.8 G_5
 Subject To
- c1: 180 x1 + 60 x2 + 80 x3 + 70 x4 + 50 x5 <= 300
+ c1: 300 G_1 + 614 G_5 + 300 G_2 + 7077988 G_3 <= 300
 Bounds
-      x1 >= 0
-      x2 >= 0
-      x3 >= 0
-      x4 >= 0
-      x5 >= 0
+      G_1 >= 0
+      G_4 >= 0
+      G_5 >= 0
+      G_2 >= 0
+      G_3 >= 0
 Generals
- x1  x2  x3  x4  x5 
+ G_1  G_4  G_5  G_2  G_3 
 End

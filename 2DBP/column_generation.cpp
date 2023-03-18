@@ -1,3 +1,4 @@
+// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"

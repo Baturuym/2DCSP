@@ -1,9 +1,10 @@
+// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
 using namespace std;
 
-void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
+void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 {
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
@@ -30,10 +31,10 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 		new_stock.x_value = 0; // 母板
 		new_stock.y_value = 0; // 母板
 
-		for (int i = 0; i < strip_types_num; i++)
+		for (int k = 0; k < strip_types_num; k++)
 		{
 			StripTypeProperties this_strip_type;
-			this_strip_type.type = i + 1;
+			this_strip_type.type = k + 1;
 			new_stock.strip_types_list.push_back(this_strip_type);
 		}
 
@@ -143,7 +144,7 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				{
 					new_strip.pattern = strip_pattern;
 					strip_pattern++; // 只有唯一的切割模式，才对应一个pattern
-					Lists.stg2_patterns_list.push_back(new_strip);
+					Lists.item_col_ptns_list.push_back(new_strip);
 				}
 				if (Lists.all_strips_list.size() != 0) // 第一个中间板之后其他中间板
 				{
@@ -181,7 +182,7 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 					{
 						new_strip.pattern = strip_pattern;
 						strip_pattern++; // 只有唯一的切割模式，才对应一个pattern
-						Lists.stg2_patterns_list.push_back(new_strip); // 第二阶段列
+						Lists.item_col_ptns_list.push_back(new_strip); // 第二阶段列
 					}
 				}
 				Lists.all_strips_list.push_back(new_strip);
@@ -270,7 +271,7 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 		{
 			new_stock.pattern = stock_pattern;
 			stock_pattern++; // 只有唯一的切割模式，才对应一个pattern
-			Lists.stg1_patterns_list.push_back(new_stock);
+			Lists.strip_col_ptns_list.push_back(new_stock);
 		}
 
 		if (Lists.occupied_stocks_list.size() != 0) // 第一个中间板之后其他母板
@@ -307,51 +308,68 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 			{
 				new_stock.pattern = stock_pattern;
 				stock_pattern++; // 只有唯一的切割模式，才对应一个pattern
-				Lists.stg1_patterns_list.push_back(new_stock); // 第一阶段列
+				Lists.strip_col_ptns_list.push_back(new_stock); // 第一阶段列
 			}
 		}
 		Lists.occupied_stocks_list.push_back(new_stock);
 		stock_index = stock_index + 1;
 	}
 
-	int stg1_cols_num = Lists.stg1_patterns_list.size();
-	int stg2_cols_num = Lists.stg2_patterns_list.size();
+	int P = Lists.strip_col_ptns_list.size();
+	int K = Lists.item_col_ptns_list.size();
 
-	// 所有列
-	for (int col = 0; col < stg1_cols_num + stg2_cols_num; col++)
+	int J = strip_types_num;
+	int N = item_types_num;
+
+	/*
+				P						K
+	 strip_types cols  item_types cols
+	----------------------------------
+	|						|						|
+	|			C		    |           D			|	J-strip_types rows >= 0
+	|						|						|
+	|---------------------------------
+	|						|						|
+	|			0			|			B			|	N-item_types rows >= item_type demand
+	|						|						|
+	----------------------------------
+
+	*/
+
+	cout << endl;
+
+	// Init model matrix
+	for (int col = 0; col < P + K; col++)
 	{
 		vector<double>temp_col;
-		for (int row = 0; row < item_types_num + strip_types_num; row++)
+		for (int row = 0; row < J + N; row++)
 		{
-			if (col < stg1_cols_num) // 第一阶段列
+			// Matrix C & Matrix 0
+			if (col < P)
 			{
-				if (row < item_types_num) // 子板行
+				// 1. Matrix C
+				if (row < J)
 				{
-					double temp_val = 0; // 系数为0
+					double temp_val =
+						Lists.strip_col_ptns_list[col].strip_types_list[row].count; // 系数为中间板种类使用次数
 					temp_col.push_back(temp_val);
 				}
-				if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
+				// 2. Matrix 0
+				if (row >= J)
 				{
-					int pos = row - item_types_num;
-					double temp_val = Lists.stg1_patterns_list[col].strip_types_list[pos].count; // 系数为中间板种类使用次数
+					double temp_val = 0; //
 					temp_col.push_back(temp_val);
 				}
 			}
-			if (col >= stg1_cols_num && col < stg1_cols_num + stg2_cols_num) // 第二阶段列
+			// Matrix B & Matrix D
+			if (col >= P)
 			{
-				if (row < item_types_num) // 子板行
+				// 3. Matrix D
+				if (row < J)
 				{
-					int pos = col - stg1_cols_num;
-					double temp_val = Lists.stg2_patterns_list[pos].item_types_list[row].count; // 字数为子板种类使用次数
-					temp_col.push_back(temp_val);
-				}
-
-				if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
-				{
-					int pos = col - stg1_cols_num;
-					int type_idx = row - item_types_num + 1;
-
-					if (Lists.stg2_patterns_list[pos].type == type_idx) // 中间板种类和子板种类对应
+					int col_pos = col - P;
+					int item_type_idx = row + 1;
+					if (Lists.item_col_ptns_list[col_pos].type == item_type_idx) // 
 					{
 						double temp_val = -1; // 系数为-1
 						temp_col.push_back(temp_val);
@@ -361,60 +379,77 @@ void CuttingHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 						double temp_val = 0; // 系数为0
 						temp_col.push_back(temp_val);
 					}
-				}
-			}
-		}
-		Lists.stg0_cols_list.push_back(temp_col);
-	}
 
-	// 第一阶段列
-	for (int col = 0; col < stg1_cols_num; col++)
-	{
-		vector<double>temp_col;
-		for (int row = 0; row < item_types_num + strip_types_num; row++)
-		{
-			if (row < item_types_num) // 子板行
-			{
-				double temp_val = 0;
-				temp_col.push_back(temp_val);
-			}
-			if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
-			{
-				int pos = row - item_types_num;
-				double temp_val = Lists.stg1_patterns_list[col].strip_types_list[pos].count;
-				temp_col.push_back(temp_val);
-			}
-		}
-		Lists.stg1_cols_list.push_back(temp_col); // 第一阶段列
-	}
-
-	// 第二阶段列
-	for (int col = 0; col < stg2_cols_num; col++)
-	{
-		vector<double>temp_col;
-		for (int row = 0; row < item_types_num + strip_types_num; row++)
-		{
-			if (row < item_types_num) // 子板行
-			{
-				double temp_val = Lists.stg2_patterns_list[col].item_types_list[row].count;
-				temp_col.push_back(temp_val);
-			}
-			if (row >= item_types_num && row < item_types_num + strip_types_num) // 中间板行
-			{
-				int type_idx = row - item_types_num + 1;
-				if (Lists.stg2_patterns_list[col].type == type_idx)
-				{
-					double temp_val = -1;
-					temp_col.push_back(temp_val);
 				}
-				else
+				// 4.Matrix B
+				if(row>=J)
 				{
-					double temp_val = 0;
+					int col_pos = col - P;
+					int row_pos = row - J;
+					double temp_val = Lists.item_col_ptns_list[col_pos].item_types_list[row_pos].count;
 					temp_col.push_back(temp_val);
 				}
 			}
 		}
-		Lists.stg2_cols_list.push_back(temp_col); // 第二阶段列
+		Lists.model_matrix.push_back(temp_col);
+	}
+
+	cout << endl;
+
+	for (int col = 0; col < P; col++)
+	{
+		vector<double>temp_col;
+		for (int row = 0; row < J + N; row++)
+		{
+			// 1. Matrix C
+			if (row < J)
+			{
+				double temp_val = Lists.strip_col_ptns_list[col].strip_types_list[row].count; // 系数为中间板种类使用次数
+				temp_col.push_back(temp_val);
+			}
+			// 2. Matrix 0
+			if (row >= J)
+			{
+				double temp_val = 0; //
+				temp_col.push_back(temp_val);
+			}
+		}
+		Lists.strip_cols_list.push_back(temp_col); // 第一阶段列
+	}
+
+	cout << endl;
+
+	for (int col = P; col < P+K; col++)
+	{
+		vector<double>temp_col;
+		for (int row = 0; row < J + N; row++)
+		{
+			// 3. Matrix D
+			if (row < J)
+			{
+				int col_pos = col - P;
+				int item_type_idx = row + 1;
+				if (Lists.item_col_ptns_list[col_pos].type == item_type_idx) // 
+				{
+					double temp_val = -1; // 系数为-1
+					temp_col.push_back(temp_val);
+				}
+				else // 中间板种类和子板种类不对应
+				{
+					double temp_val = 0; // 系数为0
+					temp_col.push_back(temp_val);
+				}
+			}
+			// 4.Matrix B
+			if (row >= J)
+			{
+				int col_pos = col - P;
+				int row_pos = row - J;
+				double temp_val = Lists.item_col_ptns_list[col_pos].item_types_list[row_pos].count;
+				temp_col.push_back(temp_val);
+			}
+		}
+		Lists.item_cols_list.push_back(temp_col); // 第二阶段列
 	}
 	cout << endl;
 }
