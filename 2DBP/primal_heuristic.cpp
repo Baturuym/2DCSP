@@ -1,10 +1,10 @@
-// Yuming Zhao: https://github.com/Baturuym
+ï»¿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
 using namespace std;
 
-void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
+void InitModelMatrix(All_Values& Values, All_Lists& Lists) // åˆ‡æ–­å¼åˆ‡å‰²å¯å‘å¼
 {
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
@@ -20,16 +20,16 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 #pragma region
 	while (Values.Finish == false)
 	{
-		// ³õÊ¼»¯ĞÂÄ¸°å
-		Lists.stock_pool_list.erase(Lists.stock_pool_list.begin()); // Ä¸°å³ØÖĞ³ıÈ¥Ä¸°å0
+		// åˆå§‹åŒ–æ–°æ¯æ¿
+		Lists.stock_pool_list.erase(Lists.stock_pool_list.begin()); // æ¯æ¿æ± ä¸­é™¤å»æ¯æ¿0
 
 		StockProperties new_stock;
-		new_stock.length = Lists.stock_pool_list[0].length; // Ä¸°å
-		new_stock.width = Lists.stock_pool_list[0].width; // Ä¸°å
-		new_stock.area = new_stock.length * new_stock.width; // Ä¸°å
-		new_stock.index = stock_index; // Ä¸°å
-		new_stock.x_value = 0; // Ä¸°å
-		new_stock.y_value = 0; // Ä¸°å
+		new_stock.length = Lists.stock_pool_list[0].length; // æ¯æ¿
+		new_stock.width = Lists.stock_pool_list[0].width; // æ¯æ¿
+		new_stock.area = new_stock.length * new_stock.width; // æ¯æ¿
+		new_stock.index = stock_index; // æ¯æ¿
+		new_stock.x_value = 0; // æ¯æ¿
+		new_stock.y_value = 0; // æ¯æ¿
 
 		for (int k = 0; k < strip_types_num; k++)
 		{
@@ -38,7 +38,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 			new_stock.strip_types_list.push_back(this_strip_type);
 		}
 
-		// Ã¿»»Ò»ÕÅĞÂÄ¸°å£¬¾Í³õÊ¼»¯±»Ä¸°åÊ£Óà°æ
+		// æ¯æ¢ä¸€å¼ æ–°æ¯æ¿ï¼Œå°±åˆå§‹åŒ–è¢«æ¯æ¿å‰©ä½™ç‰ˆ
 		ItemProperties stock_remain;
 		stock_remain.length = new_stock.length;
 		stock_remain.width = new_stock.width;
@@ -52,12 +52,12 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 		int all_items_list_size1 = Lists.all_items_list.size();
 		for (int j = 0; j < all_items_list_size1; j++)
 		{
-			// ×Ó°å j ÄÜ²»ÄÜ·ÅÈë±»ÇĞÄ¸°åÊ£ÏÂµÄÇøÓò
+			// å­æ¿ j èƒ½ä¸èƒ½æ”¾å…¥è¢«åˆ‡æ¯æ¿å‰©ä¸‹çš„åŒºåŸŸ
 			if (Lists.all_items_list[j].length <= stock_remain.length
 				&& Lists.all_items_list[j].width <= stock_remain.width
 				&& Lists.all_items_list[j].occupied == 0)
 			{
-				// È·¶¨µÚÒ»¸ö×Ó°å
+				// ç¡®å®šç¬¬ä¸€ä¸ªå­æ¿
 				ItemProperties first_item;
 				first_item.type_index = Lists.all_items_list[j].type_index;
 				first_item.index = Lists.all_items_list[j].index;
@@ -71,12 +71,12 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 				first_item.y_value = stock_remain.y_value;
 				first_item.occupied = 1;
 				Lists.all_items_list[j].occupied = 1;
-				Lists.items_occupied_list.push_back(first_item); // È·¶¨µÄ×Ó°å·ÅÈë½á¹û±í
+				Lists.items_occupied_list.push_back(first_item); // ç¡®å®šçš„å­æ¿æ”¾å…¥ç»“æœè¡¨
 
 				StripProperties new_strip;
 				new_strip.index = strip_index;
 				new_strip.type_index = first_item.type_index;
-				new_strip.items_list.push_back(first_item); // ³õÊ¼»¯µÚÒ»¸öÔªËØ
+				new_strip.items_list.push_back(first_item); // åˆå§‹åŒ–ç¬¬ä¸€ä¸ªå…ƒç´ 
 				new_strip.length = stock_remain.length;
 				new_strip.width = first_item.width;
 				new_strip.area = new_strip.length * new_strip.width;
@@ -92,97 +92,97 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 				}
 				new_strip.item_types_list[first_item.type_index - 1].count++;
 
-				// ºáÏòÇĞ¶ÏÊ½ÇĞ¸îºó£¬µÚÒ»¸ö×Ó°åµÄÓÒ²àÇøÓò
+				// æ¨ªå‘åˆ‡æ–­å¼åˆ‡å‰²åï¼Œç¬¬ä¸€ä¸ªå­æ¿çš„å³ä¾§åŒºåŸŸ
 				ItemProperties first_item_right_side;
-				first_item_right_side.length = stock_remain.length - first_item.length; // ÇøÓò³¤¶È = Ä¸°å³¤¶È - µÚÒ»¿é×Ó°å³¤¶È
-				first_item_right_side.width = first_item.width; // ÇøÓò¿í¶È = µÚÒ»¿é×Ó°å¿í¶È
-				first_item_right_side.area = first_item_right_side.length * first_item_right_side.width; // ÇøÓòÃæ»ı
-				first_item_right_side.stock_index = stock_remain.stock_index; // ÇøÓòËùÊôÄ¸°å
+				first_item_right_side.length = stock_remain.length - first_item.length; // åŒºåŸŸé•¿åº¦ = æ¯æ¿é•¿åº¦ - ç¬¬ä¸€å—å­æ¿é•¿åº¦
+				first_item_right_side.width = first_item.width; // åŒºåŸŸå®½åº¦ = ç¬¬ä¸€å—å­æ¿å®½åº¦
+				first_item_right_side.area = first_item_right_side.length * first_item_right_side.width; // åŒºåŸŸé¢ç§¯
+				first_item_right_side.stock_index = stock_remain.stock_index; // åŒºåŸŸæ‰€å±æ¯æ¿
 				first_item_right_side.type_index = -1;
 				first_item_right_side.x_value = stock_remain.x_value + first_item.length;
 				first_item_right_side.y_value = stock_remain.y_value;
 				first_item_right_side.occupied = 0;
 
-				// ÔÚµÚÒ»¸ö×Ó°åµÄÓÒ²àÇøÓò£¬¼´ÖĞ¼ä°åÄÚ²¿¼ÌĞøÌî³ä×Ó°å
-				// Ö±µ½µ±Ç°ÖĞ¼ä°åÔÙÒ²ÎŞ·¨·ÅÈë×Ó°åÎªÖ¹
+				// åœ¨ç¬¬ä¸€ä¸ªå­æ¿çš„å³ä¾§åŒºåŸŸï¼Œå³ä¸­é—´æ¿å†…éƒ¨ç»§ç»­å¡«å……å­æ¿
+				// ç›´åˆ°å½“å‰ä¸­é—´æ¿å†ä¹Ÿæ— æ³•æ”¾å…¥å­æ¿ä¸ºæ­¢
 				int all_items_list_size2 = Lists.all_items_list.size();
 				for (int m = 0; m < all_items_list_size2; m++)
 				{
-					// Èç¹ûµ±Ç°×Ó°åÄÜ¹»·ÅÈëµÚÒ»¸ö×Ó°åÓÒ²àÇøÓò£º
+					// å¦‚æœå½“å‰å­æ¿èƒ½å¤Ÿæ”¾å…¥ç¬¬ä¸€ä¸ªå­æ¿å³ä¾§åŒºåŸŸï¼š
 					if (Lists.all_items_list[m].length <= first_item_right_side.length
 						&& Lists.all_items_list[m].width <= first_item_right_side.width
 						&& Lists.all_items_list[m].occupied == 0)
 					{
-						// ĞÂµÄ×Ó°å·ÅÈëÖĞ¼ä°å
+						// æ–°çš„å­æ¿æ”¾å…¥ä¸­é—´æ¿
 						ItemProperties new_item;
-						new_item.type_index = Lists.all_items_list[m].type_index; // ×Ó°å±àºÅ
-						new_item.index = Lists.all_items_list[m].index; // ×Ó°å±àºÅ
+						new_item.type_index = Lists.all_items_list[m].type_index; // å­æ¿ç¼–å·
+						new_item.index = Lists.all_items_list[m].index; // å­æ¿ç¼–å·
 						new_item.demand = Lists.all_items_list[m].demand;
 						new_item.length = Lists.all_items_list[m].length;
 						new_item.width = Lists.all_items_list[m].width;
 						new_item.area = new_item.length * new_item.width;
 						new_item.x_value = first_item_right_side.x_value;
 						new_item.y_value = first_item_right_side.y_value;
-						new_item.stock_index = stock_remain.stock_index; // ËùÊôÄ¸°å±àºÅ
+						new_item.stock_index = stock_remain.stock_index; // æ‰€å±æ¯æ¿ç¼–å·
 						new_item.Strip_index = strip_index;
 						new_item.occupied = 1;
 						Lists.all_items_list[m].occupied = 1;
 
-						Lists.items_occupied_list.push_back(new_item); // ×Ó°å·ÅÈë½á¹û±í
+						Lists.items_occupied_list.push_back(new_item); // å­æ¿æ”¾å…¥ç»“æœè¡¨
 
 						new_strip.items_list.push_back(new_item);
 						new_strip.item_types_list[new_item.type_index - 1].count++;
 
-						first_item_right_side.length = first_item_right_side.length - new_item.length; // ¸üĞÂÖĞ¼ä°åµÄÊ£Óà³¤¶È
+						first_item_right_side.length = first_item_right_side.length - new_item.length; // æ›´æ–°ä¸­é—´æ¿çš„å‰©ä½™é•¿åº¦
 						first_item_right_side.x_value = first_item_right_side.x_value + new_item.length;
 					}
 				}
-				// ¸úÒÑ¾­³öÏÖµÄËùÓĞÖĞ¼ä°å.µÄÃ¿ÖÖ×Ó¹Ü.µÄÊ¹ÓÃÊıÁ¿±È½ÏÒ»ÏÂ
+				// è·Ÿå·²ç»å‡ºç°çš„æ‰€æœ‰ä¸­é—´æ¿.çš„æ¯ç§å­ç®¡.çš„ä½¿ç”¨æ•°é‡æ¯”è¾ƒä¸€ä¸‹
 
 				int Strip_Final_Cnt = 0;
-				if (Lists.all_strips_list.size() == 0) // µÚÒ»¸öÖĞ¼ä°å
+				if (Lists.all_strips_list.size() == 0) // ç¬¬ä¸€ä¸ªä¸­é—´æ¿
 				{
 					new_strip.pattern = strip_pattern;
-					strip_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
+					strip_pattern++; // åªæœ‰å”¯ä¸€çš„åˆ‡å‰²æ¨¡å¼ï¼Œæ‰å¯¹åº”ä¸€ä¸ªpattern
 					Lists.item_col_ptns_list.push_back(new_strip);
 				}
-				if (Lists.all_strips_list.size() != 0) // µÚÒ»¸öÖĞ¼ä°åÖ®ºóÆäËûÖĞ¼ä°å
+				if (Lists.all_strips_list.size() != 0) // ç¬¬ä¸€ä¸ªä¸­é—´æ¿ä¹‹åå…¶ä»–ä¸­é—´æ¿
 				{
 					int all_strips_list_size = Lists.all_strips_list.size();
 					for (int s = 0; s < all_strips_list_size; s++)
 					{
-						//printf("ĞÂÖĞ¼ä°å%dÓëÖĞ¼ä°å%d×ö¶Ô±È\n", new_strip.index,s);
+						//printf("æ–°ä¸­é—´æ¿%dä¸ä¸­é—´æ¿%dåšå¯¹æ¯”\n", new_strip.index,s);
 						int cnt01 = 0;
 						int cnt02 = 0;
 						int cnt03 = 0;
-						for (int k = 0; k < item_types_num; k++) // ¿¼ÂÇËùÓĞ×Ó°åÖÖÀà 1-11
+						for (int k = 0; k < item_types_num; k++) // è€ƒè™‘æ‰€æœ‰å­æ¿ç§ç±» 1-11
 						{
-							int cnt1 = Lists.all_strips_list[s].item_types_list[k].count; // ÒÑÓĞÖĞ¼ä°åsÖĞ×Ó°åÖÖÀàk+1µÄÊ¹ÓÃ´ÎÊı
-							int cnt2 = new_strip.item_types_list[k].count; // ĞÂÖĞ¼ä°ånew_stripÖĞ×Ó°åÖÖÀàk+1µÄÊ¹ÓÃ´ÎÊı
+							int cnt1 = Lists.all_strips_list[s].item_types_list[k].count; // å·²æœ‰ä¸­é—´æ¿sä¸­å­æ¿ç§ç±»k+1çš„ä½¿ç”¨æ¬¡æ•°
+							int cnt2 = new_strip.item_types_list[k].count; // æ–°ä¸­é—´æ¿new_stripä¸­å­æ¿ç§ç±»k+1çš„ä½¿ç”¨æ¬¡æ•°
 
-							if (cnt1 == cnt2) // ¶şÕßÊ¹ÓÃ´ÎÊıÏàÍ¬
+							if (cnt1 == cnt2) // äºŒè€…ä½¿ç”¨æ¬¡æ•°ç›¸åŒ
 							{
-								cnt01 = cnt01 + 1; // Ê¹ÓÃ´ÎÊıÏàÍ¬µÄÇé¿ö+1
+								cnt01 = cnt01 + 1; // ä½¿ç”¨æ¬¡æ•°ç›¸åŒçš„æƒ…å†µ+1
 							}
-							if (cnt1 != cnt2) // ¶şÕßÊ¹ÓÃ´ÎÊı²»Í¬
+							if (cnt1 != cnt2) // äºŒè€…ä½¿ç”¨æ¬¡æ•°ä¸åŒ
 							{
 								cnt03 = cnt03 + 1;
 							}
 						}
 						Strip_Final_Cnt = cnt01;
-						//printf("ÏàÍ¬Ê¹ÓÃ´ÎÊı = %d\n²»Í¬Ê¹ÓÃ´ÎÊı = %d\n",cnt01,cnt03);
-						if (Strip_Final_Cnt == item_types_num) // ËùÓĞ×Ó°åÖÖÀàÊ¹ÓÃ´ÎÊı¶¼ÏàÍ¬
+						//printf("ç›¸åŒä½¿ç”¨æ¬¡æ•° = %d\nä¸åŒä½¿ç”¨æ¬¡æ•° = %d\n",cnt01,cnt03);
+						if (Strip_Final_Cnt == item_types_num) // æ‰€æœ‰å­æ¿ç§ç±»ä½¿ç”¨æ¬¡æ•°éƒ½ç›¸åŒ
 						{
 							new_strip.pattern = Lists.all_strips_list[s].pattern;
 							break;
 						}
 					}
-					// ±éÀúËùÓĞÖĞ¼ä°åÖĞËùÓĞÖÖÀà×Ó¹ÜµÄÊ¹ÓÃ´ÎÊıºó
-					if (Strip_Final_Cnt < item_types_num) // È·ÈÏÊÇĞÂµÄÇĞ¸îÄ£Ê½
+					// éå†æ‰€æœ‰ä¸­é—´æ¿ä¸­æ‰€æœ‰ç§ç±»å­ç®¡çš„ä½¿ç”¨æ¬¡æ•°å
+					if (Strip_Final_Cnt < item_types_num) // ç¡®è®¤æ˜¯æ–°çš„åˆ‡å‰²æ¨¡å¼
 					{
 						new_strip.pattern = strip_pattern;
-						strip_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-						Lists.item_col_ptns_list.push_back(new_strip); // µÚ¶ş½×¶ÎÁĞ
+						strip_pattern++; // åªæœ‰å”¯ä¸€çš„åˆ‡å‰²æ¨¡å¼ï¼Œæ‰å¯¹åº”ä¸€ä¸ªpattern
+						Lists.item_col_ptns_list.push_back(new_strip); // ç¬¬äºŒé˜¶æ®µåˆ—
 					}
 				}
 				Lists.all_strips_list.push_back(new_strip);
@@ -190,28 +190,28 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 				new_stock.strips_list.push_back(new_strip);
 				new_stock.strip_types_list[new_strip.type_index - 1].count++;
 
-				// ºáÏòÇĞ¶ÏÊ½ÇĞ¸îºó£¬µÚÒ»¸ö×Ó°åµÄÉÏ·½ÇøÓò
+				// æ¨ªå‘åˆ‡æ–­å¼åˆ‡å‰²åï¼Œç¬¬ä¸€ä¸ªå­æ¿çš„ä¸Šæ–¹åŒºåŸŸ
 				stock_remain.length = stock_remain.length;
 				stock_remain.width = stock_remain.width - first_item.width;
 				stock_remain.area = stock_remain.length * stock_remain.width;
 				stock_remain.x_value = stock_remain.x_value;
 				stock_remain.y_value = stock_remain.y_value + first_item.width;
 
-				// Ê¹ÓÃµÄ×Ó°å×ÜÊı
+				// ä½¿ç”¨çš„å­æ¿æ€»æ•°
 				int Used_sum = 0;
 				int all_items_list_size3 = Lists.all_items_list.size();
 				for (int k = 0; k < all_items_list_size3; k++)
 				{
 					Used_sum += Lists.all_items_list[k].occupied;
 				}
-				// Èç¹ûËùÓĞ×Ó°å¶¼±»Ê¹ÓÃÁË
+				// å¦‚æœæ‰€æœ‰å­æ¿éƒ½è¢«ä½¿ç”¨äº†
 				if (Used_sum == all_items_list_size3)
 				{
 					Values.Finish = true;
 				}
 			}
 		}
-		//********¼ÆËãÄ¸°å×ÜÇĞ¸îËğºÄ³É±¾********//
+		//********è®¡ç®—æ¯æ¿æ€»åˆ‡å‰²æŸè€—æˆæœ¬********//
 		int strip_total_cut_distane = 0;
 		int new_stock_strips_list_size1 = new_stock.strips_list.size();
 		for (int j = 0; j < new_stock_strips_list_size1; j++)
@@ -247,7 +247,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 		new_stock.cutting_distance = strip_total_cut_distane;
 		new_stock.material_cutting_loss = new_stock.cutting_distance * Values.unit_cut_loss;
 
-		//********¼ÆËãÄ¸°å×ÜÃæ»ıÀË·Ñ³É±¾********//
+		//********è®¡ç®—æ¯æ¿æ€»é¢ç§¯æµªè´¹æˆæœ¬********//
 		int strip_total_waste_area = 0;
 		int new_stock_strips_list_size2 = new_stock.strips_list.size();
 		for (int j = 0; j < new_stock_strips_list_size2; j++)
@@ -267,14 +267,14 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 		new_stock.material_area_loss = new_stock.wasted_area * Values.unit_area_loss;
 
 		int Stock_Final_Cnt = 0;
-		if (Lists.occupied_stocks_list.size() == 0) // µÚÒ»¸öÄ¸°å
+		if (Lists.occupied_stocks_list.size() == 0) // ç¬¬ä¸€ä¸ªæ¯æ¿
 		{
 			new_stock.pattern = stock_pattern;
-			stock_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
+			stock_pattern++; // åªæœ‰å”¯ä¸€çš„åˆ‡å‰²æ¨¡å¼ï¼Œæ‰å¯¹åº”ä¸€ä¸ªpattern
 			Lists.strip_col_ptns_list.push_back(new_stock);
 		}
 
-		if (Lists.occupied_stocks_list.size() != 0) // µÚÒ»¸öÖĞ¼ä°åÖ®ºóÆäËûÄ¸°å
+		if (Lists.occupied_stocks_list.size() != 0) // ç¬¬ä¸€ä¸ªä¸­é—´æ¿ä¹‹åå…¶ä»–æ¯æ¿
 		{
 			for (int s = 0; s < Lists.occupied_stocks_list.size(); s++)
 			{
@@ -282,110 +282,110 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 				int cnt02 = 0;
 				int cnt03 = 0;
 
-				for (int k = 0; k < strip_types_num; k++) // ¿¼ÂÇËùÓĞÖĞ¼ä°åÖÖÀà 1-11
+				for (int k = 0; k < strip_types_num; k++) // è€ƒè™‘æ‰€æœ‰ä¸­é—´æ¿ç§ç±» 1-11
 				{
-					int cnt1 = Lists.occupied_stocks_list[s].strip_types_list[k].count; // ÒÑÓĞÄ¸°åsÖĞÖĞ¼ä°åÖÖÀàkµÄÊ¹ÓÃ´ÎÊı
-					int cnt2 = new_stock.strip_types_list[k].count; // ĞÂÄ¸°ånew_stockÖĞÖĞ¼ä°åÖÖÀàkµÄÊ¹ÓÃ´ÎÊı
+					int cnt1 = Lists.occupied_stocks_list[s].strip_types_list[k].count; // å·²æœ‰æ¯æ¿sä¸­ä¸­é—´æ¿ç§ç±»kçš„ä½¿ç”¨æ¬¡æ•°
+					int cnt2 = new_stock.strip_types_list[k].count; // æ–°æ¯æ¿new_stockä¸­ä¸­é—´æ¿ç§ç±»kçš„ä½¿ç”¨æ¬¡æ•°
 
-					if (cnt1 == cnt2) // ¶şÕßÊ¹ÓÃ´ÎÊıÏàÍ¬
+					if (cnt1 == cnt2) // äºŒè€…ä½¿ç”¨æ¬¡æ•°ç›¸åŒ
 					{
-						cnt01 = cnt01 + 1; // Ê¹ÓÃ´ÎÊıÏàÍ¬µÄÇé¿ö+1
+						cnt01 = cnt01 + 1; // ä½¿ç”¨æ¬¡æ•°ç›¸åŒçš„æƒ…å†µ+1
 					}
-					if (cnt1 != cnt2) // ¶şÕßÊ¹ÓÃ´ÎÊı²»Í¬
+					if (cnt1 != cnt2) // äºŒè€…ä½¿ç”¨æ¬¡æ•°ä¸åŒ
 					{
 						cnt03 = cnt03 + 1;
 					}
 				}
 
 				Stock_Final_Cnt = cnt01;
-				if (Stock_Final_Cnt == strip_types_num) // ËùÓĞÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı¶¼ÏàÍ¬
+				if (Stock_Final_Cnt == strip_types_num) // æ‰€æœ‰ä¸­é—´æ¿ç§ç±»ä½¿ç”¨æ¬¡æ•°éƒ½ç›¸åŒ
 				{
 					break;
 				}
 			}
 
-			if (Stock_Final_Cnt < strip_types_num) // È·ÈÏÊÇĞÂµÄÖĞ¼ä°åÖÖÀà
+			if (Stock_Final_Cnt < strip_types_num) // ç¡®è®¤æ˜¯æ–°çš„ä¸­é—´æ¿ç§ç±»
 			{
 				new_stock.pattern = stock_pattern;
-				stock_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-				Lists.strip_col_ptns_list.push_back(new_stock); // µÚÒ»½×¶ÎÁĞ
+				stock_pattern++; // åªæœ‰å”¯ä¸€çš„åˆ‡å‰²æ¨¡å¼ï¼Œæ‰å¯¹åº”ä¸€ä¸ªpattern
+				Lists.strip_col_ptns_list.push_back(new_stock); // ç¬¬ä¸€é˜¶æ®µåˆ—
 			}
 		}
 		Lists.occupied_stocks_list.push_back(new_stock);
 		stock_index = stock_index + 1;
 	}
 
-	int P = Lists.strip_col_ptns_list.size();
-	int K = Lists.item_col_ptns_list.size();
 
-	int J = strip_types_num;
-	int N = item_types_num;
-
-	/*
-				P						K
-	 strip_types cols  item_types cols
-	----------------------------------
-	|						|						|
-	|			C		    |           D			|	J-strip_types rows >= 0
-	|						|						|
-	|---------------------------------
-	|						|						|
-	|			0			|			B			|	N-item_types rows >= item_type demand
-	|						|						|
-	----------------------------------
-
+	/*			pattern columns
+	-----------------------------------------
+	|		P_num			|		K_num			|
+	| stk-cut-ptn cols	| stp-cut-tpn cols	|
+	-----------------------------------------------------
+	|							|							|				|
+	|			 C				|			D				|  J_num	|	strip_type rows >= 0
+	|							|							|				|
+	|----------------------------------------------------
+	|							|							|				|
+	|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
+	|							|							|				|
+	-----------------------------------------------------
 	*/
 
-	cout << endl;
+	int P_num = Lists.strip_col_ptns_list.size();
+	int K_num = Lists.item_col_ptns_list.size();
+
+	int J_num = strip_types_num;
+	int N_num = item_types_num;
+
 
 	// Init model matrix
-	for (int col = 0; col < P + K; col++)
+	for (int col = 0; col < P_num + K_num; col++)
 	{
 		vector<double>temp_col;
-		for (int row = 0; row < J + N; row++)
+		for (int row = 0; row < J_num + N_num; row++)
 		{
 			// Matrix C & Matrix 0
-			if (col < P)
+			if (col < P_num)
 			{
 				// 1. Matrix C
-				if (row < J)
+				if (row < J_num)
 				{
 					double temp_val =
-						Lists.strip_col_ptns_list[col].strip_types_list[row].count; // ÏµÊıÎªÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı
+						Lists.strip_col_ptns_list[col].strip_types_list[row].count; // ç³»æ•°ä¸ºä¸­é—´æ¿ç§ç±»ä½¿ç”¨æ¬¡æ•°
 					temp_col.push_back(temp_val);
 				}
 				// 2. Matrix 0
-				if (row >= J)
+				if (row >= J_num)
 				{
 					double temp_val = 0; //
 					temp_col.push_back(temp_val);
 				}
 			}
 			// Matrix B & Matrix D
-			if (col >= P)
+			if (col >= P_num)
 			{
 				// 3. Matrix D
-				if (row < J)
+				if (row < J_num)
 				{
-					int col_pos = col - P;
+					int col_pos = col - P_num;
 					int item_type_idx = row + 1;
 					if (Lists.item_col_ptns_list[col_pos].type_index == item_type_idx) // 
 					{
-						double temp_val = -1; // ÏµÊıÎª-1
+						double temp_val = -1; // ç³»æ•°ä¸º-1
 						temp_col.push_back(temp_val);
 					}
-					else // ÖĞ¼ä°åÖÖÀàºÍ×Ó°åÖÖÀà²»¶ÔÓ¦
+					else // ä¸­é—´æ¿ç§ç±»å’Œå­æ¿ç§ç±»ä¸å¯¹åº”
 					{
-						double temp_val = 0; // ÏµÊıÎª0
+						double temp_val = 0; // ç³»æ•°ä¸º0
 						temp_col.push_back(temp_val);
 					}
 
 				}
 				// 4.Matrix B
-				if(row>=J)
+				if(row>=J_num)
 				{
-					int col_pos = col - P;
-					int row_pos = row - J;
+					int col_pos = col - P_num;
+					int row_pos = row - J_num;
 					double temp_val = Lists.item_col_ptns_list[col_pos].item_types_list[row_pos].count;
 					temp_col.push_back(temp_val);
 				}
@@ -396,60 +396,60 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // ÇĞ¶ÏÊ½ÇĞ¸îÆô·¢Ê½
 
 	cout << endl;
 
-	for (int col = 0; col < P; col++)
+	for (int col = 0; col < P_num; col++)
 	{
 		vector<double>temp_col;
-		for (int row = 0; row < J + N; row++)
+		for (int row = 0; row < J_num + N_num; row++)
 		{
 			// 1. Matrix C
-			if (row < J)
+			if (row < J_num)
 			{
-				double temp_val = Lists.strip_col_ptns_list[col].strip_types_list[row].count; // ÏµÊıÎªÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı
+				double temp_val = Lists.strip_col_ptns_list[col].strip_types_list[row].count; // ç³»æ•°ä¸ºä¸­é—´æ¿ç§ç±»ä½¿ç”¨æ¬¡æ•°
 				temp_col.push_back(temp_val);
 			}
 			// 2. Matrix 0
-			if (row >= J)
+			if (row >= J_num)
 			{
 				double temp_val = 0; //
 				temp_col.push_back(temp_val);
 			}
 		}
-		Lists.strip_cols.push_back(temp_col); // µÚÒ»½×¶ÎÁĞ
+		Lists.stock_cut_cols.push_back(temp_col); // ç¬¬ä¸€é˜¶æ®µåˆ—
 	}
 
 	cout << endl;
 
-	for (int col = P; col < P+K; col++)
+	for (int col = P_num; col < P_num+K_num; col++)
 	{
 		vector<double>temp_col;
-		for (int row = 0; row < J + N; row++)
+		for (int row = 0; row < J_num + N_num; row++)
 		{
 			// 3. Matrix D
-			if (row < J)
+			if (row < J_num)
 			{
-				int col_pos = col - P;
+				int col_pos = col - P_num;
 				int item_type_idx = row + 1;
 				if (Lists.item_col_ptns_list[col_pos].type_index == item_type_idx) // 
 				{
-					double temp_val = -1; // ÏµÊıÎª-1
+					double temp_val = -1; // ç³»æ•°ä¸º-1
 					temp_col.push_back(temp_val);
 				}
-				else // ÖĞ¼ä°åÖÖÀàºÍ×Ó°åÖÖÀà²»¶ÔÓ¦
+				else // ä¸­é—´æ¿ç§ç±»å’Œå­æ¿ç§ç±»ä¸å¯¹åº”
 				{
-					double temp_val = 0; // ÏµÊıÎª0
+					double temp_val = 0; // ç³»æ•°ä¸º0
 					temp_col.push_back(temp_val);
 				}
 			}
 			// 4.Matrix B
-			if (row >= J)
+			if (row >= J_num)
 			{
-				int col_pos = col - P;
-				int row_pos = row - J;
+				int col_pos = col - P_num;
+				int row_pos = row - J_num;
 				double temp_val = Lists.item_col_ptns_list[col_pos].item_types_list[row_pos].count;
 				temp_col.push_back(temp_val);
 			}
 		}
-		Lists.item_cols.push_back(temp_col); // µÚ¶ş½×¶ÎÁĞ
+		Lists.strip_cut_cols.push_back(temp_col); // ç¬¬äºŒé˜¶æ®µåˆ—
 	}
 
 	for (int k = 0; k < item_types_num; k++)

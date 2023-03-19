@@ -1,4 +1,4 @@
-// Yuming Zhao: https://github.com/Baturuym
+ï»¿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
@@ -9,7 +9,7 @@ void SplitString(const string& s, vector<string>& v, const string& c)
 	string::size_type pos1, pos2;
 	pos2 = s.find(c);
 	pos1 = 0;
-	v.clear();//É¾³ıÔ­ÄÚÈİ
+	v.clear();//åˆ é™¤åŸå†…å®¹
 	while (string::npos != pos2)
 	{
 		v.push_back(s.substr(pos1, pos2 - pos1));
@@ -20,13 +20,13 @@ void SplitString(const string& s, vector<string>& v, const string& c)
 		v.push_back(s.substr(pos1));
 }
 
-void ReadData(All_Values& Values, All_Lists& Lists) // Æô·¢Ê½¶ÁÈ¡Êı¾İ
+void ReadData(All_Values& Values, All_Lists& Lists) // å¯å‘å¼è¯»å–æ•°æ®
 {
-	ostringstream s_in, s_out;//IOÎÄ¼ş
-	string in_str, out_str;//IOÎÄ¼şÃû
-	ofstream f_out;//Êä³öÎÄ¼ş
-	string line;//¶ÁÊı¾İµÄÒ»ĞĞ
-	vector<string> data_inline, data_inline1, data_inline2;//¶ÁÈ¡±¾µØĞĞÖĞµÄÊı¾İ
+	ostringstream s_in, s_out;//IOæ–‡ä»¶
+	string in_str, out_str;//IOæ–‡ä»¶å
+	ofstream f_out;//è¾“å‡ºæ–‡ä»¶
+	string line;//è¯»æ•°æ®çš„ä¸€è¡Œ
+	vector<string> data_inline, data_inline1, data_inline2;//è¯»å–æœ¬åœ°è¡Œä¸­çš„æ•°æ®
 
 	s_in.str("");
 	s_in << "C:/Users/YMZhao/Desktop/2DBP/2DBP/cutdata1207.txt";
@@ -38,19 +38,19 @@ void ReadData(All_Values& Values, All_Lists& Lists) // Æô·¢Ê½¶ÁÈ¡Êı¾İ
 	if (fin)
 	{
 		getline(fin, line);
-		SplitString(line, data_inline, "\t"); // µÚ1ĞĞ
-		Values.stocks_num = atoi(data_inline[0].c_str()); // µÚ1ĞĞµÚ1Î»£ºÄ¸°åÊıÁ¿
+		SplitString(line, data_inline, "\t"); // ç¬¬1è¡Œ
+		Values.stocks_num = atoi(data_inline[0].c_str()); // ç¬¬1è¡Œç¬¬1ä½ï¼šæ¯æ¿æ•°é‡
 
 		getline(fin, line);
-		SplitString(line, data_inline, "\t"); // µÚ2ĞĞ
-		Values.item_types_num = atoi(data_inline[0].c_str()); // µÚ2ĞĞµÚ1Î»£º×Ó°åÖÖÀàÊıÁ¿
+		SplitString(line, data_inline, "\t"); // ç¬¬2è¡Œ
+		Values.item_types_num = atoi(data_inline[0].c_str()); // ç¬¬2è¡Œç¬¬1ä½ï¼šå­æ¿ç§ç±»æ•°é‡
 		Values.strip_types_num = Values.item_types_num;
 
 		getline(fin, line);
-		SplitString(line, data_inline, "\t"); // µÚ3+ĞĞ Ä¸°åĞĞ
+		SplitString(line, data_inline, "\t"); // ç¬¬3+è¡Œ æ¯æ¿è¡Œ
 
-		Values.stock_length = atoi(data_inline[0].c_str()); // Ä¸°å³¤¶È
-		Values.stock_width = atoi(data_inline[1].c_str()); // Ä¸°å¿í¶È
+		Values.stock_length = atoi(data_inline[0].c_str()); // æ¯æ¿é•¿åº¦
+		Values.stock_width = atoi(data_inline[1].c_str()); // æ¯æ¿å®½åº¦
 
 		for (int i = 0; i < Values.stocks_num; i++)
 		{
@@ -66,24 +66,24 @@ void ReadData(All_Values& Values, All_Lists& Lists) // Æô·¢Ê½¶ÁÈ¡Êı¾İ
 		int item_index = 1;
 		int item_types_num = Values.item_types_num;
 
-		for (int i = 0; i < item_types_num; i++) // ËùÓĞ×Ó°åĞĞ
+		for (int i = 0; i < item_types_num; i++) // æ‰€æœ‰å­æ¿è¡Œ
 		{
 			getline(fin, line);
 			SplitString(line, data_inline, "\t");
 
 			int item_demand = atoi(data_inline[2].c_str());
-			for (int k = 0; k < item_demand; k++) // ×Ó°åĞèÇóÁ¿
+			for (int k = 0; k < item_demand; k++) // å­æ¿éœ€æ±‚é‡
 			{
 				ItemProperties this_item;
-				this_item.type_index = atoi(data_inline[3].c_str()); // ×Ó°åĞĞµÚ4Î»£º×Ó°åÖÖÀà
-				this_item.index = item_index; // ×Ó°åĞòºÅ£¬´Ó1¿ªÊ¼
-				this_item.demand = atoi(data_inline[2].c_str()); // ×Ó°åĞĞµÚ3Î»£º×Ó°åĞèÇó		
-				this_item.length = atoi(data_inline[0].c_str()); // ×Ó°åĞĞµÚ1Î»£º×Ó°å³¤¶È
-				this_item.width = atoi(data_inline[1].c_str()); // ×Ó°åĞĞµÚ2Î»£º×Ó°å¿í¶È
-				this_item.area = this_item.length * this_item.width; // ×Ó°åÃæ»ı
-				this_item.x_value = -1; // ×Ó°å×óÉÏ½Çx_value×ø±ê
-				this_item.y_value = -1; // ×Ó°å×óÉÏ½Çy_value×ø±ê
-				this_item.stock_index = -1; // ×Ó°åËùÊôÄ¸°å±àºÅ
+				this_item.type_index = atoi(data_inline[3].c_str()); // å­æ¿è¡Œç¬¬4ä½ï¼šå­æ¿ç§ç±»
+				this_item.index = item_index; // å­æ¿åºå·ï¼Œä»1å¼€å§‹
+				this_item.demand = atoi(data_inline[2].c_str()); // å­æ¿è¡Œç¬¬3ä½ï¼šå­æ¿éœ€æ±‚		
+				this_item.length = atoi(data_inline[0].c_str()); // å­æ¿è¡Œç¬¬1ä½ï¼šå­æ¿é•¿åº¦
+				this_item.width = atoi(data_inline[1].c_str()); // å­æ¿è¡Œç¬¬2ä½ï¼šå­æ¿å®½åº¦
+				this_item.area = this_item.length * this_item.width; // å­æ¿é¢ç§¯
+				this_item.x_value = -1; // å­æ¿å·¦ä¸Šè§’x_valueåæ ‡
+				this_item.y_value = -1; // å­æ¿å·¦ä¸Šè§’y_valueåæ ‡
+				this_item.stock_index = -1; // å­æ¿æ‰€å±æ¯æ¿ç¼–å·
 				this_item.occupied = 0;
 				Lists.all_items_list.push_back(this_item);
 
@@ -100,7 +100,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // Æô·¢Ê½¶ÁÈ¡Êı¾İ
 		}
 	}
 
-	// ËùÓĞ×Ó°å°´ÕÕ¿í¶È´Ó¿íµ½Õ­ÅÅĞò
+	// æ‰€æœ‰å­æ¿æŒ‰ç…§å®½åº¦ä»å®½åˆ°çª„æ’åº
 	ItemProperties  VP;
 	int all_items_list_size = Lists.all_items_list.size();
 	for (int i = 0; i < all_items_list_size - 1; i++)

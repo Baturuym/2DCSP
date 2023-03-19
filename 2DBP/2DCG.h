@@ -1,7 +1,7 @@
-// Yuming Zhao: https://github.com/Baturuym
+ï»¿// Yuming Zhao: https://github.com/Baturuym
 // 
 // 2022-10-21
-// Í·ÎÄ¼ş£¬°üº¬ËùÓĞµÄ½á¹¹ÌåºÍº¯ÊıµÄÉùÃ÷
+// å¤´æ–‡ä»¶ï¼ŒåŒ…å«æ‰€æœ‰çš„ç»“æ„ä½“å’Œå‡½æ•°çš„å£°æ˜
 
 #include<vector>
 #include<queue>
@@ -19,7 +19,23 @@
 using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
-///////////////////////////½á¹¹ÌåÉùÃ÷+¶¨Òå////////////////////////////////
+
+
+/*			pattern columns
+-----------------------------------------
+|		P_num			|		K_num			|
+| stk-cut-ptn cols	| stp-cut-tpn cols	|
+-----------------------------------------------------
+|							|							|				|
+|			 C				|			D				|  J_num	|	strip_type rows >= 0
+|							|							|				|
+|----------------------------------------------------
+|							|							|				|
+|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
+|							|							|				|
+-----------------------------------------------------
+*/
+
 
 struct ItemTypeProperties
 {
@@ -141,13 +157,13 @@ struct All_Lists
 	vector<StripProperties> all_strips_list;
 	vector<StockProperties> occupied_stocks_list;
 
-	vector<StockProperties> strip_col_ptns_list; // ´æ´¢Ã¿ÖÖµÚÒ»½×¶Î·½°¸£¨Ä¸°å£©µÄÏêÏ¸ĞÅÏ¢
-	vector<StripProperties> item_col_ptns_list; // ´æ´¢Ã¿ÖÖµÚ¶ş½×¶Î·½°¸£¨ÖĞ¼ä°å£©µÄÏêÏ¸ĞÅÏ¢
+	vector<StockProperties> strip_col_ptns_list; // å­˜å‚¨æ¯ç§ç¬¬ä¸€é˜¶æ®µæ–¹æ¡ˆï¼ˆæ¯æ¿ï¼‰çš„è¯¦ç»†ä¿¡æ¯
+	vector<StripProperties> item_col_ptns_list; // å­˜å‚¨æ¯ç§ç¬¬äºŒé˜¶æ®µæ–¹æ¡ˆï¼ˆä¸­é—´æ¿ï¼‰çš„è¯¦ç»†ä¿¡æ¯
 
-	vector<vector<double>> model_matrix; // ´æ´¢ÏµÊı¾ØÕóµÄËùÓĞÁĞ
-	vector<vector<double>> strip_cols; // ´æ´¢µÚÒ»½×¶Î·½°¸µÄËùÓĞÁĞ
-	vector<vector<double>> item_cols; // ´æ´¢µÚ¶ş½×¶Î·½°¸µÄËùÓĞÁĞ
-	//vector<vector<double>> new_cols; // ´æ´¢Òª¼ÓÈëMPµÄĞÂÁĞ
+	vector<vector<double>> model_matrix; // å­˜å‚¨ç³»æ•°çŸ©é˜µçš„æ‰€æœ‰åˆ—
+	vector<vector<double>> stock_cut_cols; // å­˜å‚¨ç¬¬ä¸€é˜¶æ®µæ–¹æ¡ˆçš„æ‰€æœ‰åˆ—
+	vector<vector<double>> strip_cut_cols; // å­˜å‚¨ç¬¬äºŒé˜¶æ®µæ–¹æ¡ˆçš„æ‰€æœ‰åˆ—
+	//vector<vector<double>> new_cols; // å­˜å‚¨è¦åŠ å…¥MPçš„æ–°åˆ—
 
 	vector<double> new_strip_col;
 	vector < vector<double>>new_item_cols;
@@ -155,10 +171,11 @@ struct All_Lists
 	vector<double>dual_prices_list;
 
 	vector<double> ISP_new_col;
+	vector<double> ISP_solns_list;
 
 };
 
-///////////////////////////º¯ÊıÉùÃ÷////////////////////////////////
+///////////////////////////å‡½æ•°å£°æ˜////////////////////////////////
 
 void SplitString(const string& s, vector<string>& v, const string& c);
 
@@ -179,9 +196,9 @@ void SolveFirstMasterProblem(
 
 int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists);
 
-int SolveInnerSubProblem(All_Values& Values, All_Lists& Lists);
+void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists);
 
-// Éú³É+Çó½âĞÂµÄÖ÷ÎÊÌâ
+// ç”Ÿæˆ+æ±‚è§£æ–°çš„ä¸»é—®é¢˜
 void SolveUpdateMasterProblem(
 	All_Values& Values, 
 	All_Lists& Lists,

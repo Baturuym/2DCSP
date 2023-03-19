@@ -1,4 +1,4 @@
-// Yuming Zhao: https://github.com/Baturuym
+ï»¿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
@@ -8,8 +8,8 @@ int main()
 {
 	All_Values Values;
 	All_Lists Lists;
-	ReadData(Values, Lists); // ¶ÁÈ¡Êı¾İ
-	InitModelMatrix(Values, Lists); // ³õÊ¼Æô·¢Ê½£¬»ñµÃÒ»×é³õÊ¼µÄÇĞ¸î·½°¸£¬×÷Îª³õÊ¼MPµÄÏµÊı¾ØÕó
+	ReadData(Values, Lists); // è¯»å–æ•°æ®
+	InitModelMatrix(Values, Lists); // åˆå§‹å¯å‘å¼ï¼Œè·å¾—ä¸€ç»„åˆå§‹çš„åˆ‡å‰²æ–¹æ¡ˆï¼Œä½œä¸ºåˆå§‹MPçš„ç³»æ•°çŸ©é˜µ
 	ColumnGeneration(Values, Lists);
 	return 0;
 }

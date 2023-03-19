@@ -1,4 +1,4 @@
-// Yuming Zhao: https://github.com/Baturuym
+ï»¿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
@@ -6,31 +6,31 @@ using namespace std;
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 {
-	IloEnv Env_MP; // MP»·¾³
-	IloModel Model_MP(Env_MP); // MPÄ£ĞÍ
-	IloNumVarArray Vars_MP(Env_MP); // MPËùÓĞ¾ö²ß±äÁ¿
-	IloRangeArray Cons_MP(Env_MP); // MPËùÓĞÔ¼Êø
-	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // MPÄ¿±êº¯Êı
+	IloEnv Env_MP; // MPç¯å¢ƒ
+	IloModel Model_MP(Env_MP); // MPæ¨¡å‹
+	IloNumVarArray Vars_MP(Env_MP); // MPæ‰€æœ‰å†³ç­–å˜é‡
+	IloRangeArray Cons_MP(Env_MP); // MPæ‰€æœ‰çº¦æŸ
+	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // MPç›®æ ‡å‡½æ•°
 
 	Values.iter = 1;
-	SolveFirstMasterProblem(Values, Lists, Env_MP, Model_MP, Obj_MP, Cons_MP, Vars_MP); // Çó½â³õÊ¼MP
+	SolveFirstMasterProblem(Values, Lists, Env_MP, Model_MP, Obj_MP, Cons_MP, Vars_MP); // æ±‚è§£åˆå§‹MP
 
 	while (1)
 	{
-		int SP_flag;
+		int loop_continue_flag=-1;
 
-		SP_flag = SolveOuterSubProblem(Values, Lists); // Çó½â×ÓÎÊÌâ
+		loop_continue_flag = SolveOuterSubProblem(Values, Lists); // æ±‚è§£å­é—®é¢˜
 
-		// Èç¹ûÇó½âSP1ºÍSP2¶¼Ã»ÓĞµÃµ½¸º·ÑÓÃÁĞ
-		if (SP_flag == 0)
+		// å¦‚æœæ±‚è§£SP1å’ŒSP2éƒ½æ²¡æœ‰å¾—åˆ°è´Ÿè´¹ç”¨åˆ—
+		if (loop_continue_flag == 0)
 		{
 			cout << endl;
 			break;
 		}
 
-		// Èç¹ûÇó½âSP1µÃµ½¸º·ÑÓÃÁĞ£¬
-		// »òÕßÇó½âSP1Ã»ÓĞµÃµ½¸º·ÑÓÃÁĞ£¬µ«ÊÇÇó½âSP2µÃµ½ÁË (?)
-		if (SP_flag == 1)
+		// å¦‚æœæ±‚è§£SP1å¾—åˆ°è´Ÿè´¹ç”¨åˆ—ï¼Œ
+		// æˆ–è€…æ±‚è§£SP1æ²¡æœ‰å¾—åˆ°è´Ÿè´¹ç”¨åˆ—ï¼Œä½†æ˜¯æ±‚è§£SP2å¾—åˆ°äº† (?)
+		if (loop_continue_flag == 1)
 		{
 			Values.iter++;
 			SolveUpdateMasterProblem(
@@ -40,7 +40,7 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 				Model_MP,
 				Obj_MP,
 				Cons_MP,
-				Vars_MP); // ¼ÌĞøÇó½â¼ÓÈëSPÉú³ÉÁĞµÄ¸üĞÂMP
+				Vars_MP); // ç»§ç»­æ±‚è§£åŠ å…¥SPç”Ÿæˆåˆ—çš„æ›´æ–°MP
 		}
 	}
 
@@ -52,7 +52,7 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 		Model_MP,
 		Obj_MP,
 		Cons_MP,
-		Vars_MP); // ×îºóÒ»´ÎÇó½âMP£¬µÃµ½×îÓÅÕûÊı½â
+		Vars_MP); // æœ€åä¸€æ¬¡æ±‚è§£MPï¼Œå¾—åˆ°æœ€ä¼˜æ•´æ•°è§£
 
 	Obj_MP.removeAllProperties();
 	Obj_MP.end();

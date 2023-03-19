@@ -1,8 +1,24 @@
-// Yuming Zhao: https://github.com/Baturuym
+ï»¿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
 using namespace std;
+
+/*			pattern columns
+-----------------------------------------
+|		P_num			|		K_num			|
+| stk-cut-ptn cols	| stp-cut-tpn cols	|
+-----------------------------------------------------
+|							|							|				|
+|			 C				|			D				|  J_num	|	strip_type rows >= 0
+|							|							|				|
+|----------------------------------------------------
+|							|							|				|
+|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
+|							|							|				|
+-----------------------------------------------------
+*/
+
 
 void SolveFirstMasterProblem(
 	All_Values& Values,
@@ -17,30 +33,32 @@ void SolveFirstMasterProblem(
 	int strip_types_num = Values.strip_types_num;
 	int item_types_num = Values.item_types_num;
 
-	int J = strip_types_num;
-	int N = item_types_num;
+	int J_num = strip_types_num;
+	int N_num = item_types_num;
 
-	int P = Lists.strip_cols.size();
-	int K = Lists.item_cols.size();
+	int P_num = Lists.stock_cut_cols.size();
+	int K_num = Lists.strip_cut_cols.size();
 
-	int all_cols_num = P + K;
+	int all_cols_num = P_num + K_num;
 	int all_rows_num = item_types_num + strip_types_num;
+
+	
 
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
 
-	for (int row = 0; row < J + N; row++)
+	for (int row = 0; row < J_num + N_num; row++)
 	{
-		if (row < J)
+		if (row < J_num)
 		{
 			// con >= 0
 			con_min.add(IloNum(0)); // con LB
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
-		if (row >= J)
+		if (row >= J_num)
 		{
 			// con >= item_type demand
-			int row_pos = row - J;
+			int row_pos = row - J_num;
 			double demand_val = Lists.item_types_list[row_pos].demand;
 			con_min.add(IloNum(demand_val)); // con LB
 			con_max.add(IloNum(IloInfinity)); // con UB
@@ -53,28 +71,13 @@ void SolveFirstMasterProblem(
 	con_min.end();
 	con_max.end();
 
-	/*
-				P						K
-	 strip_types cols  item_types cols
-	----------------------------------
-	|						|						|
-	|			C		    |           D			|	J-strip_types rows >= 0
-	|						|						|
-	|---------------------------------
-	|						|						|
-	|			0			|			B			|	N-item_types rows >= item_type demand
-	|						|						|
-	----------------------------------
-
-	*/
-
 	// Matrix C & Matrix  0
-	for (int col = 0; col < P; col++) 	// col 1 -> col P
+	for (int col = 0; col < P_num; col++) 	// col 1 -> col P_num
 	{
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
 
-		for (int row = 0; row < J + N; row++) // row 1 -> row J+N
+		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
 		{
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
@@ -92,18 +95,18 @@ void SolveFirstMasterProblem(
 
 
 	// Matrix D & Matrix  B
-	for (int col = P; col < P + K; col++) // col P+1 -> col P+K
+	for (int col = P_num; col < P_num + K_num; col++) // col P_num+1 -> col P_num+K_num
 	{
-		IloNum obj_para = 0; // Ä¿±êº¯ÊýÖÐ x ¶ÔÓ¦µÄÏµÊýÎª 0
-		IloNumColumn CplexCol = Obj_MP(obj_para); // ÁÐ½¨Ä£
+		IloNum obj_para = 0; // ç›®æ ‡å‡½æ•°ä¸­ x å¯¹åº”çš„ç³»æ•°ä¸º 0
+		IloNumColumn CplexCol = Obj_MP(obj_para); // åˆ—å»ºæ¨¡
 
-		for (int row = 0; row < J + N; row++) // row 1 -> row J+N
+		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
 		{
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
 
-		string X_name = "X_" + to_string(col + 1);
+		string X_name = "X_" + to_string(col + 1-P_num);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
 
@@ -112,12 +115,12 @@ void SolveFirstMasterProblem(
 		CplexCol.end();
 	}
 
-	printf("\n///////////////////////////////// Start the CPLEX solving of the FIRST MP /////////////////////////////////\n");
+	printf("\n///////////////// MP_1 CPLEX solving START /////////////////\n");
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("The First Master Problem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("\n///////////////////////////////// Finish the CPLEX solving of the FIRST MP /////////////////////////////////\n\n");
+	printf("\n///////////////// MP_1 CPLEX solving OVER /////////////////\n\n");
 
 	if (MP_flag == 0)
 	{
@@ -127,39 +130,38 @@ void SolveFirstMasterProblem(
 	{
 		printf("\n	The FIRST MP has feasible solution\n");
 
-		printf("\n	Y Solns:\n\n");
-		for (int col = 0; col < P; col++)
+		printf("\n	Y Solns (stock cutting patterns):\n\n");
+		for (int col = 0; col < P_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("	var_y_%d = %f\n", col + 1, soln_val);
+			printf("	var_Y_%d = %f\n", col + 1, soln_val);
 		}
 
-		printf("\n	X Solns:\n\n");
-		for (int col = P; col < P + K; col++)
+		printf("\n	X Solns (strip cutting patterns):\n\n");
+		for (int col = P_num; col < P_num + K_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("	var_x_%d = %f\n", col + 1, soln_val);
+			printf("	var_X_%d = %f\n", col + 1 - P_num, soln_val);
 		}
 
 		Lists.dual_prices_list.clear();
 
-		printf("\n	Strip cons dual prices: \n\n");
-		for (int row = 0; row < J; row++)
+		printf("\n	strip_type cons dual prices: \n\n");
+		for (int row = 0; row < J_num; row++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			printf("	dual_r_%d = %f\n", row + 1, dual_val);
 			Lists.dual_prices_list.push_back(dual_val);
 		}
 
-		printf("\n	Item cons dual prices : \n\n");
-		for (int row = J; row < J + N; row++)
+		printf("\n	item_type cons dual prices: \n\n");
+		for (int row = J_num; row < J_num + N_num; row++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			printf("	dual_r_%d = %f\n", row + 1, dual_val);
 			Lists.dual_prices_list.push_back(dual_val);
 		}
 
-		printf("\n	MP-1:\n");
 		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
 		printf("\n	NUM of all solns = %d", all_cols_num);
 	}
