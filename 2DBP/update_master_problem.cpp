@@ -180,7 +180,7 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	printf("\n	----MP_final VARS:----\n", Values.iter);
+	printf("\n	----MP_final VARS:----\n");
 	printf("\n	Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < P_num; col++)
 	{
