@@ -337,7 +337,6 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
 
-
 	// Init model matrix
 	for (int col = 0; col < P_num + K_num; col++)
 	{
