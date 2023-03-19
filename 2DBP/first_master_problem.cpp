@@ -14,14 +14,14 @@ void SolveFirstMasterProblem(
 	IloNumVarArray& Vars_MP)
 {
 
-	int P = Lists.strip_cols_list.size();
-	int K = Lists.item_cols_list.size();
-
 	int strip_types_num = Values.strip_types_num;
 	int item_types_num = Values.item_types_num;
 
 	int J = strip_types_num;
 	int N = item_types_num;
+
+	int P = Lists.strip_cols.size();
+	int K = Lists.item_cols.size();
 
 	int all_cols_num = P + K;
 	int all_rows_num = item_types_num + strip_types_num;
@@ -94,7 +94,7 @@ void SolveFirstMasterProblem(
 	// Matrix D & Matrix  B
 	for (int col = P; col < P + K; col++) // col P+1 -> col P+K
 	{
-		int obj_para = 0; // 目标函数中 x 对应的系数为 0
+		IloNum obj_para = 0; // 目标函数中 x 对应的系数为 0
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 列建模
 
 		for (int row = 0; row < J + N; row++) // row 1 -> row J+N
@@ -130,14 +130,14 @@ void SolveFirstMasterProblem(
 		printf("\n	Y Solns:\n\n");
 		for (int col = 0; col < P; col++)
 		{
-			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			printf("	var_y_%d = %f\n", col + 1, soln_val);
 		}
 
 		printf("\n	X Solns:\n\n");
 		for (int col = P; col < P + K; col++)
 		{
-			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			printf("	var_x_%d = %f\n", col + 1, soln_val);
 		}
 

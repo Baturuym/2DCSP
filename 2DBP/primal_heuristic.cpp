@@ -34,7 +34,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 		for (int k = 0; k < strip_types_num; k++)
 		{
 			StripTypeProperties this_strip_type;
-			this_strip_type.type = k + 1;
+			this_strip_type.type_index = k + 1;
 			new_stock.strip_types_list.push_back(this_strip_type);
 		}
 
@@ -42,7 +42,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 		ItemProperties stock_remain;
 		stock_remain.length = new_stock.length;
 		stock_remain.width = new_stock.width;
-		stock_remain.type = -1;
+		stock_remain.type_index = -1;
 		stock_remain.area = new_stock.area;
 		stock_remain.stock_index = new_stock.index;
 		stock_remain.x_value = new_stock.x_value;
@@ -59,7 +59,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 			{
 				// 确定第一个子板
 				ItemProperties first_item;
-				first_item.type = Lists.all_items_list[j].type;
+				first_item.type_index = Lists.all_items_list[j].type_index;
 				first_item.index = Lists.all_items_list[j].index;
 				first_item.demand = Lists.all_items_list[j].demand;
 				first_item.length = Lists.all_items_list[j].length;
@@ -75,7 +75,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 
 				StripProperties new_strip;
 				new_strip.index = strip_index;
-				new_strip.type = first_item.type;
+				new_strip.type_index = first_item.type_index;
 				new_strip.items_list.push_back(first_item); // 初始化第一个元素
 				new_strip.length = stock_remain.length;
 				new_strip.width = first_item.width;
@@ -87,10 +87,10 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				for (int k = 0; k < item_types_num; k++)
 				{
 					ItemTypeProperties this_item_type;
-					this_item_type.type = k + 1;
+					this_item_type.type_index = k + 1;
 					new_strip.item_types_list.push_back(this_item_type);
 				}
-				new_strip.item_types_list[first_item.type - 1].count++;
+				new_strip.item_types_list[first_item.type_index - 1].count++;
 
 				// 横向切断式切割后，第一个子板的右侧区域
 				ItemProperties first_item_right_side;
@@ -98,7 +98,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				first_item_right_side.width = first_item.width; // 区域宽度 = 第一块子板宽度
 				first_item_right_side.area = first_item_right_side.length * first_item_right_side.width; // 区域面积
 				first_item_right_side.stock_index = stock_remain.stock_index; // 区域所属母板
-				first_item_right_side.type = -1;
+				first_item_right_side.type_index = -1;
 				first_item_right_side.x_value = stock_remain.x_value + first_item.length;
 				first_item_right_side.y_value = stock_remain.y_value;
 				first_item_right_side.occupied = 0;
@@ -115,7 +115,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 					{
 						// 新的子板放入中间板
 						ItemProperties new_item;
-						new_item.type = Lists.all_items_list[m].type; // 子板编号
+						new_item.type_index = Lists.all_items_list[m].type_index; // 子板编号
 						new_item.index = Lists.all_items_list[m].index; // 子板编号
 						new_item.demand = Lists.all_items_list[m].demand;
 						new_item.length = Lists.all_items_list[m].length;
@@ -131,7 +131,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 						Lists.items_occupied_list.push_back(new_item); // 子板放入结果表
 
 						new_strip.items_list.push_back(new_item);
-						new_strip.item_types_list[new_item.type - 1].count++;
+						new_strip.item_types_list[new_item.type_index - 1].count++;
 
 						first_item_right_side.length = first_item_right_side.length - new_item.length; // 更新中间板的剩余长度
 						first_item_right_side.x_value = first_item_right_side.x_value + new_item.length;
@@ -188,7 +188,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				Lists.all_strips_list.push_back(new_strip);
 				strip_index++;
 				new_stock.strips_list.push_back(new_strip);
-				new_stock.strip_types_list[new_strip.type - 1].count++;
+				new_stock.strip_types_list[new_strip.type_index - 1].count++;
 
 				// 横向切断式切割后，第一个子板的上方区域
 				stock_remain.length = stock_remain.length;
@@ -369,7 +369,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				{
 					int col_pos = col - P;
 					int item_type_idx = row + 1;
-					if (Lists.item_col_ptns_list[col_pos].type == item_type_idx) // 
+					if (Lists.item_col_ptns_list[col_pos].type_index == item_type_idx) // 
 					{
 						double temp_val = -1; // 系数为-1
 						temp_col.push_back(temp_val);
@@ -414,7 +414,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				temp_col.push_back(temp_val);
 			}
 		}
-		Lists.strip_cols_list.push_back(temp_col); // 第一阶段列
+		Lists.strip_cols.push_back(temp_col); // 第一阶段列
 	}
 
 	cout << endl;
@@ -429,7 +429,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 			{
 				int col_pos = col - P;
 				int item_type_idx = row + 1;
-				if (Lists.item_col_ptns_list[col_pos].type == item_type_idx) // 
+				if (Lists.item_col_ptns_list[col_pos].type_index == item_type_idx) // 
 				{
 					double temp_val = -1; // 系数为-1
 					temp_col.push_back(temp_val);
@@ -449,7 +449,15 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 				temp_col.push_back(temp_val);
 			}
 		}
-		Lists.item_cols_list.push_back(temp_col); // 第二阶段列
+		Lists.item_cols.push_back(temp_col); // 第二阶段列
+	}
+
+	for (int k = 0; k < item_types_num; k++)
+	{
+		StripTypeProperties temp_stp;
+		temp_stp.width = Lists.item_types_list[k].width;
+		temp_stp.length = Values.stock_length;
+		Lists.strip_types_list.push_back(temp_stp);
 	}
 	cout << endl;
 }

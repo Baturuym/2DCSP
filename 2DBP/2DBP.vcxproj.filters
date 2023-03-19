@@ -51,10 +51,13 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Outer SP.lp">
+    <None Include="Outer Sub Problem.lp">
       <Filter>models</Filter>
     </None>
     <None Include="The First Master Problem.lp">
+      <Filter>models</Filter>
+    </None>
+    <None Include="Update Master Problem.lp">
       <Filter>models</Filter>
     </None>
   </ItemGroup>

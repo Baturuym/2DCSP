@@ -75,7 +75,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			for (int k = 0; k < item_demand; k++) // 子板需求量
 			{
 				ItemProperties this_item;
-				this_item.type = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
+				this_item.type_index = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
 				this_item.index = item_index; // 子板序号，从1开始
 				this_item.demand = atoi(data_inline[2].c_str()); // 子板行第3位：子板需求		
 				this_item.length = atoi(data_inline[0].c_str()); // 子板行第1位：子板长度
@@ -92,7 +92,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			}
 
 			ItemTypeProperties this_item_type;
-			this_item_type.type = atoi(data_inline[3].c_str());
+			this_item_type.type_index = atoi(data_inline[3].c_str());
 			this_item_type.demand = atoi(data_inline[2].c_str());
 			this_item_type.width = atoi(data_inline[1].c_str());
 			this_item_type.length = atoi(data_inline[0].c_str());
