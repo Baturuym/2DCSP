@@ -115,7 +115,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 			}
 		}
 
-		if (OSP_obj_val > 1+ RC_EPS) // 则求解OSP获得的新列加入当前MP，不用求解ISP
+		if (OSP_obj_val > 1 + RC_EPS) // 则求解OSP获得的新列加入当前MP，不用求解ISP
 		{
 			printf("\n\n\t OSP reduced cost = %f > 1,  \n", OSP_obj_val);
 			printf("\n\t No need to solve Inner-SP\n");
@@ -145,7 +145,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 				double a_val = Lists.dual_prices_list[k];
 				//SolveInnerSubProblem(Values, Lists);
 
-				if (Values.ISP_obj_val > a_val+ RC_EPS) //
+				if (Values.ISP_obj_val > a_val + RC_EPS) //
 				{
 					feasible_flag = 1;
 
@@ -186,7 +186,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 				{
 					printf("\n\t OSP_%d_ISP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
 						Values.iter, k + 1, Values.ISP_obj_val, k + 1, a_val);
-				}			
+				}
 			}
 
 			if (feasible_flag == 0)
