@@ -1,7 +1,7 @@
 ﻿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
-#include "2DBP.h"
+#include "2DCG.h"
 using namespace std;
 
 /*			     pattern columns
@@ -19,9 +19,9 @@ using namespace std;
 -----------------------------------------------------
 */
 
-int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
+int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 {
-	int all_cols_num = this_node.model_matrix.size();
+	int all_cols_num = Lists.model_matrix.size();
 
 	int strip_types_num = Values.strip_types_num;
 	int item_types_num = Values.item_types_num;
@@ -29,7 +29,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
 
-	int SP_flag = -1;
+	int loop_continue_flag = -1;
 
 	IloEnv Env_OSP; // OSP环境
 	IloModel Model_OSP(Env_OSP); // OSP模型
@@ -50,7 +50,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 	IloExpr obj_sum(Env_OSP);
 	for (int j = 0; j < J_num; j++) // vars num = strip_types num
 	{
-		double a_val = this_node.dual_prices_list[j];
+		double a_val = Lists.dual_prices_list[j];
 		obj_sum += a_val * Vars_Ga[j]; //  obj: sum (a_j * G_j)
 	}
 
@@ -69,38 +69,38 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 	Model_OSP.add(con_sum <= Values.stock_width);
 	con_sum.end();
 
-	printf("\n///////////////// OSP_%d CPLEX solving START /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// OSP_%d CPLEX solving START /////////////////\n\n", Values.iter);
 	IloCplex Cplex_OSP(Env_OSP);
 	Cplex_OSP.extract(Model_OSP);
 	Cplex_OSP.exportModel("Outer Sub Problem.lp"); // 
 	bool OSP_flag = Cplex_OSP.solve(); // 
-	printf("\n///////////////// OSP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// OSP_%d CPLEX solving OVER /////////////////\n\n", Values.iter);
 
 	if (OSP_flag == 0)
 	{
-		printf("\n\t OSP_%d is NOT FEASIBLE\n", this_node.iter);
+		printf("\n\t OSP_%d is NOT FEASIBLE\n", Values.iter);
 	}
 	else
 	{
-		printf("\n\t OSP_%d is FEASIBLE\n", this_node.iter);
+		printf("\n\t OSP_%d is FEASIBLE\n", Values.iter);
 		printf("\n\t Obj = %f\n", Cplex_OSP.getValue(Obj_OSP));
 
 		double OSP_obj_val = Cplex_OSP.getValue(Obj_OSP);
 		vector<double> OSP_solns_list;
 
 		// print OSP solns
-		this_node.new_stock_cut_col.clear();
-		printf("\n\t OSP_%d VARS:\n\n", this_node.iter);
+		Lists.new_stock_cut_col.clear();
+		printf("\n\t OSP_%d VARS:\n\n", Values.iter);
 		for (int j = 0; j < J_num; j++) // this_strip rows
 		{
 			double soln_val = Cplex_OSP.getValue(Vars_Ga[j]);
 			printf("\t var_G_%d = %f\n", j + 1, soln_val);
-			this_node.new_stock_cut_col.push_back(soln_val);
+			Lists.new_stock_cut_col.push_back(soln_val);
 			OSP_solns_list.push_back(soln_val);
 		}
 
 		// print OSP new col
-		printf("\n\t OSP_%d new col:\n\n", this_node.iter);
+		printf("\n\t OSP_%d new col:\n\n", Values.iter);
 		for (int j = 0; j < J_num + N_num; j++)
 		{
 			if (j < J_num)
@@ -111,7 +111,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 			else
 			{
 				printf("\t row_%d = 0\n", j + 1);
-				this_node.new_stock_cut_col.push_back(0);
+				Lists.new_stock_cut_col.push_back(0);
 			}
 		}
 
@@ -120,38 +120,37 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 			printf("\n\n\t OSP reduced cost = %f > 1,  \n", OSP_obj_val);
 			printf("\n\t No need to solve Inner-SP\n");
 
-			SP_flag = 1;
+			loop_continue_flag = 1;
 		}
-
 		else // 则继续求解这张中间板对应的ISP，看能否求出新列
 		{
 			printf("\n\t OSP reduced cost = %f <=1 \n", OSP_obj_val);
 			printf("\n\t Continue to solve ISP\n");
 
-			this_node.ISP_obj_val = -1;
-			this_node.new_strip_cut_cols.clear();
+			Values.ISP_obj_val = -1;
+			Lists.new_strip_cut_cols.clear();
 
-			this_node.ISP_solns_list.clear();
-			this_node.ISP_new_col.clear();
+			Lists.ISP_solns_list.clear();
+			Lists.ISP_new_col.clear();
 
-			SolveInnerSubProblem(Values, Lists,this_node);
+			SolveInnerSubProblem(Values, Lists);
 
 			int feasible_flag = 0;
 
-			int K_num = this_node.stock_cut_cols.size();
-			int P_num = this_node.strip_cut_cols.size();
+			int K_num = Lists.stock_cut_cols.size();
+			int P_num = Lists.strip_cut_cols.size();
 
 			for (int k = 0; k < J_num; k++) // all current stk-cut-patterns
 			{
-				double a_val =this_node.dual_prices_list[k];
+				double a_val = Lists.dual_prices_list[k];
 				//SolveInnerSubProblem(Values, Lists);
 
-				if (this_node.ISP_obj_val > a_val + RC_EPS) //
+				if (Values.ISP_obj_val > a_val + RC_EPS) //
 				{
 					feasible_flag = 1;
 
 					printf("\n\t OSP_%d_ISP_%d reduced cost = %f > strip_type con_%d dual = %f:\n",
-						this_node.iter, k + 1, this_node.ISP_obj_val, k + 1, a_val);
+						Values.iter, k + 1, Values.ISP_obj_val, k + 1, a_val);
 
 					vector<double> temp_col; // 
 					for (int j = 0; j < J_num; j++) //  all current stp-cut-patterns 
@@ -168,37 +167,37 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 
 					for (int i = 0; i < N_num; i++) // 
 					{
-						double D_soln_val = this_node.ISP_solns_list[i];
+						double D_soln_val = Lists.ISP_solns_list[i];
 						temp_col.push_back(D_soln_val); // 
 					}
 
-					printf("\n\t OSP_%d_ISP_%d new col:\n\n", this_node.iter, k + 1);
+					printf("\n\t OSP_%d_ISP_%d new col:\n\n", Values.iter, k + 1);
 					for (int row = 0; row < J_num + N_num; row++) // 输出ISP的新列
 					{
 						printf("\t row_%d = %f\n", row + 1, temp_col[row]);
 					}
-					printf("\n\t Add OSP_%d_ISP_%d new col to MP\n\n", this_node.iter, k + 1);
+					printf("\n\t Add OSP_%d_ISP_%d new col to MP\n\n", Values.iter, k + 1);
 
-					this_node.new_strip_cut_cols.push_back(temp_col);
+					Lists.new_strip_cut_cols.push_back(temp_col);
 
 					cout << endl;
 				}
 				else
 				{
 					printf("\n\t OSP_%d_ISP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
-						this_node.iter, k + 1, this_node.ISP_obj_val, k + 1, a_val);
+						Values.iter, k + 1, Values.ISP_obj_val, k + 1, a_val);
 				}
 			}
 
 			if (feasible_flag == 0)
 			{
-				printf("\n\t OSP_%d_ISP has no new col \n\n", this_node.iter);
+				printf("\n\t OSP_%d_ISP has no new col \n\n", Values.iter);
 				printf("\n\t Column Generation loop break\n");
 
 				cout << endl;
 			}
 
-			SP_flag = feasible_flag;
+			loop_continue_flag = feasible_flag;
 		}
 	}
 
@@ -211,12 +210,12 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 	Env_OSP.removeAllProperties();
 	Env_OSP.end();
 
-	return SP_flag; // 函数最终的返回值
+	return loop_continue_flag; // 函数最终的返回值
 }
 
-void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
+void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists)
 {
-	int all_cols_num = this_node.model_matrix.size();
+	int all_cols_num = Lists.model_matrix.size();
 
 	int strip_types_num = Values.strip_types_num;
 	int item_types_num = Values.item_types_num;
@@ -245,7 +244,7 @@ void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
 	for (int i = 0; i < N_num; i++)  // 
 	{
 		int row_pos = i + N_num;
-		double b_val = this_node.dual_prices_list[row_pos];
+		double b_val = Lists.dual_prices_list[row_pos];
 		obj_sum += b_val * Vars_De[i]; // 连加：对偶价格*决策变量
 	}
 
@@ -264,36 +263,36 @@ void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
 	Model_ISP.add(con_sum <= Values.stock_length);
 	con_sum.end();
 
-	printf("\n///////////////// OSP_%d_ISP CPLEX solving START /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// OSP_%d_ISP CPLEX solving START /////////////////\n\n", Values.iter);
 	IloCplex Cplex_ISP(Env_ISP);
 	Cplex_ISP.extract(Model_ISP);
 	Cplex_ISP.exportModel("Inner Sub Problem.lp"); // 输出ISP的lp模型
 	bool ISP_flag = Cplex_ISP.solve(); // 求解ISP
-	printf("\n///////////////// OSP_%d_ISP CPLEX solving OVER /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// OSP_%d_ISP CPLEX solving OVER /////////////////\n\n", Values.iter);
 
 	if (ISP_flag == 0)
 	{
-		printf("\n\t OSP_%d_ISP is NOT FEASIBLE\n", this_node.iter);
+		printf("\n\t OSP_%d_ISP is NOT FEASIBLE\n", Values.iter);
 	}
 	else
 	{
-		printf("\n\t OSP_%d_ISP is FEASIBLE\n", this_node.iter);
+		printf("\n\t OSP_%d_ISP is FEASIBLE\n", Values.iter);
 
 		printf("\n\t Obj = %f\n", Cplex_ISP.getValue(Obj_ISP));
-		this_node.ISP_obj_val = Cplex_ISP.getValue(Obj_ISP);
+		Values.ISP_obj_val = Cplex_ISP.getValue(Obj_ISP);
 
 		for (int j = 0; j < J_num; j++)
 		{
-			this_node.ISP_new_col.push_back(-1);
+			Lists.ISP_new_col.push_back(-1);
 		}
 
-		printf("\n\t OSP_%d_ISP VARS:\n\n", this_node.iter);
+		printf("\n\t OSP_%d_ISP VARS:\n\n", Values.iter);
 		for (int i = 0; i < N_num; i++)
 		{
 			double soln_val = Cplex_ISP.getValue(Vars_De[i]);
 			printf("\t var_D_%d = %f\n", i + 1, soln_val);
-			this_node.ISP_new_col.push_back(soln_val);
-			this_node.ISP_solns_list.push_back(soln_val);
+			Lists.ISP_new_col.push_back(soln_val);
+			Lists.ISP_solns_list.push_back(soln_val);
 		}
 	}
 

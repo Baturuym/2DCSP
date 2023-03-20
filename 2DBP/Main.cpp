@@ -1,19 +1,46 @@
-﻿// Yuming Zhao: https://github.com/Baturuym
-// 2023-03-10 CG for 2D-CSP
+﻿// 2022-11-23 Branch and Price
+// 2023-03-20: Branch and Price for 2DCSP 
 
-#include "2DCG.h"
+#include "2DBP.h"
 using namespace std;
 
 int main()
 {
-	All_Values Values;
+	clock_t start, finish;
+	start = clock();
+
 	All_Lists Lists;
+	All_Values Values;
 
-	ReadData(Values, Lists); // 读取数据
+	ReadData(Values, Lists);
 
-	InitModelMatrix(Values, Lists); // 初始启发式，获得一组初始的切割方案，作为初始MP的系数矩阵
-	OutPutResults(Values, Lists);
-	ColumnGeneration(Values, Lists);
 
+	Node root_node; // Init Root Node
+	root_node.index = 1; // Node index
+	Values.branch_status = 0;
+
+	InitModelMatrix(Values, Lists, root_node); // generate Root Node matrix
+	RootNodeColumnGeneration(Values, Lists, root_node);
+	Values.search_flag = FinishNode(Values, Lists, root_node); // find the branch var of Root Node
+	Lists.all_nodes_list.push_back(root_node);
+	Values.root_flag = 1;
+
+	printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+
+	// continue to BP
+	if (Values.search_flag == 0)
+	{
+		Values.branch_status = 1;
+		BranchAndPriceTree(Values, Lists); // Branch and Price loop
+	}
+
+	finish = clock();
+	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
+	printf("\n\t Process Time = %f seconds\n", duration);
+
+	Lists.all_nodes_list.clear();
+
+	cout << endl;
 	return 0;
 }
+

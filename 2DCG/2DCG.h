@@ -178,18 +178,19 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<ItemTypeProperties> item_types_list;
-	vector<StripTypeProperties> strip_types_list;
-
-	vector<StockProperties> stock_pool_list;
-	vector<ItemProperties> occupied_items_list;
-	vector<ItemProperties> all_items_list;
-
-	vector<StripProperties> all_strips_list;
-	vector<StockProperties> occupied_stocks_list;
-
 	vector<StockProperties> stock_cut_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
 	vector<StripProperties> strip_cut_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+
+	vector<ItemTypeProperties> all_item_types_list;
+	vector<StripTypeProperties> all_strip_types_list;
+
+	vector<ItemProperties> all_items_list;
+	vector<StripProperties> all_strips_list;
+
+	vector<StockProperties> occupied_stocks_list;
+	vector<ItemProperties> occupied_items_list;
+
+	vector<StockProperties> stock_pool_list;
 
 	vector<vector<double>> model_matrix; // 存储系数矩阵的所有列
 	vector<vector<double>> stock_cut_cols; // 存储第一阶段方案的所有列

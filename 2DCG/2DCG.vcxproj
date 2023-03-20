@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{68b4ea6d-79a5-4e3a-9710-f3f2675edaaa}</ProjectGuid>
-    <RootNamespace>My2DBP</RootNamespace>
+    <ProjectGuid>{83b7b588-9c94-412a-b626-56b7c4a1ce55}</ProjectGuid>
+    <RootNamespace>My2DCG</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -131,24 +131,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="branching.cpp" />
-    <ClCompile Include="branch_and_price.cpp" />
+    <ClCompile Include="column_generation.cpp" />
+    <ClCompile Include="first_master_problem.cpp" />
+    <ClCompile Include="input_data.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="new_node_column_generation.cpp" />
-    <ClCompile Include="new_node_first_master_problem.cpp" />
-    <ClCompile Include="new_node_generating.cpp" />
+    <ClCompile Include="output_results.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
-    <ClCompile Include="read_data.cpp" />
-    <ClCompile Include="root_node_column_generation.cpp" />
-    <ClCompile Include="root_node_first_master_problem.cpp" />
     <ClCompile Include="sub_problem.cpp" />
     <ClCompile Include="update_master_problem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="2DBP.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="cutdata1207.txt" />
+    <ClInclude Include="2DCG.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

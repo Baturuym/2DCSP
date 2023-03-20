@@ -1,7 +1,7 @@
 ﻿// Yuming Zhao: https://github.com/Baturuym
 // 2023-03-10 CG for 2D-CSP
 
-#include "2DCG.h"
+#include "2DBP.h"
 using namespace std;
 
 /*			pattern columns
@@ -19,14 +19,15 @@ using namespace std;
 -----------------------------------------------------
 */
 
-void SolveFirstMasterProblem(
+bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
+	IloNumVarArray& Vars_MP,
+	Node&root_node)
 {
 
 	int strip_types_num = Values.strip_types_num;
@@ -35,8 +36,8 @@ void SolveFirstMasterProblem(
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
 
-	int K_num = Lists.stock_cut_cols.size();
-	int P_num = Lists.strip_cut_cols.size();
+	int K_num = root_node.stock_cut_cols.size();
+	int P_num = root_node.strip_cut_cols.size();
 
 	int all_cols_num = K_num + P_num;
 	int all_rows_num = item_types_num + strip_types_num;
@@ -56,7 +57,7 @@ void SolveFirstMasterProblem(
 		{
 			// con >= item_type demand
 			int row_pos = row - J_num;
-			double demand_val = Lists.item_types_list[row_pos].demand;
+			double demand_val = Lists.all_item_types_list[row_pos].demand;
 			con_min.add(IloNum(demand_val)); // con LB
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
@@ -76,7 +77,7 @@ void SolveFirstMasterProblem(
 
 		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
 		{
-			IloNum row_para = Lists.model_matrix[col][row];
+			IloNum row_para = root_node.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
 
@@ -99,7 +100,7 @@ void SolveFirstMasterProblem(
 
 		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
 		{
-			IloNum row_para = Lists.model_matrix[col][row];
+			IloNum row_para = root_node.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
 
@@ -141,14 +142,14 @@ void SolveFirstMasterProblem(
 			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
 
-		Lists.dual_prices_list.clear();
+		root_node.dual_prices_list.clear();
 
 		printf("\n\t strip_type cons dual prices: \n\n");
 		for (int row = 0; row < J_num; row++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
-			Lists.dual_prices_list.push_back(dual_val);
+			root_node.dual_prices_list.push_back(dual_val);
 		}
 
 		printf("\n\t item_type cons dual prices: \n\n");
@@ -156,11 +157,13 @@ void SolveFirstMasterProblem(
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
-			Lists.dual_prices_list.push_back(dual_val);
+			root_node.dual_prices_list.push_back(dual_val);
 		}
 
 		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
 		printf("\n\t NUM of all solns = %d", all_cols_num);
 	}
 	cout << endl;
+
+	return MP_flag;
 }

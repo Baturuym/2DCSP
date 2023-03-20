@@ -1,23 +1,25 @@
-﻿// Yuming Zhao: https://github.com/Baturuym
-// 2023-03-10 CG for 2D-CSP
+﻿// 2022-11-17
 
-#include "2DCG.h"
+#include "2DBP.h"
 using namespace std;
 
-void SplitString(const string& s, vector<string>& v, const string& c)
+
+void SplitString(const string& line_string, vector<string>& string_list, const string& data_string)
 {
 	string::size_type pos1, pos2;
-	pos2 = s.find(c);
+	pos2 = line_string.find(data_string);
 	pos1 = 0;
-	v.clear();//删除原内容
+	string_list.clear();
 	while (string::npos != pos2)
 	{
-		v.push_back(s.substr(pos1, pos2 - pos1));
-		pos1 = pos2 + c.size();
-		pos2 = s.find(c, pos1);
+		string_list.push_back(line_string.substr(pos1, pos2 - pos1));
+		pos1 = pos2 + data_string.size();
+		pos2 = line_string.find(data_string, pos1);
 	}
-	if (pos1 != s.length())
-		v.push_back(s.substr(pos1));
+	if (pos1 != line_string.length())
+	{
+		string_list.push_back(line_string.substr(pos1));
+	}
 }
 
 void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
@@ -29,7 +31,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 	vector<string> data_inline, data_inline1, data_inline2;//读取本地行中的数据
 
 	s_in.str("");
-	s_in << "C:/Users/YMZhao/Desktop/2DBP/2DBP/cutdata1207.txt";
+	s_in << "C:/Users/YMZhao/Desktop/2DCG/2DBP/cutdata1207.txt";
 	//s_in << "D:/CuttingTXT/cutdata11251.txt";
 	in_str = s_in.str();
 
@@ -96,7 +98,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			this_item_type.demand = atoi(data_inline[2].c_str());
 			this_item_type.width = atoi(data_inline[1].c_str());
 			this_item_type.length = atoi(data_inline[0].c_str());
-			Lists.item_types_list.push_back(this_item_type);
+			Lists.all_item_types_list.push_back(this_item_type);
 		}
 	}
 
