@@ -135,12 +135,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="column_generation.cpp" />
+    <ClCompile Include="output_results.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
     <ClCompile Include="sub_problem.cpp" />
     <ClCompile Include="update_master_problem.cpp" />
-    <ClCompile Include="read_data.cpp" />
+    <ClCompile Include="input_data.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="cutdata1207.txt" />

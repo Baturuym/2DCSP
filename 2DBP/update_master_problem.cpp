@@ -6,7 +6,7 @@ using namespace std;
 
 /*			pattern columns
 -----------------------------------------
-|		P_num			|		K_num			|
+|		K_num			|		P_num			|
 | stk-cut-ptn cols	| stp-cut-tpn cols	|
 -----------------------------------------------------
 |							|							|				|
@@ -52,8 +52,8 @@ void SolveUpdateMasterProblem(
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
 
-		IloNumVar Y_var(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // 
-		(Vars_MP).add(Y_var);
+		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // 
+		(Vars_MP).add(Var_Y);
 
 		CplexCol.end(); // must end this IloNumColumn object
 
@@ -65,7 +65,7 @@ void SolveUpdateMasterProblem(
 			temp_col.push_back(temp_val);
 		}
 
-		Lists.stock_cut_cols.push_back(temp_col); // update strip cols
+		Lists.stock_cut_cols.push_back(temp_col); // update this_strip cols
 		Lists.model_matrix.insert(Lists.model_matrix.begin() + Lists.stock_cut_cols.size(), temp_col); // update model matrix
 
 		break;
@@ -88,8 +88,8 @@ void SolveUpdateMasterProblem(
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
 
-		IloNumVar X_var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 非整数松弛变量
-		(Vars_MP).add(X_var);
+		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 
+		(Vars_MP).add(Var_X);
 
 		CplexCol.end(); // must end this IloNumColumn object
 
@@ -113,22 +113,22 @@ void SolveUpdateMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_%d CPLEX solving OVER /////////////////\n\n", Values.iter);
 
-	int P_num = Lists.stock_cut_cols.size();
-	int K_num = Lists.strip_cut_cols.size();
-	int all_cols_num = P_num + K_num;
+	int K_num = Lists.stock_cut_cols.size();
+	int P_num = Lists.strip_cut_cols.size();
+	int all_cols_num = K_num + P_num;
 
-	printf("\n	Y Solns (stock cutting patterns):\n\n");
-	for (int col = 0; col < P_num; col++)
+	printf("\n	pos_y Solns (stock cutting patterns):\n\n");
+	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
 		printf("	var_Y_%d = %f\n", col + 1, soln_val);
 	}
 
-	printf("\n	X Solns (strip cutting patterns):\n\n");
-	for (int col = P_num; col < P_num + K_num; col++)
+	printf("\n	pos_x Solns (this_strip cutting patterns):\n\n");
+	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_X_%d = %f\n", col + 1-P_num, soln_val);
+		printf("	var_X_%d = %f\n", col + 1 - K_num, soln_val);
 	}
 
 	Lists.dual_prices_list.clear();
@@ -164,14 +164,14 @@ void SolveFinalMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP)
 {
-	int P_num = Lists.stock_cut_cols.size();
-	int K_num = Lists.strip_cut_cols.size();
+	int K_num = Lists.stock_cut_cols.size();
+	int P_num = Lists.strip_cut_cols.size();
 
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
 
 	int all_rows_num = item_types_num + strip_types_num;
-	int all_cols_num = P_num + K_num;
+	int all_cols_num = K_num + P_num;
 
 	printf("\n\n///////////////// MP_final CPLEX solving START /////////////////\n");
 	IloCplex MP_cplex(Model_MP);
@@ -180,22 +180,20 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	printf("\n	----MP_final VARS:----\n");
-	printf("\n	Y Solns (stock cutting patterns):\n\n");
-	for (int col = 0; col < P_num; col++)
+	printf("\n	pos_y Solns (stock cutting patterns):\n\n");
+	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
 		printf("	var_Y_%d = %f\n", col + 1, soln_val);
 	}
 
-	printf("\n	X Solns (strip cutting patterns):\n\n");
-	for (int col = P_num; col < P_num + K_num; col++)
+	printf("\n	pos_x Solns (this_strip cutting patterns):\n\n");
+	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_X_%d = %f\n", col + 1-P_num, soln_val);
+		printf("	var_X_%d = %f\n", col + 1 - K_num, soln_val);
 	}
 
-	printf("\n	----MP_Final:----\n");
 	printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
 	printf("\n	NUM of all solns = %d", all_cols_num);
 

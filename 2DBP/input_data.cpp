@@ -58,8 +58,8 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			this_stock.length = Values.stock_length;
 			this_stock.width = Values.stock_width;
 			this_stock.area = Values.stock_length * Values.stock_width;
-			this_stock.x_value = 0;
-			this_stock.y_value = 0;
+			this_stock.pos_x = 0;
+			this_stock.pos_y = 0;
 			Lists.stock_pool_list.insert(Lists.stock_pool_list.begin(), this_stock);
 		}
 
@@ -75,15 +75,15 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			for (int k = 0; k < item_demand; k++) // 子板需求量
 			{
 				ItemProperties this_item;
-				this_item.type_index = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
-				this_item.index = item_index; // 子板序号，从1开始
+				this_item.item_type_idx = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
+				this_item.item_idx = item_index; // 子板序号，从1开始
 				this_item.demand = atoi(data_inline[2].c_str()); // 子板行第3位：子板需求		
 				this_item.length = atoi(data_inline[0].c_str()); // 子板行第1位：子板长度
 				this_item.width = atoi(data_inline[1].c_str()); // 子板行第2位：子板宽度
 				this_item.area = this_item.length * this_item.width; // 子板面积
-				this_item.x_value = -1; // 子板左上角x_value坐标
-				this_item.y_value = -1; // 子板左上角y_value坐标
-				this_item.stock_index = -1; // 子板所属母板编号
+				this_item.pos_x = -1; // 子板左上角pos_x坐标
+				this_item.pos_y = -1; // 子板左上角pos_y坐标
+				this_item.stock_idx = -1; // 子板所属母板编号
 				this_item.occupied = 0;
 				Lists.all_items_list.push_back(this_item);
 
@@ -92,7 +92,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			}
 
 			ItemTypeProperties this_item_type;
-			this_item_type.type_index = atoi(data_inline[3].c_str());
+			this_item_type.item_type_idx = atoi(data_inline[3].c_str());
 			this_item_type.demand = atoi(data_inline[2].c_str());
 			this_item_type.width = atoi(data_inline[1].c_str());
 			this_item_type.length = atoi(data_inline[0].c_str());

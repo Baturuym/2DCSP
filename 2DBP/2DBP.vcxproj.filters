@@ -26,7 +26,7 @@
     <ClCompile Include="main.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
-    <ClCompile Include="read_data.cpp">
+    <ClCompile Include="input_data.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="primal_heuristic.cpp">
@@ -42,6 +42,9 @@
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="column_generation.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="output_results.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
   </ItemGroup>

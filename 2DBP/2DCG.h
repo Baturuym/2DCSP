@@ -1,7 +1,6 @@
 ﻿// Yuming Zhao: https://github.com/Baturuym
 // 
 // 2022-10-21
-// 头文件，包含所有的结构体和函数的声明
 
 #include<vector>
 #include<queue>
@@ -14,6 +13,11 @@
 #include <array>
 #include <algorithm>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
+#include <iomanip>
+
 #include <ilcplex/ilocplex.h>
 
 using namespace std;
@@ -23,7 +27,7 @@ using namespace std;
 
 /*			pattern columns
 -----------------------------------------
-|		P_num			|		K_num			|
+|		K_num			|		P_num			|
 | stk-cut-ptn cols	| stp-cut-tpn cols	|
 -----------------------------------------------------
 |							|							|				|
@@ -39,39 +43,45 @@ using namespace std;
 
 struct ItemTypeProperties
 {
-	int type_index = -1;
-	int count = 0;
+	int item_type_idx = -1;
 	double demand = -1;
+
 	int length = -1;
 	int width = -1;
+	int this_item_type_num = 0;
 };
 
 struct StripTypeProperties
 {
-	int type_index = -1;
-	int count = 0;
+	int strip_type_idx = -1;
+
 	int width = -1;
 	int length = -1;
+	int this_strip_type_num = 0;
 };
 
 struct StockTypeProperties
 {
-	int type_index = -1;
-	int count = 0;
+	int stock_type_idx = -1;
+	int this_stock_type_num = 0;
 };
 
 struct ItemProperties
 {
-	int type_index = -1;
+	int item_idx = -1;
+	int item_type_idx = -1;
 	int demand = -1;
+
 	int length = -1;
 	int width = -1;
 	int area = -1;
-	int x_value = -1;
-	int y_value = -1;
-	int index = -1;
-	int Strip_index = -1;
-	int stock_index = -1;
+
+	int pos_x = -1;
+	int pos_y = -1;
+
+	int strip_idx = -1;
+	int stock_idx = -1;
+
 	int occupied = 0;
 
 	int cutting_distance = -1;
@@ -80,17 +90,21 @@ struct ItemProperties
 
 struct StripProperties
 {
-	int type_index = -1;
+	int strip_idx = -1;
+	int strip_type_idx = -1;
 	int pattern = -1;
-	vector<ItemProperties> items_list;
+
+	vector<ItemProperties> items_in_strip_list;
 	vector<ItemTypeProperties> item_types_list;
+
 	int length = -1;
 	int width = -1;
 	int area = -1;
-	int x_value = -1;
-	int y_value = -1;
-	int index = -1;
-	int stock_index = -1;
+
+	int pos_x = -1;
+	int pos_y = -1;
+
+	int stock_idx = -1;
 
 	int cutting_distance = -1;
 	int material_cutting_loss = -1;
@@ -101,17 +115,19 @@ struct StripProperties
 
 struct StockProperties
 {
-	int type_index = 0;
+	int stock_idx = -1;
+	int stock_type_idx = 0;
 	int pattern = -1;
+
 	vector<StripProperties> strips_list;
 	vector<StripTypeProperties> strip_types_list;
 
 	int length = -1;
 	int width = -1;
 	int area = -1;
-	int x_value = -1;
-	int y_value = -1;
-	int index = -1;
+
+	int pos_x = -1;
+	int pos_y = -1;
 
 	int cutting_distance = -1;
 	int material_cutting_loss = -1;
@@ -122,16 +138,17 @@ struct StockProperties
 
 struct All_Values
 {
+	int strip_types_num = -1;
+	int item_types_num = -1;
+
 	int stocks_num = -1;
 	int stock_types_num = -1;
-	int items_num = -1;
-	int strips_num = -1;
-
-	int item_types_num = -1;
-	int strip_types_num = -1;
 
 	int stock_length = -1;
 	int stock_width = -1;
+
+	int items_num = -1;
+	int strips_num = -1;
 
 	int unit_cut_loss = -1;
 	int unit_area_loss = -1;
@@ -141,7 +158,7 @@ struct All_Values
 
 	bool Finish;
 
-	int iter = -1;;
+	int iter = -1;
 	double ISP_obj_val = -1;
 };
 
@@ -151,14 +168,14 @@ struct All_Lists
 	vector<StripTypeProperties> strip_types_list;
 
 	vector<StockProperties> stock_pool_list;
-	vector<ItemProperties> items_occupied_list;
+	vector<ItemProperties> occupied_items_list;
 	vector<ItemProperties> all_items_list;
 
 	vector<StripProperties> all_strips_list;
 	vector<StockProperties> occupied_stocks_list;
 
-	vector<StockProperties> strip_col_ptns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<StripProperties> item_col_ptns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<StockProperties> stock_cut_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<StripProperties> strip_cut_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
 	vector<vector<double>> model_matrix; // 存储系数矩阵的所有列
 	vector<vector<double>> stock_cut_cols; // 存储第一阶段方案的所有列
@@ -186,12 +203,12 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists);
 void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 
 void SolveFirstMasterProblem(
-	All_Values& Values, 
+	All_Values& Values,
 	All_Lists& Lists,
-	IloEnv& Env_MP, 
-	IloModel& Model_MP, 
+	IloEnv& Env_MP,
+	IloModel& Model_MP,
 	IloObjective& Obj_MP,
-	IloRangeArray& Cons_MP, 
+	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
 int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists);
@@ -200,12 +217,12 @@ void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists);
 
 // 生成+求解新的主问题
 void SolveUpdateMasterProblem(
-	All_Values& Values, 
+	All_Values& Values,
 	All_Lists& Lists,
-	IloEnv& Env_MP, 
-	IloModel& Model_MP, 
+	IloEnv& Env_MP,
+	IloModel& Model_MP,
 	IloObjective& Obj_MP,
-	IloRangeArray& Cons_MP, 
+	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
 void SolveFinalMasterProblem(
@@ -217,7 +234,7 @@ void SolveFinalMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
-
+void OutPutResults(All_Values& Values, All_Lists& Lists);
 
 
 

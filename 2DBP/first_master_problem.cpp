@@ -6,7 +6,7 @@ using namespace std;
 
 /*			pattern columns
 -----------------------------------------
-|		P_num			|		K_num			|
+|		 P_num			|		K_num			|
 | stk-cut-ptn cols	| stp-cut-tpn cols	|
 -----------------------------------------------------
 |							|							|				|
@@ -18,7 +18,6 @@ using namespace std;
 |							|							|				|
 -----------------------------------------------------
 */
-
 
 void SolveFirstMasterProblem(
 	All_Values& Values,
@@ -36,13 +35,11 @@ void SolveFirstMasterProblem(
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
 
-	int P_num = Lists.stock_cut_cols.size();
-	int K_num = Lists.strip_cut_cols.size();
+	int K_num = Lists.stock_cut_cols.size();
+	int P_num = Lists.strip_cut_cols.size();
 
-	int all_cols_num = P_num + K_num;
+	int all_cols_num = K_num + P_num;
 	int all_rows_num = item_types_num + strip_types_num;
-
-	
 
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
@@ -72,7 +69,7 @@ void SolveFirstMasterProblem(
 	con_max.end();
 
 	// Matrix C & Matrix  0
-	for (int col = 0; col < P_num; col++) 	// col 1 -> col P_num
+	for (int col = 0; col < K_num; col++) 	// col 1 -> col K_num
 	{
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
@@ -87,18 +84,18 @@ void SolveFirstMasterProblem(
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
 
-		IloNumVar var(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
-		Vars_MP.add(var);
+		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
+		Vars_MP.add(Var_Y);
 
 		CplexCol.end();
 	}
 
 
 	// Matrix D & Matrix  B
-	for (int col = P_num; col < P_num + K_num; col++) // col P_num+1 -> col P_num+K_num
+	for (int col = K_num; col < K_num + P_num; col++) // col K_num+1 -> col K_num+P_num
 	{
-		IloNum obj_para = 0; // 目标函数中 x 对应的系数为 0
-		IloNumColumn CplexCol = Obj_MP(obj_para); // 列建模
+		IloNum obj_para = 0; // 
+		IloNumColumn CplexCol = Obj_MP(obj_para); // 
 
 		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
 		{
@@ -106,12 +103,12 @@ void SolveFirstMasterProblem(
 			CplexCol += Cons_MP[row](row_para);
 		}
 
-		string X_name = "X_" + to_string(col + 1-P_num);
+		string X_name = "X_" + to_string(col + 1 - K_num);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
 
-		IloNumVar var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
-		Vars_MP.add(var);
+		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+		Vars_MP.add(Var_X);
 		CplexCol.end();
 	}
 
@@ -129,19 +126,19 @@ void SolveFirstMasterProblem(
 	else
 	{
 		printf("\n	The FIRST MP has feasible solution\n");
+		printf("\n	pos_y Solns (stock cutting patterns):\n\n");
 
-		printf("\n	Y Solns (stock cutting patterns):\n\n");
-		for (int col = 0; col < P_num; col++)
+		for (int col = 0; col < K_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			printf("	var_Y_%d = %f\n", col + 1, soln_val);
 		}
 
-		printf("\n	X Solns (strip cutting patterns):\n\n");
-		for (int col = P_num; col < P_num + K_num; col++)
+		printf("\n	pos_x Solns (this_strip cutting patterns):\n\n");
+		for (int col = K_num; col < K_num + P_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("	var_X_%d = %f\n", col + 1 - P_num, soln_val);
+			printf("	var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
 
 		Lists.dual_prices_list.clear();
