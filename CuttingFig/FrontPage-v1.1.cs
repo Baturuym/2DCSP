@@ -53,7 +53,7 @@ namespace CuttingFig
 			while (!srReadFile.EndOfStream)
 			{
 				string str = srReadFile.ReadLine();
-				char[] chs = { '	' }; //****数据中用的是tab还是空格得整明白
+				char[] chs = { '	' }; // ATTENTION: 数据中用的是tab还是空格得整明白
 				res = str.Split(chs, StringSplitOptions.RemoveEmptyEntries);
 				int XR = Convert.ToInt32(res[0]);
 				int YR = Convert.ToInt32(res[1]);
