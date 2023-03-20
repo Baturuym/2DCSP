@@ -43,7 +43,7 @@ void SolveUpdateMasterProblem(
 
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			IloNum row_para = Lists.new_strip_col[row];
+			IloNum row_para = Lists.new_stock_cut_col[row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
@@ -61,7 +61,7 @@ void SolveUpdateMasterProblem(
 		vector<double>temp_col;
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			double temp_val = Lists.new_strip_col[row];
+			double temp_val = Lists.new_stock_cut_col[row];
 			temp_col.push_back(temp_val);
 		}
 
@@ -71,7 +71,7 @@ void SolveUpdateMasterProblem(
 		break;
 	}
 
-	int new_item_cols_num = Lists.new_item_cols.size();
+	int new_item_cols_num = Lists.new_strip_cut_cols.size();
 	for (int col = 0; col < new_item_cols_num; col++)
 	{
 		IloNum obj_para = 0; // 
@@ -79,7 +79,7 @@ void SolveUpdateMasterProblem(
 
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			IloNum row_para = Lists.new_item_cols[col][row];
+			IloNum row_para = Lists.new_strip_cut_cols[col][row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
@@ -97,7 +97,7 @@ void SolveUpdateMasterProblem(
 		vector<double>temp_col;
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			double temp_val = Lists.new_item_cols[col][row];
+			double temp_val = Lists.new_strip_cut_cols[col][row];
 			temp_col.push_back(temp_val);
 		}
 
@@ -117,40 +117,40 @@ void SolveUpdateMasterProblem(
 	int P_num = Lists.strip_cut_cols.size();
 	int all_cols_num = K_num + P_num;
 
-	printf("\n	pos_y Solns (stock cutting patterns):\n\n");
+	printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_Y_%d = %f\n", col + 1, soln_val);
+		printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 	}
 
-	printf("\n	pos_x Solns (this_strip cutting patterns):\n\n");
+	printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
 	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 	}
 
 	Lists.dual_prices_list.clear();
 
-	printf("\n	strip_type cons dual prices: \n\n");
+	printf("\n\t strip_type cons dual prices: \n\n");
 	for (int row = 0; row < J_num; row++)
 	{
 		double dual_val = MP_cplex.getDual(Cons_MP[row]);
-		printf("	dual_r_%d = %f\n", row + 1, dual_val);
+		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		Lists.dual_prices_list.push_back(dual_val);
 	}
 
-	printf("\n	item_type cons dual prices: \n\n");
+	printf("\n\t item_type cons dual prices: \n\n");
 	for (int row = J_num; row < J_num + N_num; row++)
 	{
 		double dual_val = MP_cplex.getDual(Cons_MP[row]);
-		printf("	dual_r_%d = %f\n", row + 1, dual_val);
+		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		Lists.dual_prices_list.push_back(dual_val);
 	}
 
-	printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n	NUM of all solns = %d", all_cols_num);
+	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
+	printf("\n\t NUM of all solns = %d", all_cols_num);
 
 	cout << endl;
 }
@@ -180,22 +180,22 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	printf("\n	pos_y Solns (stock cutting patterns):\n\n");
+	printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_Y_%d = %f\n", col + 1, soln_val);
+		printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 	}
 
-	printf("\n	pos_x Solns (this_strip cutting patterns):\n\n");
+	printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
 	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 	}
 
-	printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n	NUM of all solns = %d", all_cols_num);
+	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
+	printf("\n\t NUM of all solns = %d", all_cols_num);
 
 	cout << endl;
 }

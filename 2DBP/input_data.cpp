@@ -71,8 +71,8 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			getline(fin, line);
 			SplitString(line, data_inline, "\t");
 
-			int item_demand = atoi(data_inline[2].c_str());
-			for (int k = 0; k < item_demand; k++) // 子板需求量
+			int item_type_demand_num = atoi(data_inline[2].c_str());
+			for (int k = 0; k < item_type_demand_num; k++) // 子板需求量
 			{
 				ItemProperties this_item;
 				this_item.item_type_idx = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
@@ -102,10 +102,10 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 
 	// 所有子板按照宽度从宽到窄排序
 	ItemProperties  VP;
-	int all_items_list_size = Lists.all_items_list.size();
-	for (int i = 0; i < all_items_list_size - 1; i++)
+	int all_items_num = Lists.all_items_list.size();
+	for (int i = 0; i < all_items_num - 1; i++)
 	{
-		for (int j = i + 1; j < all_items_list_size; j++)
+		for (int j = i + 1; j < all_items_num; j++)
 		{
 			if (Lists.all_items_list[i].width < Lists.all_items_list[j].width)
 			{

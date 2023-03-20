@@ -25,7 +25,7 @@ using namespace std;
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
 
-/*			pattern columns
+/*				  Master Problem
 -----------------------------------------
 |		K_num			|		P_num			|
 | stk-cut-ptn cols	| stp-cut-tpn cols	|
@@ -36,6 +36,20 @@ using namespace std;
 |----------------------------------------------------
 |							|							|				|
 |			 0				|			B				|  N_num	|	item_type rows >= item_type demand
+|							|							|				|
+-----------------------------------------------------
+*/
+
+/*				     Dual Problem
+-----------------------------------------
+|		J_num			|		N_num			|
+-----------------------------------------------------
+|							|							|				|
+|			 D				|			B				|  K_num	|	
+|							|							|				|
+|----------------------------------------------------
+|							|							|				|
+|			 C				|			0				|  P_num	|	
 |							|							|				|
 -----------------------------------------------------
 */
@@ -182,10 +196,10 @@ struct All_Lists
 	vector<vector<double>> strip_cut_cols; // 存储第二阶段方案的所有列
 	//vector<vector<double>> new_cols; // 存储要加入MP的新列
 
-	vector<double> new_strip_col;
-	vector < vector<double>>new_item_cols;
+	vector<double> new_stock_cut_col;
+	vector<vector<double>> new_strip_cut_cols;
 
-	vector<double>dual_prices_list;
+	vector<double> dual_prices_list;
 
 	vector<double> ISP_new_col;
 	vector<double> ISP_solns_list;

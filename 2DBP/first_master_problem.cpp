@@ -121,46 +121,46 @@ void SolveFirstMasterProblem(
 
 	if (MP_flag == 0)
 	{
-		printf("\n	The FIRST MP has NO feasible solution\n");
+		printf("\n\t The FIRST MP has NO feasible solution\n");
 	}
 	else
 	{
-		printf("\n	The FIRST MP has feasible solution\n");
-		printf("\n	pos_y Solns (stock cutting patterns):\n\n");
+		printf("\n\t The FIRST MP has feasible solution\n");
+		printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
 
 		for (int col = 0; col < K_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("	var_Y_%d = %f\n", col + 1, soln_val);
+			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 		}
 
-		printf("\n	pos_x Solns (this_strip cutting patterns):\n\n");
+		printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
 		for (int col = K_num; col < K_num + P_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("	var_X_%d = %f\n", col + 1 - K_num, soln_val);
+			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
 
 		Lists.dual_prices_list.clear();
 
-		printf("\n	strip_type cons dual prices: \n\n");
+		printf("\n\t strip_type cons dual prices: \n\n");
 		for (int row = 0; row < J_num; row++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
-			printf("	dual_r_%d = %f\n", row + 1, dual_val);
+			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 			Lists.dual_prices_list.push_back(dual_val);
 		}
 
-		printf("\n	item_type cons dual prices: \n\n");
+		printf("\n\t item_type cons dual prices: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
-			printf("	dual_r_%d = %f\n", row + 1, dual_val);
+			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 			Lists.dual_prices_list.push_back(dual_val);
 		}
 
-		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-		printf("\n	NUM of all solns = %d", all_cols_num);
+		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
+		printf("\n\t NUM of all solns = %d", all_cols_num);
 	}
 	cout << endl;
 }
