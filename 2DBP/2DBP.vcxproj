@@ -24,6 +24,7 @@
     <ProjectGuid>{00286a0d-c162-4af3-937c-f415d13836ac}</ProjectGuid>
     <RootNamespace>My2DBP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>2DCG</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

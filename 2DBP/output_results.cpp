@@ -91,10 +91,10 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 				int W = Lists.occupied_items_list[i].width;
 				int item_type_idx = Lists.occupied_items_list[i].item_type_idx;
 
-				f_out << X << "\t" << Y << "\t" <<"item_type_" << item_type_idx << endl;
-				f_out << X << "\t" << Y + W << "\t" << "item_type_" << item_type_idx << endl;
-				f_out << X + L << "\t" << Y + W << "\t" << "item_type_" << item_type_idx << endl;
-				f_out << X + L << "\t" << Y << "\t" << "item_type_" << item_type_idx << endl;
+				f_out << X << "\t" << Y << "\t" <<"I" << item_type_idx << endl;
+				f_out << X << "\t" << Y + W << "\t" << "I" << item_type_idx << endl;
+				f_out << X + L << "\t" << Y + W << "\t" << "I" << item_type_idx << endl;
+				f_out << X + L << "\t" << Y << "\t" << "I" << item_type_idx << endl;
 			}
 		}
 
@@ -109,10 +109,10 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 				int W = Lists.all_strips_list[i].width;
 				int strip_type_idx = Lists.all_strips_list[i].strip_type_idx;
 
-				f_out << X << "\t" << Y << "\t" << "stripe_type_" << strip_type_idx << endl;
-				f_out << X << "\t" << Y +W << "\t" << "stripe_type_" << strip_type_idx << endl;
-				f_out << X + L << "\t" << Y + W << "\t" << "stripe_type_" << strip_type_idx << endl;
-				f_out << X + L << "\t" << Y << "\t" << "stripe_type_" << strip_type_idx << endl;
+				f_out << X << "\t" << Y << "\t" << "S" << strip_type_idx << endl;
+				f_out << X << "\t" << Y +W << "\t" << "S" << strip_type_idx << endl;
+				f_out << X + L << "\t" << Y + W << "\t" << "S" << strip_type_idx << endl;
+				f_out << X + L << "\t" << Y << "\t" << "S" << strip_type_idx << endl;
 			}
 		}
 

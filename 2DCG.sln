@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2DBP", "2DBP\2DBP.vcxproj", "{00286A0D-C162-4AF3-937C-F415D13836AC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2DCG", "2DBP\2DBP.vcxproj", "{00286A0D-C162-4AF3-937C-F415D13836AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuttingFigv11", "CuttingFig\CuttingFigv11.csproj", "{CFCDB0EC-3D09-45F2-B271-BCBAA7BF8FA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuttingFig", "CuttingFig\CuttingFig.csproj", "{CFCDB0EC-3D09-45F2-B271-BCBAA7BF8FA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
