@@ -1,8 +1,10 @@
 # 2D Cutting Stock Problem
-File 2DCG: Column Generation  
-File 2DBP: Branch and Price
+Solving two dimensional cutting stock problem  
 
-BP Master Problem (MP):  
+File 2DCG: solving with column generation  
+File 2DBP: solving with branch and price  
+
+CG & BP Master Problem (MP):  
 ![image](https://github.com/Baturuym/2DCSP_Column_Generation/blob/new_model/01.png)
 
 BP Stock Cutting Sub Problem (OSP):  
