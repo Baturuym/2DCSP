@@ -1,10 +1,12 @@
-# 2D Cutting Stock Column Generation
+# 2D Cutting Stock Problem
+File 2DCG: Column Generation  
+File 2DBP: Branch and Price
 
-Master Problem (MP):  
+BP Master Problem (MP):  
 ![image](https://github.com/Baturuym/2DCSP_Column_Generation/blob/new_model/01.png)
 
-Stock Cutting Sub Problem (OSP):  
+BP Stock Cutting Sub Problem (OSP):  
 ![image](https://github.com/Baturuym/2DCSP_Column_Generation/blob/new_model/02.png)
 
-Strip Cutting Sub Problem (ISP):  
+BP Strip Cutting Sub Problem (ISP):  
 ![image](https://github.com/Baturuym/2DCSP_Column_Generation/blob/new_model/03.png)
