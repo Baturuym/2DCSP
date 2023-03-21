@@ -1,23 +1,8 @@
-﻿// Yuming Zhao: https://github.com/Baturuym
+﻿
 // 2023-03-10 CG for 2D-CSP
 
 #include "2DCG.h"
 using namespace std;
-
-/*			pattern columns
------------------------------------------
-|		 P_num			|		K_num			|
-| cut-stk-ptn cols	| cut-stp-ptn cols	|
------------------------------------------------------
-|							|							|				|
-|			 C				|			D				|  J_num	|	strip_type rows >= 0
-|							|							|				|
-|----------------------------------------------------
-|							|							|				|
-|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
-|							|							|				|
------------------------------------------------------
-*/
 
 void SolveFirstMasterProblem(
 	All_Values& Values,

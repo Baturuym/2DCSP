@@ -1,4 +1,4 @@
-// Yuming Zhao: https://github.com/Baturuym
+
 // 2023-03-20: Column Generation for 2D-CSP
 
 #include "2DCG.h"

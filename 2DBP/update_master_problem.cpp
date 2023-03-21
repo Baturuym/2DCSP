@@ -1,23 +1,8 @@
-﻿// Yuming Zhao: https://github.com/Baturuym
+﻿
 // 2023-03-20: Branch and Price for 2DCSP
 
 #include "2DBP.h"
 using namespace std;
-
-/*			pattern columns
------------------------------------------
-|		K_num			|		P_num			|
-| cut-stk-ptn cols	| cut-stp-ptn cols	|
------------------------------------------------------
-|							|							|				|
-|			 C				|			D				|  J_num	|	strip_type rows >= 0
-|							|							|				|
-|----------------------------------------------------
-|							|							|				|
-|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
-|							|							|				|
------------------------------------------------------
-*/
 
 void SolveUpdateMasterProblem(
 	All_Values& Values,
@@ -128,8 +113,6 @@ void SolveUpdateMasterProblem(
 	MP_cplex.exportModel("Update Master Problem.lp"); // 输出当前MP的模型 
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
-
-
 
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;

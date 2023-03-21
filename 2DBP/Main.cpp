@@ -1,4 +1,5 @@
-﻿// 2022-11-23 Branch and Price
+﻿
+// 2022-11-23 Branch and Price
 // 2023-03-20: Branch and Price for 2DCSP 
 
 #include "2DBP.h"
