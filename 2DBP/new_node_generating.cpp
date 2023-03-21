@@ -136,11 +136,11 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 			parent_node.cutting_strip_cols.push_back(temp_col);
 		}
 
-		int branched_vars_num = Lists.all_nodes_list[pos].branched_vars_idx_list.size();
+		int branched_vars_num = Lists.all_nodes_list[pos].branched_idx_list.size();
 		for (int k = 0; k < branched_vars_num; k++)
 		{
-			int temp_idx = Lists.all_nodes_list[pos].branched_vars_idx_list[k];
-			parent_node.branched_vars_idx_list.push_back(temp_idx);
+			int temp_idx = Lists.all_nodes_list[pos].branched_idx_list[k];
+			parent_node.branched_idx_list.push_back(temp_idx);
 
 			double temp_val = Lists.all_nodes_list[pos].branched_vars_soln_val_list[k];
 			parent_node.branched_vars_soln_val_list.push_back(temp_val);
@@ -150,8 +150,8 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		{
 			for (int k = 0; k < branched_vars_num - 1; k++)
 			{
-				double temp_val = Lists.all_nodes_list[pos].branched_vars_int_val_list[k];
-				parent_node.branched_vars_int_val_list.push_back(temp_val);
+				double temp_val = Lists.all_nodes_list[pos].branched_int_val_list[k];
+				parent_node.branched_int_val_list.push_back(temp_val);
 			}
 		}
 
@@ -232,11 +232,11 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	}
 
 	// Init branched-vars list and their col-index list of the Node-to-branch
-	int branched_vars_num = parent_node.branched_vars_idx_list.size();
+	int branched_vars_num = parent_node.branched_idx_list.size();
 	for (int col = 0; col < branched_vars_num; col++)
 	{
-		int temp_idx = parent_node.branched_vars_idx_list[col];
-		new_node.branched_vars_idx_list.push_back(temp_idx);
+		int temp_idx = parent_node.branched_idx_list[col];
+		new_node.branched_idx_list.push_back(temp_idx);
 	}
 
 	if (Values.branch_status == 1)
@@ -251,16 +251,16 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	double final_int_val = new_node.var_to_branch_int_val_final;
 	if (branched_vars_num <= 1) // if new_node is the left or the Right Node of Root Node
 	{
-		new_node.branched_vars_int_val_list.push_back(final_int_val);
+		new_node.branched_int_val_list.push_back(final_int_val);
 	}
 	else // other Nodes
 	{
 		for (int col = 0; col < branched_vars_num - 1; col++)
 		{
-			double temp_val = parent_node.branched_vars_int_val_list[col];
-			new_node.branched_vars_int_val_list.push_back(temp_val);
+			double temp_val = parent_node.branched_int_val_list[col];
+			new_node.branched_int_val_list.push_back(temp_val);
 		}
-		new_node.branched_vars_int_val_list.push_back(final_int_val);
+		new_node.branched_int_val_list.push_back(final_int_val);
 	}
 	
 	// Clear all other lists to init them

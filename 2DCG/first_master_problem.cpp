@@ -7,7 +7,7 @@ using namespace std;
 /*			pattern columns
 -----------------------------------------
 |		 P_num			|		K_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
+| cut-stk-ptn cols	| cut-stp-ptn cols	|
 -----------------------------------------------------
 |							|							|				|
 |			 C				|			D				|  J_num	|	strip_type rows >= 0
@@ -29,17 +29,29 @@ void SolveFirstMasterProblem(
 	IloNumVarArray& Vars_MP)
 {
 
-	int strip_types_num = Values.strip_types_num;
-	int item_types_num = Values.item_types_num;
+	int K_num = Lists.cutting_stock_cols.size();
+	int P_num = Lists.cutting_strip_cols.size();
 
-	int J_num = strip_types_num;
-	int N_num = item_types_num;
-
-	int K_num = Lists.stock_cut_cols.size();
-	int P_num = Lists.strip_cut_cols.size();
+	int J_num = Values.strip_types_num;
+	int N_num = Values.item_types_num;
 
 	int all_cols_num = K_num + P_num;
-	int all_rows_num = item_types_num + strip_types_num;
+	int all_rows_num = J_num + N_num;
+
+	/*			    pattern columns
+	-----------------------------------------
+	|		 P_num			|		K_num			|
+	| cut-stk-ptn cols	| cut-stp-ptn cols	|
+	-----------------------------------------------------
+	|							|							|				|
+	|			 C				|			D				|  J_num	|	strip_type cons >= 0
+	|							|							|				|
+	|----------------------------------------------------
+	|							|							|				|
+	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
+	|							|							|				|
+	-----------------------------------------------------
+	*/
 
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
@@ -84,8 +96,8 @@ void SolveFirstMasterProblem(
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
 
-		// IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
-		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOINT, Y_name.c_str());
+		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
+		//IloNumVar Var_Y(CplexCol, var_min, var_max, ILOINT, Y_name.c_str());
 		Vars_MP.add(Var_Y);
 
 		CplexCol.end();

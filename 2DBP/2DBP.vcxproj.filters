@@ -54,6 +54,9 @@
     <ClCompile Include="primal_heuristic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="output_results.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2DBP.h">

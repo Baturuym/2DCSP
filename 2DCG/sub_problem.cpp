@@ -7,7 +7,7 @@ using namespace std;
 /*			     pattern columns
 -----------------------------------------
 |		K_num			|		P_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
+| cut-stk-ptn cols	| cut-stp-ptn cols	|
 -----------------------------------------------------
 |							|							|				|
 |			 C				|			D				|  J_num	|	strip_type rows >= 0
@@ -89,13 +89,13 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 		vector<double> OSP_solns_list;
 
 		// print OSP solns
-		Lists.new_stock_cut_col.clear();
+		Lists.new_cutting_stock_col.clear();
 		printf("\n\t OSP_%d VARS:\n\n", Values.iter);
 		for (int j = 0; j < J_num; j++) // this_strip rows
 		{
 			double soln_val = Cplex_OSP.getValue(Vars_Ga[j]);
 			printf("\t var_G_%d = %f\n", j + 1, soln_val);
-			Lists.new_stock_cut_col.push_back(soln_val);
+			Lists.new_cutting_stock_col.push_back(soln_val);
 			OSP_solns_list.push_back(soln_val);
 		}
 
@@ -111,7 +111,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 			else
 			{
 				printf("\t row_%d = 0\n", j + 1);
-				Lists.new_stock_cut_col.push_back(0);
+				Lists.new_cutting_stock_col.push_back(0);
 			}
 		}
 
@@ -128,7 +128,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 			printf("\n\t Continue to solve ISP\n");
 
 			Values.ISP_obj_val = -1;
-			Lists.new_strip_cut_cols.clear();
+			Lists.new_cutting_strip_cols.clear();
 
 			Lists.ISP_solns_list.clear();
 			Lists.ISP_new_col.clear();
@@ -137,8 +137,8 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 
 			int feasible_flag = 0;
 
-			int K_num = Lists.stock_cut_cols.size();
-			int P_num = Lists.strip_cut_cols.size();
+			int K_num = Lists.cutting_stock_cols.size();
+			int P_num = Lists.cutting_strip_cols.size();
 
 			for (int k = 0; k < J_num; k++) // all current stk-cut-patterns
 			{
@@ -178,7 +178,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists)
 					}
 					printf("\n\t Add OSP_%d_ISP_%d new col to MP\n\n", Values.iter, k + 1);
 
-					Lists.new_strip_cut_cols.push_back(temp_col);
+					Lists.new_cutting_strip_cols.push_back(temp_col);
 
 					cout << endl;
 				}

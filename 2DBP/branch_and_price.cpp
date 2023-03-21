@@ -28,16 +28,20 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 				// always start from the Left Node
 				Values.branch_status = 1;
 				Values.node_num++;
+
 				GenerateNewNode(Values, Lists, new_left_node, parent_node); // set the Left Node
 				NewNodeColumnGeneration(Values, Lists, new_left_node, parent_node); // solve the Left Node with CG loop
+				
 				int left_search_flag = FinishNode(Values, Lists, new_left_node); // finish the Left Node
 				Lists.all_nodes_list.push_back(new_left_node);
 
 				// Then the Right Node
 				Values.branch_status = 2;
 				Values.node_num++;
+				
 				GenerateNewNode(Values, Lists, new_right_node, parent_node);  // set the Right Node
 				NewNodeColumnGeneration(Values, Lists, new_right_node, parent_node); // solve the Right Node with CG loop
+				
 				int right_search_flag = FinishNode(Values, Lists, new_right_node);  // finish the RightNode
 				Lists.all_nodes_list.push_back(new_right_node);
 
@@ -74,10 +78,9 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 						}
 					}
 				}
-				else // if 
+				if (parent_branch_val <= 1)
 				{
 					Values.search_flag = right_search_flag;
-
 					if (Values.search_flag != 1)
 					{
 						Values.fathom_flag = 2; // fathom_flag set to fathom the Right Nodeand branch it in next while - iter
@@ -86,6 +89,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 							parent_branch_val, new_right_node.index);
 					}
 				}
+
 				Values.branch_status = 1;  // branch_status set to the Left Node in next while-iter
 			}
 		}

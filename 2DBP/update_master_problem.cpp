@@ -7,7 +7,7 @@ using namespace std;
 /*			pattern columns
 -----------------------------------------
 |		K_num			|		P_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
+| cut-stk-ptn cols	| cut-stp-ptn cols	|
 -----------------------------------------------------
 |							|							|				|
 |			 C				|			D				|  J_num	|	strip_type rows >= 0
@@ -29,13 +29,29 @@ void SolveUpdateMasterProblem(
 	IloNumVarArray& Vars_MP,
 	Node& this_node)
 {
-	int strip_types_num = Values.strip_types_num;
-	int item_types_num = Values.item_types_num;
+	int K_num = this_node.cutting_stock_cols.size();
+	int P_num = this_node.cutting_strip_cols.size();
 
-	int J_num = strip_types_num;
-	int N_num = item_types_num;
+	int J_num = Values.strip_types_num;
+	int N_num = Values.item_types_num;
 
-	int all_rows_num = item_types_num + strip_types_num;
+	int all_cols_num = K_num + P_num;
+	int all_rows_num = J_num + N_num;
+
+	/*			    pattern columns
+	-----------------------------------------
+	|		 P_num			|		K_num			|
+	| cut-stk-ptn cols	| cut-stp-ptn cols	|
+	-----------------------------------------------------
+	|							|							|				|
+	|			 C				|			D				|  J_num	|	strip_type cons >= 0
+	|							|							|				|
+	|----------------------------------------------------
+	|							|							|				|
+	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
+	|							|							|				|
+	-----------------------------------------------------
+	*/
 
 	while (1)
 	{
@@ -72,7 +88,7 @@ void SolveUpdateMasterProblem(
 		break;
 	}
 
-	int new_item_cols_num = this_node.new_strip_cut_cols.size();
+	int new_item_cols_num = this_node.new_cutting_strip_cols.size();
 	for (int col = 0; col < new_item_cols_num; col++)
 	{
 		IloNum obj_para = 0; // 
@@ -80,7 +96,7 @@ void SolveUpdateMasterProblem(
 
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			IloNum row_para = this_node.new_strip_cut_cols[col][row];
+			IloNum row_para = this_node.new_cutting_strip_cols[col][row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
@@ -98,7 +114,7 @@ void SolveUpdateMasterProblem(
 		vector<double>temp_col;
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			double temp_val = this_node.new_strip_cut_cols[col][row];
+			double temp_val = this_node.new_cutting_strip_cols[col][row];
 			temp_col.push_back(temp_val);
 		}
 
@@ -113,9 +129,7 @@ void SolveUpdateMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
 
-	int K_num = this_node.cutting_stock_cols.size();
-	int P_num = this_node.cutting_strip_cols.size();
-	int all_cols_num = K_num + P_num;
+
 
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
@@ -230,13 +244,13 @@ void SolveFinalMasterProblem(
 	}
 
 	printf("\n\t BRANCHED VARS: \n\n");
-	int branched_cols_num = this_node.branched_vars_int_val_list.size();
+	int branched_cols_num = this_node.branched_int_val_list.size();
 	int var_idx = -1;
 	double var_int_val = -1;
 	for (int k = 0; k < branched_cols_num; k++)
 	{
-		var_idx = this_node.branched_vars_idx_list[k] + 1;
-		var_int_val = this_node.branched_vars_int_val_list[k];
+		var_idx = this_node.branched_idx_list[k] + 1;
+		var_int_val = this_node.branched_int_val_list[k];
 		printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);
 	}
 

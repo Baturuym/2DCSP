@@ -28,7 +28,7 @@ using namespace std;
 /*				  Master Problem
 -----------------------------------------
 |		K_num			|		P_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
+| cut-stk-ptn cols	| cut-stp-ptn cols	|
 -----------------------------------------------------
 |							|							|				|
 |			 C				|			D				|  J_num	|	strip_type rows >= 0
@@ -193,12 +193,12 @@ struct All_Lists
 	vector<StockProperties> stock_pool_list;
 
 	vector<vector<double>> model_matrix; // 存储系数矩阵的所有列
-	vector<vector<double>> stock_cut_cols; // 存储第一阶段方案的所有列
-	vector<vector<double>> strip_cut_cols; // 存储第二阶段方案的所有列
+	vector<vector<double>> cutting_stock_cols; // 存储第一阶段方案的所有列
+	vector<vector<double>> cutting_strip_cols; // 存储第二阶段方案的所有列
 	//vector<vector<double>> new_cols; // 存储要加入MP的新列
 
-	vector<double> new_stock_cut_col;
-	vector<vector<double>> new_strip_cut_cols;
+	vector<double> new_cutting_stock_col;
+	vector<vector<double>> new_cutting_strip_cols;
 
 	vector<double> dual_prices_list;
 

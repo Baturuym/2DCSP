@@ -12,8 +12,8 @@ void NewNodeColumnGeneration(
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
-	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
+	IloNumVarArray Vars_MP(Env_MP); // Init vars
 
 	this_node.iter = 0; // The firsth MP index ==0
 
@@ -67,12 +67,12 @@ void NewNodeColumnGeneration(
 			this_node);
 	}
 
-	Obj_MP.removeAllProperties();
-	Obj_MP.end();
 	Vars_MP.clear();
 	Vars_MP.end();
 	Cons_MP.clear();
 	Cons_MP.end();
+	Obj_MP.removeAllProperties();
+	Obj_MP.end();
 	Model_MP.removeAllProperties();
 	Model_MP.end();
 	Env_MP.removeAllProperties();

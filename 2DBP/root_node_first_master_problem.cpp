@@ -4,20 +4,6 @@
 #include "2DBP.h"
 using namespace std;
 
-/*			pattern columns
------------------------------------------
-|		 P_num			|		K_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
------------------------------------------------------
-|							|							|				|
-|			 C				|			D				|  J_num	|	strip_type rows >= 0
-|							|							|				|
-|----------------------------------------------------
-|							|							|				|
-|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
-|							|							|				|
------------------------------------------------------
-*/
 
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -27,20 +13,32 @@ bool SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node&root_node)
+	Node& root_node)
 {
-
-	int strip_types_num = Values.strip_types_num;
-	int item_types_num = Values.item_types_num;
-
-	int J_num = strip_types_num;
-	int N_num = item_types_num;
 
 	int K_num = root_node.cutting_stock_cols.size();
 	int P_num = root_node.cutting_strip_cols.size();
 
+	int J_num = Values.strip_types_num;
+	int N_num = Values.item_types_num;
+
 	int all_cols_num = K_num + P_num;
-	int all_rows_num = item_types_num + strip_types_num;
+	int all_rows_num = J_num + N_num;
+
+	/*			    pattern columns
+	-----------------------------------------
+	|		 P_num			|		K_num			|
+	| cut-stk-ptn cols	| cut-stp-ptn cols	|
+	-----------------------------------------------------
+	|							|							|				|
+	|			 C				|			D				|  J_num	|	strip_type cons >= 0
+	|							|							|				|
+	|----------------------------------------------------
+	|							|							|				|
+	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
+	|							|							|				|
+	-----------------------------------------------------
+	*/
 
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
@@ -84,11 +82,10 @@ bool SolveRootNodeFirstMasterProblem(
 		string Y_name = "Y_" + to_string(col + 1);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
-
 		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
 		Vars_MP.add(Var_Y);
 
-		CplexCol.end();
+		CplexCol.end(); // must end this IloNumColumn object
 	}
 
 
@@ -107,10 +104,10 @@ bool SolveRootNodeFirstMasterProblem(
 		string X_name = "X_" + to_string(col + 1 - K_num);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
-
 		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
 		Vars_MP.add(Var_X);
-		CplexCol.end();
+
+		CplexCol.end(); // must end this IloNumColumn object
 	}
 
 	printf("\n///////////////// MP_1 CPLEX solving START /////////////////\n");
@@ -133,26 +130,25 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n\t Y Solns (stock cutting patterns):\n\n");
 		for (int col = 0; col < K_num; col++)
 		{
-			double soln_val = MP_cplex.getValue(Vars_MP[col]);			
-			if (soln_val > 0)
+			double soln_val = MP_cplex.getValue(Vars_MP[col]);
+			if (soln_val > 0) // only print feasible solns
 			{
 				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 				Y_fsb_num++;
 			}
 		}
-
 		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 		for (int col = K_num; col < K_num + P_num; col++)
 		{
-			double soln_val = MP_cplex.getValue(Vars_MP[col]);			
-			if (soln_val > 0)
+			double soln_val = MP_cplex.getValue(Vars_MP[col]);
+			if (soln_val > 0) // only print feasible solns
 			{
 				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 				X_fsb_num++;
 			}
 		}
 
-		root_node.dual_prices_list.clear();
+		root_node.dual_prices_list.clear(); // ATTENTION: must clear dual_prices_list
 
 		printf("\n\t strip_type cons dual prices: \n\n");
 		for (int row = 0; row < J_num; row++)
@@ -161,7 +157,6 @@ bool SolveRootNodeFirstMasterProblem(
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
-
 		printf("\n\t item_type cons dual prices: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++)
 		{

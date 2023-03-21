@@ -7,7 +7,7 @@ using namespace std;
 /*			     pattern columns
 -----------------------------------------
 |		K_num			|		P_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
+| cut-stk-ptn cols	| cut-stp-ptn cols	|
 -----------------------------------------------------
 |							|							|				|
 |			 C				|			D				|  J_num	|	strip_type rows >= 0
@@ -129,7 +129,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 			printf("\n\t Continue to solve ISP\n");
 
 			this_node.ISP_obj_val = -1;
-			this_node.new_strip_cut_cols.clear();
+			this_node.new_cutting_strip_cols.clear();
 
 			this_node.ISP_solns_list.clear();
 			this_node.ISP_one_new_col.clear();
@@ -179,7 +179,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 					}
 					printf("\n\t Add OSP_%d_ISP_%d new col to MP\n\n", this_node.iter, k + 1);
 
-					this_node.new_strip_cut_cols.push_back(temp_col);
+					this_node.new_cutting_strip_cols.push_back(temp_col);
 
 					cout << endl;
 				}

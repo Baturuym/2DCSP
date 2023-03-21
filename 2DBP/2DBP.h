@@ -33,6 +33,8 @@ using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
+// stock --> strip --> item
+
 struct ItemTypeProperties
 {
 	int item_type_idx = -1;
@@ -151,8 +153,8 @@ struct Node
 	double var_to_branch_int_val_final = -1; // var-to-branch's final int-val (floored or ceiled)
 
 	// Lists of final branching of one Node
-	vector<int> branched_vars_idx_list; // all branched-vars' col-index on the route from this Node to Root Node
-	vector<double> branched_vars_int_val_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
+	vector<int> branched_idx_list; // all branched-vars' col-index on the route from this Node to Root Node
+	vector<double> branched_int_val_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
 	vector<double> branched_vars_soln_val_list; // all branched-vars' soln-val on the route from this Node to Root Node
 	//vector<vector<int>>branched_cols_list;
 
@@ -178,7 +180,7 @@ struct Node
 	vector<vector<double>> cutting_strip_cols; // 存储第二阶段方案的所有列
 
 	vector<double> new_cutting_stock_col;
-	vector<vector<double>> new_strip_cut_cols;
+	vector<vector<double>> new_cutting_strip_cols;
 
 
 	vector<double> ISP_one_new_col;
@@ -237,8 +239,9 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<StockProperties> stock_pool_list;
 	vector<Node> all_nodes_list; // list of all Nodes generated
+
+	vector<StockProperties> stock_pool_list;
 
 	vector<StripTypeProperties> all_strip_types_list; 
 	vector<ItemTypeProperties> all_item_types_list; 

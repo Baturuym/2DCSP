@@ -14,7 +14,6 @@ int main()
 
 	ReadData(Values, Lists);
 
-
 	Node root_node; // Init Root Node
 	root_node.index = 1; // Node index
 	Values.branch_status = 0;
@@ -25,10 +24,7 @@ int main()
 	Lists.all_nodes_list.push_back(root_node);
 	Values.root_flag = 1;
 
-	printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
-
-	// continue to BP
-	if (Values.search_flag == 0)
+	if (Values.search_flag == 0) // continue to BP
 	{
 		Values.branch_status = 1;
 		BranchAndPriceTree(Values, Lists); // Branch and Price loop
@@ -38,9 +34,6 @@ int main()
 	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
 	printf("\n\t Process Time = %f seconds\n", duration);
 
-	Lists.all_nodes_list.clear();
-
-	cout << endl;
 	return 0;
 }
 

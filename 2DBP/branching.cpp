@@ -5,8 +5,11 @@ using namespace std;
 // judge the integerity of the Node, and find the branch var
 int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
 {	
-	int node_int_flag = -1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
-	int tree_search_flag = -1; // 0 -- continue to branch this Node; 1 -- search another generated Node
+	// 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
+	int node_int_flag = -1;
+
+	// 0 -- continue to branch this Node; 1 -- search another generated Node
+	int tree_search_flag = -1; 
 
 	node_int_flag = ChooseVarToBranch(Values, Lists, this_node); // branch this Node
 
@@ -19,7 +22,7 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
 		if (node_int_flag == 0)  // NOT ALL non-zero-solns are int in this Node
 		{
 			int var_idx = this_node.var_to_branch_idx;
-			this_node.branched_vars_idx_list.push_back(var_idx);
+			this_node.branched_idx_list.push_back(var_idx);
 
 			double var_val = this_node.var_to_branch_soln_val;
 			this_node.branched_vars_soln_val_list.push_back(var_val);
@@ -60,7 +63,12 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
 		}
 	}
 
-	return tree_search_flag; // 0 -- continue to branch this Node; 1 -- search another generated Node
+	Lists.occupied_stocks_list.clear();
+	Lists.occupied_items_list.clear();
+	Lists.all_strips_list.clear();
+
+	// 0 -- continue to branch this Node; 1 -- search another generated Node
+	return tree_search_flag; 
 }
 
 

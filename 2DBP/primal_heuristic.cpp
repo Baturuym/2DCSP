@@ -349,7 +349,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇÐ¶
 	/*			    pattern columns
 	-----------------------------------------
 	|		K_num			|		P_num			|
-	| stk-cut-ptn cols	| stp-cut-ptn cols	|
+	| cut-stk-ptn cols	| stp-cut-ptn cols	|
 	-----------------------------------------------------
 	|							|							|				|
 	|			 C				|			D				|  J_num	|	strip_type cons >= 0

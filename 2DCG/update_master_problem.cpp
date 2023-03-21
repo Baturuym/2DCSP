@@ -4,21 +4,6 @@
 #include "2DCG.h"
 using namespace std;
 
-/*			pattern columns
------------------------------------------
-|		K_num			|		P_num			|
-| stk-cut-ptn cols	| stp-cut-tpn cols	|
------------------------------------------------------
-|							|							|				|
-|			 C				|			D				|  J_num	|	strip_type rows >= 0
-|							|							|				|
-|----------------------------------------------------
-|							|							|				|
-|			 0				|			B				|  N_num	|	item_type rows >= item_type demand
-|							|							|				|
------------------------------------------------------
-*/
-
 void SolveUpdateMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -28,13 +13,29 @@ void SolveUpdateMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP)
 {
-	int strip_types_num = Values.strip_types_num;
-	int item_types_num = Values.item_types_num;
+	int K_num = Lists.cutting_stock_cols.size();
+	int P_num = Lists.cutting_strip_cols.size();
 
-	int J_num = strip_types_num;
-	int N_num = item_types_num;
+	int J_num = Values.strip_types_num;
+	int N_num = Values.item_types_num;
 
-	int all_rows_num = item_types_num + strip_types_num;
+	int all_cols_num = K_num + P_num;
+	int all_rows_num = J_num + N_num;
+
+	/*			    pattern columns
+	-----------------------------------------
+	|		 P_num			|		K_num			|
+	| cut-stk-ptn cols	| cut-stp-ptn cols	|
+	-----------------------------------------------------
+	|							|							|				|
+	|			 C				|			D				|  J_num	|	strip_type cons >= 0
+	|							|							|				|
+	|----------------------------------------------------
+	|							|							|				|
+	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
+	|							|							|				|
+	-----------------------------------------------------
+	*/
 
 	while (1)
 	{
@@ -43,11 +44,11 @@ void SolveUpdateMasterProblem(
 
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			IloNum row_para = Lists.new_stock_cut_col[row];
+			IloNum row_para = Lists.new_cutting_stock_col[row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
-		int old_strip_cols_num = Lists.stock_cut_cols.size();
+		int old_strip_cols_num = Lists.cutting_stock_cols.size();
 		string Y_name = "Y_" + to_string(old_strip_cols_num + 1);
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
@@ -62,17 +63,17 @@ void SolveUpdateMasterProblem(
 		vector<double>temp_col;
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			double temp_val = Lists.new_stock_cut_col[row];
+			double temp_val = Lists.new_cutting_stock_col[row];
 			temp_col.push_back(temp_val);
 		}
 
-		Lists.stock_cut_cols.push_back(temp_col); // update this_strip cols
-		Lists.model_matrix.insert(Lists.model_matrix.begin() + Lists.stock_cut_cols.size(), temp_col); // update model matrix
+		Lists.cutting_stock_cols.push_back(temp_col); // update this_strip cols
+		Lists.model_matrix.insert(Lists.model_matrix.begin() + Lists.cutting_stock_cols.size(), temp_col); // update model matrix
 
 		break;
 	}
 
-	int new_item_cols_num = Lists.new_strip_cut_cols.size();
+	int new_item_cols_num = Lists.new_cutting_strip_cols.size();
 	for (int col = 0; col < new_item_cols_num; col++)
 	{
 		IloNum obj_para = 0; // 
@@ -80,17 +81,17 @@ void SolveUpdateMasterProblem(
 
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			IloNum row_para = Lists.new_strip_cut_cols[col][row];
+			IloNum row_para = Lists.new_cutting_strip_cols[col][row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
-		int old_item_cols_num = Lists.strip_cut_cols.size();
+		int old_item_cols_num = Lists.cutting_strip_cols.size();
 		string X_name = "X_" + to_string(old_item_cols_num + 1);
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
 
-		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 
-		IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str()); // 
+		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 
+		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str()); // 
 		(Vars_MP).add(Var_X);
 
 		CplexCol.end(); // must end this IloNumColumn object
@@ -99,11 +100,11 @@ void SolveUpdateMasterProblem(
 		vector<double>temp_col;
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			double temp_val = Lists.new_strip_cut_cols[col][row];
+			double temp_val = Lists.new_cutting_strip_cols[col][row];
 			temp_col.push_back(temp_val);
 		}
 
-		Lists.strip_cut_cols.push_back(temp_col); // update item cols
+		Lists.cutting_strip_cols.push_back(temp_col); // update item cols
 		Lists.model_matrix.insert(Lists.model_matrix.end(), temp_col); // update model matrix
 	}
 
@@ -114,10 +115,6 @@ void SolveUpdateMasterProblem(
 	MP_cplex.exportModel("Update Master Problem.lp"); // 输出当前MP的模型 
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_%d CPLEX solving OVER /////////////////\n\n", Values.iter);
-
-	int K_num = Lists.stock_cut_cols.size();
-	int P_num = Lists.strip_cut_cols.size();
-	int all_cols_num = K_num + P_num;
 
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
@@ -178,8 +175,8 @@ void SolveFinalMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP)
 {
-	int K_num = Lists.stock_cut_cols.size();
-	int P_num = Lists.strip_cut_cols.size();
+	int K_num = Lists.cutting_stock_cols.size();
+	int P_num = Lists.cutting_strip_cols.size();
 
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;

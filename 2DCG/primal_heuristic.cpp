@@ -350,7 +350,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 	/*			    pattern columns
 	-----------------------------------------
 	|		K_num			|		P_num			|
-	| stk-cut-ptn cols	| stp-cut-ptn cols	|
+	| cut-stk-ptn cols	| stp-cut-ptn cols	|
 	-----------------------------------------------------
 	|							|							|				|
 	|			 C				|			D				|  J_num	|	strip_type cons >= 0
@@ -449,7 +449,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 			}
 		}
 
-		Lists.stock_cut_cols.push_back(temp_col); // 第一阶段列
+		Lists.cutting_stock_cols.push_back(temp_col); // 第一阶段列
 	}
 
 	cout << endl;
@@ -487,7 +487,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 			}
 		}
 
-		Lists.strip_cut_cols.push_back(temp_col); // 第二阶段列
+		Lists.cutting_strip_cols.push_back(temp_col); // 第二阶段列
 	}
 
 	for (int k = 0; k < item_types_num; k++)
