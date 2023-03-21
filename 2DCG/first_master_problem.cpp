@@ -84,7 +84,8 @@ void SolveFirstMasterProblem(
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
 
-		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
+		// IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
+		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOINT, Y_name.c_str());
 		Vars_MP.add(Var_Y);
 
 		CplexCol.end();
@@ -107,7 +108,8 @@ void SolveFirstMasterProblem(
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
 
-		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+		IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str());
 		Vars_MP.add(Var_X);
 		CplexCol.end();
 	}
@@ -126,19 +128,29 @@ void SolveFirstMasterProblem(
 	else
 	{
 		printf("\n\t The FIRST MP has feasible solution\n");
-		printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
-
+		
+		int Y_fsb_num = 0;
+		int X_fsb_num = 0;
+		printf("\n\t Y Solns (stock cutting patterns):\n\n");
 		for (int col = 0; col < K_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+			if (soln_val > 0)
+			{
+				Y_fsb_num++;
+				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+			}
 		}
 
-		printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
+		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 		for (int col = K_num; col < K_num + P_num; col++)
 		{
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+			if (soln_val > 0)
+			{
+				X_fsb_num++;
+				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+			}
 		}
 
 		Lists.dual_prices_list.clear();
@@ -159,8 +171,12 @@ void SolveFirstMasterProblem(
 			Lists.dual_prices_list.push_back(dual_val);
 		}
 
+		printf("\n\t MP-1:\n");
 		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-		printf("\n\t NUM of all solns = %d", all_cols_num);
+		printf("\n\t NUM of all solns = %d", K_num + P_num);
+		printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
+		printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
+		printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
 	}
 	cout << endl;
 }

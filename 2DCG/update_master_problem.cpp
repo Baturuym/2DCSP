@@ -52,7 +52,8 @@ void SolveUpdateMasterProblem(
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
 
-		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // 
+		//IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // 
+		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOINT, Y_name.c_str()); // 
 		(Vars_MP).add(Var_Y);
 
 		CplexCol.end(); // must end this IloNumColumn object
@@ -88,7 +89,8 @@ void SolveUpdateMasterProblem(
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
 
-		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 
+		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 
+		IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str()); // 
 		(Vars_MP).add(Var_X);
 
 		CplexCol.end(); // must end this IloNumColumn object
@@ -117,18 +119,27 @@ void SolveUpdateMasterProblem(
 	int P_num = Lists.strip_cut_cols.size();
 	int all_cols_num = K_num + P_num;
 
-	printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
+	int Y_fsb_num = 0;
+	int X_fsb_num = 0;
+	printf("\n\t Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		if (soln_val > 0)
+		{
+			Y_fsb_num++;
+			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		}
 	}
-
-	printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
+	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		if (soln_val > 0)
+		{
+			X_fsb_num++;
+			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		}
 	}
 
 	Lists.dual_prices_list.clear();
@@ -140,7 +151,6 @@ void SolveUpdateMasterProblem(
 		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		Lists.dual_prices_list.push_back(dual_val);
 	}
-
 	printf("\n\t item_type cons dual prices: \n\n");
 	for (int row = J_num; row < J_num + N_num; row++)
 	{
@@ -149,8 +159,12 @@ void SolveUpdateMasterProblem(
 		Lists.dual_prices_list.push_back(dual_val);
 	}
 
+	printf("\n\t MP-%d:\n", Values.iter);
 	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n\t NUM of all solns = %d", all_cols_num);
+	printf("\n\t NUM of all solns = %d", K_num + P_num);
+	printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
+	printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
+	printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
 
 	cout << endl;
 }
@@ -180,22 +194,37 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
+	int Y_fsb_num = 0;
+	int X_fsb_num = 0;
+	printf("\n\t Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		if (soln_val > 0)
+		{
+			Y_fsb_num++;
+			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		}
 	}
 
-	printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
+	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		if (soln_val > 0)
+		{
+			X_fsb_num++;
+			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+
+		}
 	}
 
+	printf("\n\t MP-final:\n");
 	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n\t NUM of all solns = %d", all_cols_num);
+	printf("\n\t NUM of all solns = %d", K_num + P_num);
+	printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
+	printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
+	printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
 
 	cout << endl;
 }

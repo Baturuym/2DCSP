@@ -171,17 +171,17 @@ struct Node
 
 		/*-------------------------------------*/
 
-	vector<StockProperties> stock_cut_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<StripProperties> strip_cut_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<StockProperties> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<StripProperties> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
-	vector<vector<double>> stock_cut_cols; // 存储第一阶段方案的所有列
-	vector<vector<double>> strip_cut_cols; // 存储第二阶段方案的所有列
+	vector<vector<double>> cutting_stock_cols; // 存储第一阶段方案的所有列
+	vector<vector<double>> cutting_strip_cols; // 存储第二阶段方案的所有列
 
-	vector<double> new_stock_cut_col;
+	vector<double> new_cutting_stock_col;
 	vector<vector<double>> new_strip_cut_cols;
 
 
-	vector<double> ISP_new_col;
+	vector<double> ISP_one_new_col;
 	vector<double> ISP_solns_list;
 
 	double ISP_obj_val = -1;

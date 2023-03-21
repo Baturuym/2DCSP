@@ -44,11 +44,11 @@ void SolveUpdateMasterProblem(
 
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			IloNum row_para = this_node.new_stock_cut_col[row];
+			IloNum row_para = this_node.new_cutting_stock_col[row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
-		int old_strip_cols_num = this_node.stock_cut_cols.size();
+		int old_strip_cols_num = this_node.cutting_stock_cols.size();
 		string Y_name = "Y_" + to_string(old_strip_cols_num + 1);
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
@@ -62,12 +62,12 @@ void SolveUpdateMasterProblem(
 		vector<double>temp_col;
 		for (int row = 0; row < all_rows_num; row++)
 		{
-			double temp_val = this_node.new_stock_cut_col[row];
+			double temp_val = this_node.new_cutting_stock_col[row];
 			temp_col.push_back(temp_val);
 		}
 
-		this_node.stock_cut_cols.push_back(temp_col); // update this_strip cols
-		this_node.model_matrix.insert(this_node.model_matrix.begin() + this_node.stock_cut_cols.size(), temp_col); // update model matrix
+		this_node.cutting_stock_cols.push_back(temp_col); // update this_strip cols
+		this_node.model_matrix.insert(this_node.model_matrix.begin() + this_node.cutting_stock_cols.size(), temp_col); // update model matrix
 
 		break;
 	}
@@ -84,7 +84,7 @@ void SolveUpdateMasterProblem(
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
 
-		int old_item_cols_num = this_node.strip_cut_cols.size();
+		int old_item_cols_num = this_node.cutting_strip_cols.size();
 		string X_name = "X_" + to_string(old_item_cols_num + 1);
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
@@ -102,10 +102,9 @@ void SolveUpdateMasterProblem(
 			temp_col.push_back(temp_val);
 		}
 
-		this_node.strip_cut_cols.push_back(temp_col); // update item cols
+		this_node.cutting_strip_cols.push_back(temp_col); // update item cols
 		this_node.model_matrix.insert(this_node.model_matrix.end(), temp_col); // update model matrix
 	}
-
 
 	printf("\n\n///////////////// MP_%d CPLEX solving START /////////////////\n", this_node.iter);
 	IloCplex MP_cplex(Model_MP);
@@ -114,22 +113,31 @@ void SolveUpdateMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
 
-	int K_num = this_node.stock_cut_cols.size();
-	int P_num = this_node.strip_cut_cols.size();
+	int K_num = this_node.cutting_stock_cols.size();
+	int P_num = this_node.cutting_strip_cols.size();
 	int all_cols_num = K_num + P_num;
 
-	printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
+	int Y_fsb_num = 0;
+	int X_fsb_num = 0;
+	printf("\n\t Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		if (soln_val > 0)
+		{
+			Y_fsb_num++;
+			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		}
 	}
-
-	printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
+	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		if (soln_val > 0)
+		{
+			X_fsb_num++;
+			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		}
 	}
 
 	this_node.dual_prices_list.clear();
@@ -141,7 +149,6 @@ void SolveUpdateMasterProblem(
 		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		this_node.dual_prices_list.push_back(dual_val);
 	}
-
 	printf("\n\t item_type cons dual prices: \n\n");
 	for (int row = J_num; row < J_num + N_num; row++)
 	{
@@ -150,8 +157,13 @@ void SolveUpdateMasterProblem(
 		this_node.dual_prices_list.push_back(dual_val);
 	}
 
+	printf("\n\t Node_%d MP-1:\n", this_node.index);
 	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n\t NUM of all solns = %d", all_cols_num);
+	printf("\n\t NUM of all solns = %d", K_num + P_num);
+	printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
+	printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
+	printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
+
 }
 
 void SolveFinalMasterProblem(
@@ -164,8 +176,8 @@ void SolveFinalMasterProblem(
 	IloNumVarArray& Vars_MP,
 	Node& this_node)
 {
-	int K_num = this_node.stock_cut_cols.size();
-	int P_num = this_node.strip_cut_cols.size();
+	int K_num = this_node.cutting_stock_cols.size();
+	int P_num = this_node.cutting_strip_cols.size();
 
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
@@ -180,22 +192,60 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	printf("\n\t pos_y Solns (stock cutting patterns):\n\n");
+	this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
+	printf("\n\t OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
+
+	for (int col = 0; col < all_cols_num; col++)
+	{
+		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+		this_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
+		if (soln_val > 0)
+		{
+			this_node.fsb_solns_val_list.push_back(soln_val); // Node feasible (i.e. non-zero-solns) solns 
+			this_node.fsb_solns_idx_list.push_back(col); 	// Node fsb-solns' index
+		}
+	}
+
+	int Y_fsb_num = 0;
+	int X_fsb_num = 0;
+	printf("\n\t Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		if (soln_val > 0)
+		{
+			Y_fsb_num++;
+			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+		}
 	}
-
-	printf("\n\t pos_x Solns (this_strip cutting patterns):\n\n");
+	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 	for (int col = K_num; col < K_num + P_num; col++)
 	{
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		if (soln_val > 0)
+		{
+			X_fsb_num++;
+			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+		}
 	}
 
+	printf("\n\t BRANCHED VARS: \n\n");
+	int branched_cols_num = this_node.branched_vars_int_val_list.size();
+	int var_idx = -1;
+	double var_int_val = -1;
+	for (int k = 0; k < branched_cols_num; k++)
+	{
+		var_idx = this_node.branched_vars_idx_list[k] + 1;
+		var_int_val = this_node.branched_vars_int_val_list[k];
+		printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);
+	}
+
+	printf("\n\t Node_%d MP-1:\n", this_node.index);
 	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n\t NUM of all solns = %d", all_cols_num);
+	printf("\n\t NUM of all solns = %d", K_num + P_num);
+	printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
+	printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
+	printf("\n\t NUM of all fsb solns = %d\n", Y_fsb_num + X_fsb_num);
 
 	cout << endl;
 }

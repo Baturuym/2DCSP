@@ -89,13 +89,13 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 		vector<double> OSP_solns_list;
 
 		// print OSP solns
-		this_node.new_stock_cut_col.clear();
+		this_node.new_cutting_stock_col.clear();
 		printf("\n\t OSP_%d VARS:\n\n", this_node.iter);
 		for (int j = 0; j < J_num; j++) // this_strip rows
 		{
 			double soln_val = Cplex_OSP.getValue(Vars_Ga[j]);
 			printf("\t var_G_%d = %f\n", j + 1, soln_val);
-			this_node.new_stock_cut_col.push_back(soln_val);
+			this_node.new_cutting_stock_col.push_back(soln_val);
 			OSP_solns_list.push_back(soln_val);
 		}
 
@@ -111,7 +111,7 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 			else
 			{
 				printf("\t row_%d = 0\n", j + 1);
-				this_node.new_stock_cut_col.push_back(0);
+				this_node.new_cutting_stock_col.push_back(0);
 			}
 		}
 
@@ -132,14 +132,14 @@ int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 			this_node.new_strip_cut_cols.clear();
 
 			this_node.ISP_solns_list.clear();
-			this_node.ISP_new_col.clear();
+			this_node.ISP_one_new_col.clear();
 
 			SolveInnerSubProblem(Values, Lists,this_node);
 
 			int feasible_flag = 0;
 
-			int K_num = this_node.stock_cut_cols.size();
-			int P_num = this_node.strip_cut_cols.size();
+			int K_num = this_node.cutting_stock_cols.size();
+			int P_num = this_node.cutting_strip_cols.size();
 
 			for (int k = 0; k < J_num; k++) // all current stk-cut-patterns
 			{
@@ -284,7 +284,7 @@ void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
 
 		for (int j = 0; j < J_num; j++)
 		{
-			this_node.ISP_new_col.push_back(-1);
+			this_node.ISP_one_new_col.push_back(-1);
 		}
 
 		printf("\n\t OSP_%d_ISP VARS:\n\n", this_node.iter);
@@ -292,7 +292,7 @@ void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
 		{
 			double soln_val = Cplex_ISP.getValue(Vars_De[i]);
 			printf("\t var_D_%d = %f\n", i + 1, soln_val);
-			this_node.ISP_new_col.push_back(soln_val);
+			this_node.ISP_one_new_col.push_back(soln_val);
 			this_node.ISP_solns_list.push_back(soln_val);
 		}
 	}

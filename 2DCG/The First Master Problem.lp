@@ -14,4 +14,13 @@ Subject To
  c8:  4 X_4 >= 4
  c9:  2 X_3 + X_4 >= 3
  c10: 3 X_1 + 3 X_2 >= 6
+Bounds
+      Y_1 >= 0
+      Y_2 >= 0
+      X_1 >= 0
+      X_3 >= 0
+      X_4 >= 0
+      X_2 >= 0
+Generals
+ Y_1  Y_2  X_1  X_3  X_4  X_2 
 End

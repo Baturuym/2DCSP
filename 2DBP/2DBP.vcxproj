@@ -150,6 +150,14 @@
   <ItemGroup>
     <Text Include="cutdata1207.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Final Master Problem.lp" />
+    <None Include="Inner Sub Problem.lp" />
+    <None Include="New Node First Master Problem.lp" />
+    <None Include="Outer Sub Problem.lp" />
+    <None Include="The First Master Problem.lp" />
+    <None Include="Update Master Problem.lp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

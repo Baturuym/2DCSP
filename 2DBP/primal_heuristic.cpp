@@ -162,7 +162,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 				{
 					new_strip.pattern = strip_pattern;
 					strip_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-					root_node.strip_cut_patterns_list.push_back(new_strip);
+					root_node.cutting_strip_patterns_list.push_back(new_strip);
 				}
 				if (all_strips_num != 0) // µÚÒ»¸öÖĞ¼ä°åÖ®ºóÆäËûÖĞ¼ä°å
 				{
@@ -199,7 +199,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 					{
 						new_strip.pattern = strip_pattern;
 						strip_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-						root_node.strip_cut_patterns_list.push_back(new_strip); // µÚ¶ş½×¶ÎÁĞ
+						root_node.cutting_strip_patterns_list.push_back(new_strip); // µÚ¶ş½×¶ÎÁĞ
 					}
 				}
 
@@ -301,7 +301,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 		{
 			new_stock.pattern = stock_pattern;
 			stock_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-			root_node.stock_cut_patterns_list.push_back(new_stock);
+			root_node.cutting_stock_patterns_list.push_back(new_stock);
 		}
 
 		if (occupied_stocks_num != 0) // µÚÒ»¸öÖĞ¼ä°åÖ®ºóÆäËûÄ¸°å
@@ -338,7 +338,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 			{
 				new_stock.pattern = stock_pattern;
 				stock_pattern++; // Ö»ÓĞÎ¨Ò»µÄÇĞ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-				root_node.stock_cut_patterns_list.push_back(new_stock); // µÚÒ»½×¶ÎÁĞ
+				root_node.cutting_stock_patterns_list.push_back(new_stock); // µÚÒ»½×¶ÎÁĞ
 			}
 		}
 
@@ -361,8 +361,8 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 	-----------------------------------------------------
 	*/
 
-	int K_num = root_node.stock_cut_patterns_list.size();
-	int P_num = root_node.strip_cut_patterns_list.size();
+	int K_num = root_node.cutting_stock_patterns_list.size();
+	int P_num = root_node.cutting_strip_patterns_list.size();
 
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
@@ -380,7 +380,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 				if (row < J_num)
 				{
 					double temp_val =
-						root_node.stock_cut_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊıÎªÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı
+						root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊıÎªÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı
 					temp_col.push_back(temp_val);
 				}
 				// 2. Matrix 0
@@ -398,7 +398,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 				{
 					int col_pos = col - K_num;
 					int item_type_idx = row + 1;
-					int strip_type_idx = root_node.strip_cut_patterns_list[col_pos].strip_type_idx;
+					int strip_type_idx = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
 					if (strip_type_idx == item_type_idx) // 
 					{
 						double temp_val = -1; // ÏµÊıÎª-1
@@ -417,7 +417,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 					int col_pos = col - K_num;
 					int row_pos = row - J_num;
 					double temp_val =
-						root_node.strip_cut_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
+						root_node.cutting_strip_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
 					temp_col.push_back(temp_val);
 				}
 			}
@@ -437,7 +437,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 			if (row < J_num)
 			{
 				double temp_val =
-					root_node.stock_cut_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊıÎªÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı
+					root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊıÎªÖĞ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊı
 				temp_col.push_back(temp_val);
 			}
 			// 2. Matrix 0
@@ -448,7 +448,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 			}
 		}
 
-		root_node.stock_cut_cols.push_back(temp_col); // µÚÒ»½×¶ÎÁĞ
+		root_node.cutting_stock_cols.push_back(temp_col); // µÚÒ»½×¶ÎÁĞ
 	}
 
 	cout << endl;
@@ -463,7 +463,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 			{
 				int col_pos = col - K_num;
 				int item_type_index = row + 1;
-				int strip_type_index = root_node.strip_cut_patterns_list[col_pos].strip_type_idx;
+				int strip_type_index = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
 				if (strip_type_index == item_type_index) // 
 				{
 					double temp_val = -1; // ÏµÊıÎª-1
@@ -481,12 +481,12 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇĞ¶
 				int col_pos = col - K_num;
 				int row_pos = row - J_num;
 				double temp_val =
-					root_node.strip_cut_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
+					root_node.cutting_strip_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
 				temp_col.push_back(temp_val);
 			}
 		}
 
-		root_node.strip_cut_cols.push_back(temp_col); // µÚ¶ş½×¶ÎÁĞ
+		root_node.cutting_strip_cols.push_back(temp_col); // µÚ¶ş½×¶ÎÁĞ
 	}
 
 	for (int k = 0; k < item_types_num; k++)

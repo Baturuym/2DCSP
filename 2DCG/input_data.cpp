@@ -29,7 +29,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 	vector<string> data_inline, data_inline1, data_inline2;//读取本地行中的数据
 
 	s_in.str("");
-	s_in << "C:/Users/YMZhao/Desktop/2DBP/2DBP/cutdata1207.txt";
+	s_in << "C:/Users/YMZhao/Desktop/2DCG/2DCG/cutdata1207.txt";
 	//s_in << "D:/CuttingTXT/cutdata11251.txt";
 	in_str = s_in.str();
 

@@ -9,7 +9,10 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="资源文件">
+    <Filter Include="模型">
+      <UniqueIdentifier>{e6c313af-0b04-47f0-aff5-1ebdfd236591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="数据">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
@@ -44,5 +47,27 @@
     <ClInclude Include="2DCG.h">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Final Master Problem.lp">
+      <Filter>模型</Filter>
+    </None>
+    <None Include="Inner Sub Problem.lp">
+      <Filter>模型</Filter>
+    </None>
+    <None Include="Outer Sub Problem.lp">
+      <Filter>模型</Filter>
+    </None>
+    <None Include="The First Master Problem.lp">
+      <Filter>模型</Filter>
+    </None>
+    <None Include="Update Master Problem.lp">
+      <Filter>模型</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cutdata1207.txt">
+      <Filter>数据</Filter>
+    </Text>
   </ItemGroup>
 </Project>

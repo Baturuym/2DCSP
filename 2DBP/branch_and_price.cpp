@@ -16,8 +16,8 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 
 			if (parent_branch_flag == 0)
 			{
-				printf("\n	Branch and Bound stop!\n");
-				printf("\n	Final Optimal Lower Bound = %f\n\n\n", Values.tree_optimal_lower_bound);
+				printf("\n\t Branch and Bound stop!\n");
+				printf("\n\t Final Optimal Lower Bound = %f\n\n\n", Values.tree_optimal_lower_bound);
 				break;
 			}
 			if (parent_branch_flag == 1)
@@ -55,7 +55,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 						{
 							Values.fathom_flag = 1; //  fathom_flag set to fathom the Left Node and branch it in next while-iter
 
-							printf("\n	LLB %.4f < RLB %.4f, continue to fathom LEFT Node_%d\n",
+							printf("\n\t LLB %.4f < RLB %.4f, continue to fathom LEFT Node_%d\n",
 								new_left_node.node_lower_bound, new_right_node.node_lower_bound, new_left_node.index);
 						}
 					}
@@ -67,7 +67,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 						{
 							Values.fathom_flag = 2; // fathom_flag set to fathom the Right Node and branch it in next while-iter
 
-							printf("\n	Left Node_%d LB %.4f >= Right Node_%d LB %.4f \n\n	continue to fathom RIGHT Node_%d\n",
+							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f \n\n\t continue to fathom RIGHT Node_%d\n",
 								new_left_node.index, new_left_node.node_lower_bound,
 								new_right_node.index, new_right_node.node_lower_bound,
 								new_right_node.index);
@@ -82,7 +82,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 					{
 						Values.fathom_flag = 2; // fathom_flag set to fathom the Right Nodeand branch it in next while - iter
 
-						printf("\n	parent branch val = %.4f < 1, \n\n	Have to fathom Right Node_%d",
+						printf("\n\t parent branch val = %.4f < 1, \n\n\t Have to fathom Right Node_%d\n",
 							parent_branch_val, new_right_node.index);
 					}
 				}
@@ -98,8 +98,8 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 
 			Values.search_flag = 0; // search_flag set to continue to the next while-iter
 
-			printf("\n	Solns of this Node are all INTEGERS! \n");
-			printf("\n	Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+			printf("\n\t Solns of this Node are all INTEGERS! \n");
+			printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 
 		}
 

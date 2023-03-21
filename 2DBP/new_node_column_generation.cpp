@@ -67,7 +67,6 @@ void NewNodeColumnGeneration(
 			this_node);
 	}
 
-
 	Obj_MP.removeAllProperties();
 	Obj_MP.end();
 	Vars_MP.clear();

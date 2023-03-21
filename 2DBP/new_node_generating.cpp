@@ -24,7 +24,7 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 				else
 				{
 					int temp_idx = Lists.all_nodes_list[k].index;
-					printf("\n	Node_%d has to be pruned\n", temp_idx);
+					printf("\n\t Node_%d has to be pruned\n", temp_idx);
 					Lists.all_nodes_list[k].node_pruned_flag = 1; // prune this previously generated Node
 				}
 			}
@@ -78,7 +78,7 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 	{
 		parent_branch_flag = 0;
 
-		printf("\n	No Node to branch! \n");
+		printf("\n\t No Node to branch! \n");
 	}
 	else
 	{
@@ -98,15 +98,13 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		parent_node.var_to_branch_int_val_floor = Lists.all_nodes_list[pos].var_to_branch_int_val_floor;
 		parent_node.var_to_branch_int_val_ceil = Lists.all_nodes_list[pos].var_to_branch_int_val_ceil;
 
-		int cols_num = Lists.all_nodes_list[pos].model_matrix.size();
-		int rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
-		int branched_num = Lists.all_nodes_list[pos].branched_vars_idx_list.size();
-
 		// Init model matrix of the Parent Node
-		for (int col = 0; col < cols_num; col++)
+		int all_cols_num = Lists.all_nodes_list[pos].model_matrix.size();
+		int all_rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
+		for (int col = 0; col < all_cols_num; col++) 
 		{
 			vector<double> temp_col;
-			for (int row = 0; row < rows_num; row++)
+			for (int row = 0; row < all_rows_num; row++)
 			{
 				double temp_val = Lists.all_nodes_list[pos].model_matrix[col][row];
 				temp_col.push_back(temp_val);
@@ -114,30 +112,50 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 			parent_node.model_matrix.push_back(temp_col);
 		}
 
-		for (int k = 0; k < branched_num; k++)
+		int K_num = Lists.all_nodes_list[pos].cutting_stock_cols.size();
+		for (int col = 0; col < K_num; col++)
 		{
-			double temp_val = Lists.all_nodes_list[pos].branched_vars_soln_val_list[k];
-
-			parent_node.branched_vars_soln_val_list.push_back(temp_val);
+			vector<double> temp_col;
+			for (int row = 0; row < all_rows_num; row++)
+			{
+				double temp_val = Lists.all_nodes_list[pos].cutting_stock_cols[col][row];
+				temp_col.push_back(temp_val);
+			}
+			parent_node.cutting_stock_cols.push_back(temp_col);
 		}
 
-		// Init branched-vars list of the Parent Node
-		for (int k = 0; k < branched_num; k++)
+		int P_num = Lists.all_nodes_list[pos].cutting_strip_cols.size();
+		for (int col = 0; col < P_num; col++)
+		{
+			vector<double> temp_col;
+			for (int row = 0; row < all_rows_num; row++)
+			{
+				double temp_val = Lists.all_nodes_list[pos].cutting_strip_cols[col][row];
+				temp_col.push_back(temp_val);
+			}
+			parent_node.cutting_strip_cols.push_back(temp_col);
+		}
+
+		int branched_vars_num = Lists.all_nodes_list[pos].branched_vars_idx_list.size();
+		for (int k = 0; k < branched_vars_num; k++)
 		{
 			int temp_idx = Lists.all_nodes_list[pos].branched_vars_idx_list[k];
 			parent_node.branched_vars_idx_list.push_back(temp_idx);
+
+			double temp_val = Lists.all_nodes_list[pos].branched_vars_soln_val_list[k];
+			parent_node.branched_vars_soln_val_list.push_back(temp_val);
 		}
 
-		if (branched_num > 1)
+		if (branched_vars_num > 1)
 		{
-			for (int k = 0; k < branched_num - 1; k++)
+			for (int k = 0; k < branched_vars_num - 1; k++)
 			{
 				double temp_val = Lists.all_nodes_list[pos].branched_vars_int_val_list[k];
 				parent_node.branched_vars_int_val_list.push_back(temp_val);
 			}
 		}
 
-		printf("\n	The Node to branch is Node_%d\n", parent_node.index);
+		printf("\n\t The Node to branch is Node_%d\n", parent_node.index);
 	}
 	
 	return parent_branch_flag;
@@ -153,11 +171,11 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	if (Values.branch_status == 1)
 	{
-		printf("\n	Node_%d is the LEFT branch of Node_%d	\n", new_node.index, parent_node.index);
+		printf("\n\t Node_%d is the LEFT branch of Node_%d	\n", new_node.index, parent_node.index);
 	}
 	if (Values.branch_status == 2)
 	{
-		printf("\n	Node_%d is the RIGHT branch of Node_%d	\n", new_node.index, parent_node.index);
+		printf("\n\t Node_%d is the RIGHT branch of Node_%d	\n", new_node.index, parent_node.index);
 	}
 
 	new_node.parent_index = parent_node.index;
@@ -175,16 +193,13 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	new_node.var_to_branch_int_val_floor = -1;
 	new_node.var_to_branch_int_val_ceil = -1;
 	new_node.var_to_branch_int_val_final = -1;
-
-	int cols_num = parent_node.model_matrix.size();
-	int rows_num = parent_node.model_matrix[0].size();
-	int branched_num = parent_node.branched_vars_idx_list.size();
-
 	// Init model matrix of the Node-to-branch
-	for (int col = 0; col < cols_num; col++)
+	int all_cols_num = parent_node.model_matrix.size();
+	int all_rows_num = parent_node.model_matrix[0].size();
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		vector<double> temp_col;
-		for (int row = 0; row < rows_num; row++)
+		for (int row = 0; row < all_rows_num; row++)
 		{
 			double temp_val = parent_node.model_matrix[col][row];
 			temp_col.push_back(temp_val);
@@ -192,8 +207,33 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 		new_node.model_matrix.push_back(temp_col); //6
 	}
 
+	int K_num = parent_node.cutting_stock_cols.size();
+	for (int col = 0; col < K_num; col++)
+	{
+		vector<double> temp_col;
+		for (int row = 0; row < all_rows_num; row++)
+		{
+			double temp_val = parent_node.cutting_stock_cols[col][row];
+			temp_col.push_back(temp_val);
+		}
+		new_node.cutting_stock_cols.push_back(temp_col);
+	}
+
+	int P_num = parent_node.cutting_strip_cols.size();
+	for (int col = 0; col < P_num; col++)
+	{
+		vector<double> temp_col;
+		for (int row = 0; row < all_rows_num; row++)
+		{
+			double temp_val = parent_node.cutting_strip_cols[col][row];
+			temp_col.push_back(temp_val);
+		}
+		new_node.cutting_strip_cols.push_back(temp_col);
+	}
+
 	// Init branched-vars list and their col-index list of the Node-to-branch
-	for (int col = 0; col < branched_num; col++)
+	int branched_vars_num = parent_node.branched_vars_idx_list.size();
+	for (int col = 0; col < branched_vars_num; col++)
 	{
 		int temp_idx = parent_node.branched_vars_idx_list[col];
 		new_node.branched_vars_idx_list.push_back(temp_idx);
@@ -209,13 +249,13 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	}
 
 	double final_int_val = new_node.var_to_branch_int_val_final;
-	if (branched_num <= 1) // if new_node is the left or the Right Node of Root Node
+	if (branched_vars_num <= 1) // if new_node is the left or the Right Node of Root Node
 	{
 		new_node.branched_vars_int_val_list.push_back(final_int_val);
 	}
 	else // other Nodes
 	{
-		for (int col = 0; col < branched_num - 1; col++)
+		for (int col = 0; col < branched_vars_num - 1; col++)
 		{
 			double temp_val = parent_node.branched_vars_int_val_list[col];
 			new_node.branched_vars_int_val_list.push_back(temp_val);
