@@ -347,7 +347,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists,Node&root_node) // ÇÐ¶
 
 	/*			    pattern columns
 	-----------------------------------------
-	|		K_num			|		P_num			|
+	|		 K_num			|		 P_num			|
 	| cut-stk-ptn cols	| stp-cut-ptn cols	|
 	-----------------------------------------------------
 	|							|							|				|

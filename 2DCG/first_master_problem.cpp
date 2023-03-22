@@ -4,6 +4,8 @@
 #include "2DCG.h"
 using namespace std;
 
+
+
 void SolveFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -23,20 +25,20 @@ void SolveFirstMasterProblem(
 	int all_cols_num = K_num + P_num;
 	int all_rows_num = J_num + N_num;
 
-	/*			    pattern columns
-	-----------------------------------------
-	|		 P_num			|		K_num			|
-	| cut-stk-ptn cols	| cut-stp-ptn cols	|
-	-----------------------------------------------------
-	|							|							|				|
-	|			 C				|			D				|  J_num	|	strip_type cons >= 0
-	|							|							|				|
-	|----------------------------------------------------
-	|							|							|				|
-	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
-	|							|							|				|
-	-----------------------------------------------------
-	*/
+	/*			      pattern columns
+    ---------------------------------------------
+    |          P_num         |          K_num         |
+    |  cut-stk-ptn cols  |  cut-stp-ptn cols  |
+    --------------------------------------------------------
+    |                             |                              |             |
+    |               C            |              D              | J_num | strip_type cons >= 0
+    |                             |                              |             |
+    |-------------------------------------------------------
+    |                             |                              |	            |
+    |              0             |               B             | N_num | item_type cons >= item_type demand
+    |                             |                              |             |
+    ---------------------------------------------------------
+    */
 
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);

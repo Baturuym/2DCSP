@@ -147,8 +147,8 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<StockProperties> stock_cut_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<StripProperties> strip_cut_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<StockProperties> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<StripProperties> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
 	vector<ItemTypeProperties> all_item_types_list;
 	vector<StripTypeProperties> all_strip_types_list;

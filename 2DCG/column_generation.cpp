@@ -54,12 +54,12 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 		Cons_MP,
 		Vars_MP); // 最后一次求解MP，得到最优整数解
 
-	Obj_MP.removeAllProperties();
-	Obj_MP.end();
 	Vars_MP.clear();
 	Vars_MP.end();
 	Cons_MP.clear();
 	Cons_MP.end();
+	Obj_MP.removeAllProperties();
+	Obj_MP.end();
 	Model_MP.removeAllProperties();
 	Model_MP.end();
 	Env_MP.removeAllProperties();

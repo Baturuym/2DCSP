@@ -163,7 +163,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				{
 					new_strip.pattern = strip_pattern;
 					strip_pattern++; // 只有唯一的切割模式，才对应一个pattern
-					Lists.strip_cut_patterns_list.push_back(new_strip);
+					Lists.cutting_strip_patterns_list.push_back(new_strip);
 				}
 				if (all_strips_num != 0) // 第一个中间板之后其他中间板
 				{
@@ -200,7 +200,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 					{
 						new_strip.pattern = strip_pattern;
 						strip_pattern++; // 只有唯一的切割模式，才对应一个pattern
-						Lists.strip_cut_patterns_list.push_back(new_strip); // 第二阶段列
+						Lists.cutting_strip_patterns_list.push_back(new_strip); // 第二阶段列
 					}
 				}
 
@@ -302,7 +302,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 		{
 			new_stock.pattern = stock_pattern;
 			stock_pattern++; // 只有唯一的切割模式，才对应一个pattern
-			Lists.stock_cut_patterns_list.push_back(new_stock);
+			Lists.cutting_stock_patterns_list.push_back(new_stock);
 		}
 
 		if (occupied_stocks_num != 0) // 第一个中间板之后其他母板
@@ -339,13 +339,19 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 			{
 				new_stock.pattern = stock_pattern;
 				stock_pattern++; // 只有唯一的切割模式，才对应一个pattern
-				Lists.stock_cut_patterns_list.push_back(new_stock); // 第一阶段列
+				Lists.cutting_stock_patterns_list.push_back(new_stock); // 第一阶段列
 			}
 		}
 
 		Lists.occupied_stocks_list.push_back(new_stock);
 		stock_index = stock_index + 1;
 	}
+
+	int K_num = Lists.cutting_stock_patterns_list.size();
+	int P_num = Lists.cutting_strip_patterns_list.size();
+
+	int J_num = strip_types_num;
+	int N_num = item_types_num;
 
 	/*			    pattern columns
 	-----------------------------------------
@@ -362,12 +368,6 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 	-----------------------------------------------------
 	*/
 
-	int K_num = Lists.stock_cut_patterns_list.size();
-	int P_num = Lists.strip_cut_patterns_list.size();
-
-	int J_num = strip_types_num;
-	int N_num = item_types_num;
-
 	// Init model matrix
 	for (int col = 0; col < K_num + P_num; col++)
 	{
@@ -381,7 +381,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				if (row < J_num)
 				{
 					double temp_val =
-						Lists.stock_cut_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
+						Lists.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
 					temp_col.push_back(temp_val);
 				}
 				// 2. Matrix 0
@@ -399,7 +399,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				{
 					int col_pos = col - K_num;
 					int item_type_idx = row + 1;
-					int strip_type_idx = Lists.strip_cut_patterns_list[col_pos].strip_type_idx;
+					int strip_type_idx = Lists.cutting_strip_patterns_list[col_pos].strip_type_idx;
 					if (strip_type_idx == item_type_idx) // 
 					{
 						double temp_val = -1; // 系数为-1
@@ -418,7 +418,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 					int col_pos = col - K_num;
 					int row_pos = row - J_num;
 					double temp_val =
-						Lists.strip_cut_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
+						Lists.cutting_strip_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
 					temp_col.push_back(temp_val);
 				}
 			}
@@ -438,7 +438,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 			if (row < J_num)
 			{
 				double temp_val =
-					Lists.stock_cut_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
+					Lists.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
 				temp_col.push_back(temp_val);
 			}
 			// 2. Matrix 0
@@ -464,7 +464,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 			{
 				int col_pos = col - K_num;
 				int item_type_index = row + 1;
-				int strip_type_index = Lists.strip_cut_patterns_list[col_pos].strip_type_idx;
+				int strip_type_index = Lists.cutting_strip_patterns_list[col_pos].strip_type_idx;
 				if (strip_type_index == item_type_index) // 
 				{
 					double temp_val = -1; // 系数为-1
@@ -482,7 +482,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				int col_pos = col - K_num;
 				int row_pos = row - J_num;
 				double temp_val =
-					Lists.strip_cut_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
+					Lists.cutting_strip_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
 				temp_col.push_back(temp_val);
 			}
 		}
@@ -492,11 +492,11 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 
 	for (int k = 0; k < item_types_num; k++)
 	{
-		StripTypeProperties temp_stp;
-		temp_stp.width = Lists.all_item_types_list[k].width;
-		temp_stp.length = Values.stock_length;
+		StripTypeProperties temp_stc;
+		temp_stc.width = Lists.all_item_types_list[k].width;
+		temp_stc.length = Values.stock_length;
 
-		Lists.all_strip_types_list.push_back(temp_stp);
+		Lists.all_strip_types_list.push_back(temp_stc);
 	}
 	cout << endl;
 }
