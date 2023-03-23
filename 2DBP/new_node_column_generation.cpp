@@ -7,8 +7,8 @@ using namespace std;
 void NewNodeColumnGeneration(
 	All_Values& Values,
 	All_Lists& Lists,
-	Node_Stc& this_node,
-	Node_Stc& parent_node) {
+	Node& this_node,
+	Node& parent_node) {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj

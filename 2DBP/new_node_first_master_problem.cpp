@@ -13,8 +13,8 @@ bool SolveNewNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node_Stc& this_node,
-	Node_Stc& parent_node) {
+	Node& this_node,
+	Node& parent_node) {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
 
@@ -75,7 +75,7 @@ bool SolveNewNodeFirstMasterProblem(
 		string Y_name = "Y_" + to_string(col + 1); // var name
 
 		// Case 1 
-		if (col == parent_node.var_to_branch_idx) {// var of this col is the var-to-branch of Parent Node_Stc
+		if (col == parent_node.var_to_branch_idx) { // var of this col is the var-to-branch of Parent Node
 			IloNum var_min = this_node.var_to_branch_int_val_final;
 			IloNum var_max = this_node.var_to_branch_int_val_final;
 			IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // Init and set var
@@ -84,13 +84,13 @@ bool SolveNewNodeFirstMasterProblem(
 		}
 
 		// Case 2
-		else {// var of this col is not the var-to-branch of Parent Node_Stc
+		else { // var of this col is not the var-to-branch of Parent Node
 			// Case 2.1: var of this col is NOT a branched - var in previous Nodes	
 			int branched_vars_num = parent_node.branched_int_val_list.size();
 			bool find_flag = 0;
-			for (int index = 0; index < branched_vars_num; index++) {// loop of all branched-vars in previous Nodes
+			for (int index = 0; index < branched_vars_num; index++) { // loop of all branched-vars in previous Nodes
 				int branched_idx = parent_node.branched_idx_list[index];
-				if (col == branched_idx) {// var of this col is a branched-var in Parent Node_Stc
+				if (col == branched_idx) { // var of this col is a branched-var in Parent Node
 					IloNum var_min = parent_node.branched_int_val_list[index];
 					IloNum var_max = parent_node.branched_int_val_list[index];
 					IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // Init and set var
@@ -103,7 +103,7 @@ bool SolveNewNodeFirstMasterProblem(
 			}
 
 			// Case 2.2:
-			if (find_flag == 0) {//  var of this col is NOT a branched-var in previous Nodes
+			if (find_flag == 0) { //  var of this col is NOT a branched-var in previous Nodes
 				IloNum var_min = 0;
 				IloNum var_max = IloInfinity;
 				IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // Init and set var
@@ -125,7 +125,7 @@ bool SolveNewNodeFirstMasterProblem(
 		string X_name = "X_" + to_string(col + 1); // var name
 
 		// Case 1
-		if (col + K_num == parent_node.var_to_branch_idx) { // var of this col is the var-to-branch of Parent Node_Stc
+		if (col + K_num == parent_node.var_to_branch_idx) { // var of this col is the var-to-branch of Parent Node
 			IloNum var_min = this_node.var_to_branch_int_val_final;
 			IloNum var_max = this_node.var_to_branch_int_val_final;
 			IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
@@ -134,7 +134,7 @@ bool SolveNewNodeFirstMasterProblem(
 		}
 
 		// Case 2
-		else { // var of this col is not the var-to-branch of Parent Node_Stc
+		else { // var of this col is not the var-to-branch of Parent Node
 			int branched_vars_num = parent_node.branched_int_val_list.size();
 			bool find_flag = 0;
 
@@ -142,7 +142,7 @@ bool SolveNewNodeFirstMasterProblem(
 			for (int pos = 0; pos < branched_vars_num; pos++) { //var of this col is NOT a branched - var in previous Nodes	
 				// loop of all branched-vars in previous Nodes
 				int branched_idx = parent_node.branched_idx_list[pos];
-				if (col == branched_idx) { // var of this col is a branched-var in Parent Node_Stc
+				if (col == branched_idx) { // var of this col is a branched-var in Parent Node
 					IloNum var_min = parent_node.branched_int_val_list[pos];
 					IloNum var_max = parent_node.branched_int_val_list[pos];
 					IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
@@ -170,7 +170,7 @@ bool SolveNewNodeFirstMasterProblem(
 	printf("\n\n############# Node_%d MP-1 CPLEX SOLVING START #############\n\n", this_node.index);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
-	MP_cplex.exportModel("New Node_Stc First Master Problem.lp");
+	MP_cplex.exportModel("New Node First Master Problem.lp");
 	bool MP_flag = MP_cplex.solve();
 	printf("\n############# Node_%d MP-1 CPLEX SOLVING OVER ###############\n\n", this_node.index);
 

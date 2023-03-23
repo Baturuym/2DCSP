@@ -2,7 +2,7 @@
 #include "2DBP.h"
 using namespace std;
 
-void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) // 切断式切割启发式
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // 切断式切割启发式
 {
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
@@ -16,8 +16,8 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 	int strip_pattern = 0;
 
 #pragma region
-	while (Values.Finish == false) {
-		// 初始化新母板
+	while (Values.Finish == false) { // 初始化新母板
+
 		Lists.all_stocks_list.erase(Lists.all_stocks_list.begin()); // 母板池中除去母板0
 
 		// Init one stock
@@ -50,10 +50,10 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 		int all_items_num = Lists.all_items_list.size();
 		for (int j = 0; j < all_items_num; j++) {
-			// 子板 j 能不能放入被切母板剩下的区域
 			if (Lists.all_items_list[j].length <= stock_remain.length
 				&& Lists.all_items_list[j].width <= stock_remain.width
-				&& Lists.all_items_list[j].occupied == 0) {
+				&& Lists.all_items_list[j].occupied == 0) { // 子板 j 能不能放入被切母板剩下的区域
+
 				// Init first item in a this_strip, though may not use them all
 				Item_Stc first_item;
 				Lists.all_items_list[j].occupied = 1;
@@ -114,10 +114,10 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				// 在第一个子板的右侧区域，即中间板内部继续填充子板
 				// 直到当前中间板再也无法放入子板为止
 				for (int m = 0; m < all_items_num; m++) {
-					// 如果当前子板能够放入第一个子板右侧区域：
 					if (Lists.all_items_list[m].length <= first_item_right_side.length
 						&& Lists.all_items_list[m].width <= first_item_right_side.width
-						&& Lists.all_items_list[m].occupied == 0) {
+						&& Lists.all_items_list[m].occupied == 0) { // 如果当前子板能够放入第一个子板右侧区域
+
 						// 新的子板放入中间板
 						Item_Stc new_item;
 						Lists.all_items_list[m].occupied = 1;
@@ -150,44 +150,35 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 				int Strip_Final_Cnt = 0;
 				int all_strips_num = Lists.all_strips_list.size();
-				if (all_strips_num == 0) // 第一个中间板
-				{
+				if (all_strips_num == 0) { // 第一个中间板
 					new_strip.pattern = strip_pattern;
 					strip_pattern++; // 只有唯一的切割模式，才对应一个pattern
 					root_node.cutting_strip_patterns_list.push_back(new_strip);
 				}
-				if (all_strips_num != 0) // 第一个中间板之后其他中间板
-				{
+				if (all_strips_num != 0) { // 第一个中间板之后其他中间板
 					for (int s = 0; s < all_strips_num; s++) {
-						//printf("新中间板%d与中间板%d做对比\n", new_strip.index,s);
 						int cnt01 = 0;
 						int cnt02 = 0;
 						int cnt03 = 0;
-						for (int k = 0; k < item_types_num; k++) // 考虑所有子板种类 1-11
-						{
+						for (int k = 0; k < item_types_num; k++) { // 考虑所有子板种类 1-11
 							int cnt1 = Lists.all_strips_list[s].item_types_list[k].this_item_type_num; // 已有中间板s中子板种类k+1的使用次数
 							int cnt2 = new_strip.item_types_list[k].this_item_type_num; // 新中间板new_strip中子板种类k+1的使用次数
-
-							if (cnt1 == cnt2) // 二者使用次数相同
-							{
+							if (cnt1 == cnt2) { // 二者使用次数相同
 								cnt01 = cnt01 + 1; // 使用次数相同的情况+1
 							}
-							if (cnt1 != cnt2) // 二者使用次数不同
-							{
+							if (cnt1 != cnt2) { // 二者使用次数不同
 								cnt03 = cnt03 + 1;
 							}
 						}
 						Strip_Final_Cnt = cnt01;
 						//printf("相同使用次数 = %d\n不同使用次数 = %d\n",cnt01,cnt03);
-						if (Strip_Final_Cnt == item_types_num) // 所有子板种类使用次数都相同
-						{
+						if (Strip_Final_Cnt == item_types_num) { // 所有子板种类使用次数都相同
 							new_strip.pattern = Lists.all_strips_list[s].pattern;
 							break;
 						}
 					}
 					// 遍历所有中间板中所有种类子管的使用次数后
-					if (Strip_Final_Cnt < item_types_num) // 确认是新的切割模式
-					{
+					if (Strip_Final_Cnt < item_types_num) { // 确认是新的切割模式
 						new_strip.pattern = strip_pattern;
 						strip_pattern++; // 只有唯一的切割模式，才对应一个pattern
 						root_node.cutting_strip_patterns_list.push_back(new_strip); // 第二阶段列
@@ -214,8 +205,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				for (int k = 0; k < all_items_num; k++) {
 					occupied_items_num += Lists.all_items_list[k].occupied;
 				}
-				// 如果所有子板都被使用了
-				if (occupied_items_num == all_items_num) {
+				if (occupied_items_num == all_items_num) { // 如果所有子板都被使用了
 					Values.Finish = true;
 				}
 			}
@@ -225,8 +215,8 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 		int strip_total_cut_distance = 0;
 		int strips_num_in_stock = new_stock.strips_list.size();
 		for (int j = 0; j < strips_num_in_stock; j++) {
-			Strip_Stc this_strip = new_stock.strips_list[j];
 
+			Strip_Stc this_strip = new_stock.strips_list[j];
 			int item_total_cut_distance = 0;
 			int items_num_in_strip = this_strip.items_in_strip_list.size();
 			for (int k = 0; k < items_num_in_strip; k++) {
@@ -250,7 +240,6 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				this_strip.cutting_distance = item_total_cut_distance;
 				this_strip.material_cutting_loss = this_strip.cutting_distance * Values.unit_cut_loss;
 			}
-
 			strip_total_cut_distance = strip_total_cut_distance + this_strip.cutting_distance;
 		}
 
@@ -261,7 +250,6 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 		int strip_total_waste_area = 0;
 		for (int j = 0; j < strips_num_in_stock; j++) {
 			Strip_Stc this_strip = new_stock.strips_list[j];
-
 			int item_total_used_area = 0;
 			int items_num_in_strip = this_strip.items_in_strip_list.size();
 			for (int k = 0; k < items_num_in_strip; k++) {
@@ -278,44 +266,36 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 		int Stock_Final_Cnt = 0;
 		int occupied_stocks_num = Lists.occupied_stocks_list.size();
-		if (occupied_stocks_num == 0) // 第一个母板
-		{
+		if (occupied_stocks_num == 0) { // 第一个母板
 			new_stock.pattern = stock_pattern;
 			stock_pattern++; // 只有唯一的切割模式，才对应一个pattern
 			root_node.cutting_stock_patterns_list.push_back(new_stock);
 		}
 
-		if (occupied_stocks_num != 0) // 第一个中间板之后其他母板
-		{
+		if (occupied_stocks_num != 0) { // 第一个中间板之后其他母板
 			for (int s = 0; s < occupied_stocks_num; s++) {
 				int cnt01 = 0;
 				int cnt02 = 0;
 				int cnt03 = 0;
-
-				for (int k = 0; k < strip_types_num; k++) // 考虑所有中间板种类 1-11
-				{
+				for (int k = 0; k < strip_types_num; k++) { // 考虑所有中间板种类 1-11
 					int cnt1 = Lists.occupied_stocks_list[s].strip_types_list[k].this_strip_type_num; // 已有母板s中中间板种类k的使用次数
 					int cnt2 = new_stock.strip_types_list[k].this_strip_type_num; // 新母板new_stock中中间板种类k的使用次数
 
-					if (cnt1 == cnt2) // 二者使用次数相同
-					{
+					if (cnt1 == cnt2) { // 二者使用次数相同
 						cnt01 = cnt01 + 1; // 使用次数相同的情况+1
 					}
-					if (cnt1 != cnt2) // 二者使用次数不同
-					{
+					if (cnt1 != cnt2) { // 二者使用次数不同
 						cnt03 = cnt03 + 1;
 					}
 				}
 
 				Stock_Final_Cnt = cnt01;
-				if (Stock_Final_Cnt == strip_types_num) // 所有中间板种类使用次数都相同
-				{
+				if (Stock_Final_Cnt == strip_types_num) { // 所有中间板种类使用次数都相同
 					break;
 				}
 			}
 
-			if (Stock_Final_Cnt < strip_types_num) // 确认是新的中间板种类
-			{
+			if (Stock_Final_Cnt < strip_types_num) { // 确认是新的中间板种类
 				new_stock.pattern = stock_pattern;
 				stock_pattern++; // 只有唯一的切割模式，才对应一个pattern
 				root_node.cutting_stock_patterns_list.push_back(new_stock); // 第一阶段列
@@ -351,22 +331,27 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 	for (int col = 0; col < K_num + P_num; col++) {
 		vector<double>temp_col;
 		for (int row = 0; row < J_num + N_num; row++) {
+
 			// Matrix C & Matrix 0
 			if (col < K_num) {
+
 				// 1. Matrix C
 				if (row < J_num) {
 					double temp_val =
 						root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
 					temp_col.push_back(temp_val);
 				}
+
 				// 2. Matrix 0
 				if (row >= J_num) {
 					double temp_val = 0; //
 					temp_col.push_back(temp_val);
 				}
 			}
+
 			// Matrix B & Matrix D
 			if (col >= K_num) {
+
 				// 3. Matrix D
 				if (row < J_num) {
 					int col_pos = col - K_num;
@@ -382,8 +367,8 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 						double temp_val = 0; // 系数为0
 						temp_col.push_back(temp_val);
 					}
-
 				}
+
 				// 4.Matrix B
 				if (row >= J_num) {
 					int col_pos = col - K_num;
@@ -403,19 +388,20 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 	for (int col = 0; col < K_num; col++) {
 		vector<double>temp_col;
 		for (int row = 0; row < J_num + N_num; row++) {
+
 			// 1. Matrix C
 			if (row < J_num) {
 				double temp_val =
 					root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
 				temp_col.push_back(temp_val);
 			}
+
 			// 2. Matrix 0
 			if (row >= J_num) {
 				double temp_val = 0; //
 				temp_col.push_back(temp_val);
 			}
 		}
-
 		root_node.cutting_stock_cols.push_back(temp_col); // 第一阶段列
 	}
 
@@ -424,22 +410,22 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 	for (int col = K_num; col < K_num + P_num; col++) {
 		vector<double>temp_col;
 		for (int row = 0; row < J_num + N_num; row++) {
+
 			// 3. Matrix D
 			if (row < J_num) {
 				int col_pos = col - K_num;
 				int item_type_index = row + 1;
 				int strip_type_index = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
-				if (strip_type_index == item_type_index) // 
-				{
+				if (strip_type_index == item_type_index) {
 					double temp_val = -1; // 系数为-1
 					temp_col.push_back(temp_val);
 				}
-				else // 中间板种类和子板种类不对应
-				{
+				else { // 中间板种类和子板种类不对应
 					double temp_val = 0; // 系数为0
 					temp_col.push_back(temp_val);
 				}
 			}
+
 			// 4.Matrix B
 			if (row >= J_num) {
 				int col_pos = col - K_num;
@@ -449,7 +435,6 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				temp_col.push_back(temp_val);
 			}
 		}
-
 		root_node.cutting_strip_cols.push_back(temp_col); // 第二阶段列
 	}
 

@@ -4,7 +4,7 @@
 #include "2DBP.h"
 using namespace std;
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
+int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
@@ -203,7 +203,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_no
 	return SP_flag; // 函数最终的返回值
 }
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
+void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
 

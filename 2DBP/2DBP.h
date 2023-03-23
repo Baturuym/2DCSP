@@ -125,18 +125,18 @@ struct Stock_Stc {
 	int material_area_loss = -1;
 };
 
-// Node_Stc
-struct Node_Stc {
+// Node
+struct Node {
 	int index = -1;
 
-	// Values of the Parent Node_Stc of this Node
+	// Values of the Parent Node of this Node
 	int parent_index = -1;
 	int parent_branching_flag = -1;
 	double parent_var_to_branch_val = -1;
 
-	// Values of Node_Stc status
+	// Values of Node status
 	double node_lower_bound = -1; // LB of this Node
-	int node_branched_flag = -1; // flag: this Node is the left or the Right Node of its Parent Node_Stc, 1 -- left, 2 -- right
+	int node_branched_flag = -1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
 	int node_pruned_flag = -1; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
 
 	// Values of final branching of this Node
@@ -229,7 +229,7 @@ struct All_Values {
 };
 
 struct All_Lists {
-	vector<Node_Stc> all_nodes_list; // list of all Nodes generated
+	vector<Node> all_nodes_list; // list of all Nodes generated
 
 	vector<Stock_Stc> all_stocks_list;
 	vector<Strip_Stc> all_strips_list;
@@ -246,9 +246,9 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 void ReadData(All_Values& Values, All_Lists& Lists);
 
-void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node);
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& root_node);
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node);
 
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -258,13 +258,13 @@ bool SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node_Stc& root_node);
+	Node& root_node);
 
-//bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
+//bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
+int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
+void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 void SolveUpdateMasterProblem(
 	All_Values& Values,
@@ -274,7 +274,7 @@ void SolveUpdateMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node_Stc& this_node);
+	Node& this_node);
 
 void SolveFinalMasterProblem(
 	All_Values& Values,
@@ -284,19 +284,19 @@ void SolveFinalMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node_Stc& this_node);
+	Node& this_node);
 
-int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
+int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
+int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int BranchAndPriceTree(All_Values& Values, All_Lists& Lists);
 
-int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& parent_node);
+int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
-void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node_Stc& new_node, Node_Stc& parent_node);
+void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
 
-void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& this_node, Node_Stc& parent_node);
+void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
 
 bool SolveNewNodeFirstMasterProblem(
 	All_Values& Values,
@@ -306,8 +306,8 @@ bool SolveNewNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node_Stc& this_node,
-	Node_Stc& parent_node);
+	Node& this_node,
+	Node& parent_node);
 
 
 

@@ -14,8 +14,8 @@ int main() {
 
 	ReadData(Values, Lists);
 
-	Node_Stc root_node; // Init Root Node
-	root_node.index = 1; // Node_Stc index
+	Node root_node; // Init Root Node
+	root_node.index = 1; // Node index
 	Values.branch_status = 0;
 
 	PrimalHeuristic(Values, Lists, root_node); // generate Root Node matrix

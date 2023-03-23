@@ -3,8 +3,8 @@
 #include "2DBP.h"
 using namespace std;
 
-// judge the integerity of the Node_Stc, and find the branch var
-int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
+// judge the integerity of the Node, and find the branch var
+int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	// 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int node_int_flag = -1;
 
@@ -37,7 +37,7 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
 			}
 			if (this_node.index > 1) // this Node is not Root Node
 			{
-				if (Values.tree_optimal_lower_bound == -1) // this Node is the first Node_Stc with all int-solns
+				if (Values.tree_optimal_lower_bound == -1) // this Node is the first Node with all int-solns
 				{
 					Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 					printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
@@ -68,7 +68,7 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
 }
 
 
-int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
+int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	int node_int_flag = 1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	double soln_val;
 

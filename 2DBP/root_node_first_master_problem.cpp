@@ -13,7 +13,7 @@ bool SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node_Stc& root_node) {
+	Node& root_node) {
 
 	int K_num = root_node.cutting_stock_cols.size();
 	int P_num = root_node.cutting_strip_cols.size();
@@ -64,13 +64,10 @@ bool SolveRootNodeFirstMasterProblem(
 	con_max.end();
 
 	// Matrix C & Matrix  0
-	for (int col = 0; col < K_num; col++) 	// col 1 -> col K_num
-	{
+	for (int col = 0; col < K_num; col++) { // col 1 -> col K_num
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
-
-		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
-		{
+		for (int row = 0; row < J_num + N_num; row++) { // row 1 -> row J_num+N_num
 			IloNum row_para = root_node.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
@@ -86,13 +83,10 @@ bool SolveRootNodeFirstMasterProblem(
 
 
 	// Matrix D & Matrix  B
-	for (int col = K_num; col < K_num + P_num; col++) // col K_num+1 -> col K_num+P_num
-	{
+	for (int col = K_num; col < K_num + P_num; col++) { // col K_num+1 -> col K_num+P_num
 		IloNum obj_para = 0; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
-
-		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
-		{
+		for (int row = 0; row < J_num + N_num; row++) {// row 1 -> row J_num+N_num
 			IloNum row_para = root_node.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
@@ -124,8 +118,7 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n\t Y Solns (stock cutting patterns):\n\n");
 		for (int col = 0; col < K_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val > 0) // only print feasible solns
-			{
+			if (soln_val > 0) { // only print feasible solns
 				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 				Y_fsb_num++;
 			}
@@ -133,8 +126,7 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
 		for (int col = K_num; col < K_num + P_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val > 0) // only print feasible solns
-			{
+			if (soln_val > 0) { // only print feasible solns
 				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 				X_fsb_num++;
 			}
