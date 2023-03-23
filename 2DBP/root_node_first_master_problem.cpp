@@ -13,8 +13,7 @@ bool SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node_Stc& root_node)
-{
+	Node_Stc& root_node) {
 
 	int K_num = root_node.cutting_stock_cols.size();
 	int P_num = root_node.cutting_strip_cols.size();
@@ -43,16 +42,13 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
 
-	for (int row = 0; row < J_num + N_num; row++)
-	{
-		if (row < J_num)
-		{
+	for (int row = 0; row < J_num + N_num; row++) {
+		if (row < J_num) {
 			// con >= 0
 			con_min.add(IloNum(0)); // con LB
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
-		if (row >= J_num)
-		{
+		if (row >= J_num) {
 			// con >= item_type demand
 			int row_pos = row - J_num;
 			double demand_val = Lists.all_item_types_list[row_pos].demand;
@@ -117,19 +113,16 @@ bool SolveRootNodeFirstMasterProblem(
 	bool MP_flag = MP_cplex.solve();
 	printf("\n///////////////// MP_1 CPLEX solving OVER /////////////////\n\n");
 
-	if (MP_flag == 0)
-	{
+	if (MP_flag == 0) {
 		printf("\n\t MP_1 is NOT FEASIBLE\n");
 	}
-	else
-	{
+	else {
 		printf("\n\t MP_1 is FEASIBLE\n");
 
 		int Y_fsb_num = 0;
 		int X_fsb_num = 0;
 		printf("\n\t Y Solns (stock cutting patterns):\n\n");
-		for (int col = 0; col < K_num; col++)
-		{
+		for (int col = 0; col < K_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) // only print feasible solns
 			{
@@ -138,8 +131,7 @@ bool SolveRootNodeFirstMasterProblem(
 			}
 		}
 		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
-		for (int col = K_num; col < K_num + P_num; col++)
-		{
+		for (int col = K_num; col < K_num + P_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) // only print feasible solns
 			{
@@ -151,15 +143,13 @@ bool SolveRootNodeFirstMasterProblem(
 		root_node.dual_prices_list.clear(); // ATTENTION: must clear dual_prices_list
 
 		printf("\n\t strip_type cons dual prices: \n\n");
-		for (int row = 0; row < J_num; row++)
-		{
+		for (int row = 0; row < J_num; row++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			root_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 		printf("\n\t item_type cons dual prices: \n\n");
-		for (int row = J_num; row < J_num + N_num; row++)
-		{
+		for (int row = J_num; row < J_num + N_num; row++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			root_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);

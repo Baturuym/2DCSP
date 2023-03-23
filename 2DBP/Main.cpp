@@ -5,8 +5,7 @@
 #include "2DBP.h"
 using namespace std;
 
-int main()
-{
+int main() {
 	clock_t start, finish;
 	start = clock();
 

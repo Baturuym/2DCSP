@@ -36,8 +36,7 @@ using namespace std;
 
 // stock --> strip --> item
 
-struct Item_Type_Stc
-{
+struct Item_Type_Stc {
 	int item_type_idx = -1;
 	double demand = -1;
 
@@ -46,8 +45,7 @@ struct Item_Type_Stc
 	int this_item_type_num = 0;
 };
 
-struct Strip_Type_Stc
-{
+struct Strip_Type_Stc {
 	int strip_type_idx = -1;
 
 	int width = -1;
@@ -55,14 +53,12 @@ struct Strip_Type_Stc
 	int this_strip_type_num = 0;
 };
 
-struct Stock_Type_Stc
-{
+struct Stock_Type_Stc {
 	int stock_type_idx = -1;
 	int this_stock_type_num = 0;
 };
 
-struct Item_Stc
-{
+struct Item_Stc {
 	int item_idx = -1;
 	int item_type_idx = -1;
 	int demand = -1;
@@ -83,8 +79,7 @@ struct Item_Stc
 	int material_cutting_loss = -1;
 };
 
-struct Strip_Stc
-{
+struct Strip_Stc {
 	int strip_idx = -1;
 	int strip_type_idx = -1;
 	int pattern = -1;
@@ -108,8 +103,7 @@ struct Strip_Stc
 	int material_area_loss = -1;
 };
 
-struct Stock_Stc
-{
+struct Stock_Stc {
 	int stock_idx = -1;
 	int stock_type_idx = 0;
 	int pattern = -1;
@@ -132,8 +126,7 @@ struct Stock_Stc
 };
 
 // Node_Stc
-struct Node_Stc
-{
+struct Node_Stc {
 	int index = -1;
 
 	// Values of the Parent Node_Stc of this Node
@@ -189,8 +182,7 @@ struct Node_Stc
 
 };
 
-struct All_Values
-{
+struct All_Values {
 	bool Finish;
 
 	int item_types_num = -1; // number of all item_types demanded
@@ -236,8 +228,7 @@ struct All_Values
 	int root_flag = -1;
 };
 
-struct All_Lists
-{
+struct All_Lists {
 	vector<Node_Stc> all_nodes_list; // list of all Nodes generated
 
 	vector<Stock_Stc> all_stocks_list;

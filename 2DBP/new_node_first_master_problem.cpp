@@ -14,8 +14,7 @@ bool SolveNewNodeFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
 	Node_Stc& this_node,
-	Node_Stc& parent_node)
-{
+	Node_Stc& parent_node) {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
 
@@ -43,16 +42,13 @@ bool SolveNewNodeFirstMasterProblem(
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
 
-	for (int row = 0; row < J_num + N_num; row++)
-	{
-		if (row < J_num)
-		{
+	for (int row = 0; row < J_num + N_num; row++) {
+		if (row < J_num) {
 			// con >= 0
 			con_min.add(IloNum(0)); // con LB
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
-		if (row >= J_num)
-		{
+		if (row >= J_num) {
 			// con >= item_type demand
 			int row_pos = row - J_num;
 			double demand_val = Lists.all_item_types_list[row_pos].demand;
@@ -68,8 +64,7 @@ bool SolveNewNodeFirstMasterProblem(
 	con_max.end();
 
 	// Cplex Modeling
-	for (int col = 0; col < K_num; col++)
-	{
+	for (int col = 0; col < K_num; col++) {
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 
@@ -82,8 +77,7 @@ bool SolveNewNodeFirstMasterProblem(
 		string Y_name = "Y_" + to_string(col + 1); // var name
 
 		// Case 1 
-		if (col == parent_node.var_to_branch_idx)
-		{
+		if (col == parent_node.var_to_branch_idx) {
 			// var of this col is the var-to-branch of Parent Node_Stc
 			IloNum var_min = this_node.var_to_branch_int_val_final;
 			IloNum var_max = this_node.var_to_branch_int_val_final;
@@ -93,8 +87,7 @@ bool SolveNewNodeFirstMasterProblem(
 		}
 
 		// Case 2
-		else
-		{
+		else {
 			// var of this col is not the var-to-branch of Parent Node_Stc
 			// Case 2.1: var of this col is NOT a branched - var in previous Nodes	
 			int branched_vars_num = parent_node.branched_int_val_list.size();
@@ -103,8 +96,7 @@ bool SolveNewNodeFirstMasterProblem(
 			for (int index = 0; index < branched_vars_num; index++) // loop of all branched-vars in previous Nodes
 			{
 				int branched_idx = parent_node.branched_idx_list[index];
-				if (col == branched_idx)
-				{
+				if (col == branched_idx) {
 					// var of this col is a branched-var in Parent Node_Stc
 					IloNum var_min = parent_node.branched_int_val_list[index];
 					IloNum var_max = parent_node.branched_int_val_list[index];
@@ -118,8 +110,7 @@ bool SolveNewNodeFirstMasterProblem(
 			}
 
 			// Case 2.2:
-			if (find_flag == 0)
-			{
+			if (find_flag == 0) {
 				//  var of this col is NOT a branched-var in previous Nodes
 				IloNum var_min = 0;
 				IloNum var_max = IloInfinity;
@@ -131,8 +122,7 @@ bool SolveNewNodeFirstMasterProblem(
 		CplexCol.end(); // must end this IloNumColumn object
 	}
 
-	for (int col = 0; col < P_num; col++)
-	{
+	for (int col = 0; col < P_num; col++) {
 		IloNum obj_para = 0;
 		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 
@@ -145,8 +135,7 @@ bool SolveNewNodeFirstMasterProblem(
 		string X_name = "X_" + to_string(col + 1); // var name
 
 		// Case 1
-		if (col + K_num == parent_node.var_to_branch_idx)
-		{
+		if (col + K_num == parent_node.var_to_branch_idx) {
 			// var of this col is the var-to-branch of Parent Node_Stc
 			IloNum var_min = this_node.var_to_branch_int_val_final;
 			IloNum var_max = this_node.var_to_branch_int_val_final;
@@ -156,8 +145,7 @@ bool SolveNewNodeFirstMasterProblem(
 		}
 
 		// Case 2
-		else
-		{
+		else {
 			// var of this col is not the var-to-branch of Parent Node_Stc
 			int branched_vars_num = parent_node.branched_int_val_list.size();
 			bool find_flag = 0;
@@ -166,8 +154,7 @@ bool SolveNewNodeFirstMasterProblem(
 			for (int pos = 0; pos < branched_vars_num; pos++) // loop of all branched-vars in previous Nodes
 			{
 				int branched_idx = parent_node.branched_idx_list[pos];
-				if (col == branched_idx)
-				{
+				if (col == branched_idx) {
 					// var of this col is a branched-var in Parent Node_Stc
 					IloNum var_min = parent_node.branched_int_val_list[pos];
 					IloNum var_max = parent_node.branched_int_val_list[pos];
@@ -182,8 +169,7 @@ bool SolveNewNodeFirstMasterProblem(
 			}
 
 			// Case 2.2
-			if (find_flag == 0)
-			{
+			if (find_flag == 0) {
 				// var of this col is NOT a branched-var in previous Nodes
 				IloNum var_min = 0;
 				IloNum var_max = IloInfinity;
@@ -202,35 +188,29 @@ bool SolveNewNodeFirstMasterProblem(
 	bool MP_flag = MP_cplex.solve();
 	printf("\n############# Node_%d MP-1 CPLEX SOLVING OVER ###############\n\n", this_node.index);
 
-	if (MP_flag == 0)
-	{
+	if (MP_flag == 0) {
 		this_node.node_pruned_flag = 1;
 		printf("\n\t Node_%d MP-1 is NOT FEASIBLE\n", this_node.index);
 		printf("\n\t Node_%d MP-1 has to be pruned\n", this_node.index);
 	}
-	else
-	{
+	else {
 		printf("\n\t Node_%d MP-1 is FEASIBLE\n", this_node.index);
 		printf("\n\t OBJ of Node_%d MP-1 is %f\n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
 		int Y_fsb_num = 0;
 		int X_fsb_num = 0;
 		printf("\n\t Y Solns (stock cutting patterns):\n\n");
-		for (int col = 0; col < K_num; col++)
-		{
+		for (int col = 0; col < K_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val > 0)
-			{
+			if (soln_val > 0) {
 				Y_fsb_num++;
 				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 			}
 		}
 		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
-		for (int col = K_num; col < K_num + P_num; col++)
-		{
+		for (int col = K_num; col < K_num + P_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val > 0)
-			{
+			if (soln_val > 0) {
 				X_fsb_num++;
 				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 			}
@@ -238,8 +218,7 @@ bool SolveNewNodeFirstMasterProblem(
 
 		printf("\n\t BRANCHED VARS: \n\n");
 		int branched_vars_num = this_node.branched_int_val_list.size();
-		for (int k = 0; k < branched_vars_num; k++)
-		{
+		for (int k = 0; k < branched_vars_num; k++) {
 			printf("\t var_X_%d = %f branched \n",
 				this_node.branched_idx_list[k] + 1, this_node.branched_int_val_list[k]);
 		}
@@ -247,15 +226,13 @@ bool SolveNewNodeFirstMasterProblem(
 		this_node.dual_prices_list.clear(); // ATTENTION: must clear dual_prices_list
 
 		printf("\n\t strip_type cons dual prices: \n\n");
-		for (int row = 0; row < J_num; row++)
-		{
+		for (int row = 0; row < J_num; row++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			this_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 		printf("\n\t item_type cons dual prices: \n\n");
-		for (int row = J_num; row < J_num + N_num; row++)
-		{
+		for (int row = J_num; row < J_num + N_num; row++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			this_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);

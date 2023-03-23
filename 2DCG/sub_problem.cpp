@@ -4,8 +4,7 @@
 #include "2DCG.h"
 using namespace std;
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
-{
+int SolveStockSubProblem(All_Values& Values, All_Lists& Lists) {
 	int K_num = Lists.cutting_stock_cols.size();
 	int P_num = Lists.cutting_strip_cols.size();
 
@@ -61,8 +60,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
 
 	// KSP only one con
 	IloExpr con_sum(Env_KSP);
-	for (int j = 0; j < J_num; j++)
-	{
+	for (int j = 0; j < J_num; j++) {
 		double ws_val = Lists.all_strip_types_list[j].width;
 		con_sum += ws_val * Vars_Ga[j]; // con: sum (ws_j * G_j) <= W
 	}
@@ -77,12 +75,10 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
 	bool KSP_flag = Cplex_KSP.solve(); // 
 	printf("\n///////////////// KSP_%d CPLEX solving OVER /////////////////\n\n", Values.iter);
 
-	if (KSP_flag == 0)
-	{
+	if (KSP_flag == 0) {
 		printf("\n\t KSP_%d is NOT FEASIBLE\n", Values.iter);
 	}
-	else
-	{
+	else {
 		printf("\n\t KSP_%d is FEASIBLE\n", Values.iter);
 		printf("\n\t Obj = %f\n", Cplex_KSP.getValue(Obj_KSP));
 
@@ -102,15 +98,12 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
 
 		// print KSP new col
 		printf("\n\t KSP_%d new col:\n\n", Values.iter);
-		for (int j = 0; j < J_num + N_num; j++)
-		{
-			if (j < J_num)
-			{
+		for (int j = 0; j < J_num + N_num; j++) {
+			if (j < J_num) {
 				double soln_val = Cplex_KSP.getValue(Vars_Ga[j]);
 				printf("\t row_%d = %f\n", j + 1, soln_val);
 			}
-			else
-			{
+			else {
 				printf("\t row_%d = 0\n", j + 1);
 				Lists.new_cutting_stock_col.push_back(0);
 			}
@@ -160,8 +153,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
 						{
 							temp_col.push_back(-1); // used
 						}
-						else
-						{
+						else {
 							temp_col.push_back(0); // not used
 						}
 					}
@@ -183,15 +175,13 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
 
 					cout << endl;
 				}
-				else
-				{
+				else {
 					printf("\n\t KSP_%d_PSP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
 						Values.iter, k + 1, Values.ISP_obj_val, k + 1, a_val);
 				}
 			}
 
-			if (feasible_flag == 0)
-			{
+			if (feasible_flag == 0) {
 				printf("\n\t KSP_%d_PSP has no new col \n\n", Values.iter);
 				printf("\n\t Column Generation loop break\n");
 
@@ -214,8 +204,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists)
 	return loop_continue_flag; // 函数最终的返回值
 }
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists)
-{
+void SolveStripSubProblem(All_Values& Values, All_Lists& Lists) {
 	int all_cols_num = Lists.model_matrix.size();
 
 	int strip_types_num = Values.strip_types_num;
@@ -271,25 +260,21 @@ void SolveStripSubProblem(All_Values& Values, All_Lists& Lists)
 	bool ISP_flag = Cplex_PSP.solve(); // 求解ISP
 	printf("\n///////////////// KSP_%d_PSP CPLEX solving OVER /////////////////\n\n", Values.iter);
 
-	if (ISP_flag == 0)
-	{
+	if (ISP_flag == 0) {
 		printf("\n\t KSP_%d_PSP is NOT FEASIBLE\n", Values.iter);
 	}
-	else
-	{
+	else {
 		printf("\n\t KSP_%d_PSP is FEASIBLE\n", Values.iter);
 
 		printf("\n\t Obj = %f\n", Cplex_PSP.getValue(Obj_PSP));
 		Values.ISP_obj_val = Cplex_PSP.getValue(Obj_PSP);
 
-		for (int j = 0; j < J_num; j++)
-		{
+		for (int j = 0; j < J_num; j++) {
 			Lists.ISP_new_col.push_back(-1);
 		}
 
 		printf("\n\t KSP_%d_PSP VARS:\n\n", Values.iter);
-		for (int i = 0; i < N_num; i++)
-		{
+		for (int i = 0; i < N_num; i++) {
 			double soln_val = Cplex_PSP.getValue(Vars_De[i]);
 			printf("\t var_D_%d = %f\n", i + 1, soln_val);
 			Lists.ISP_new_col.push_back(soln_val);

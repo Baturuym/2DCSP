@@ -4,8 +4,7 @@
 using namespace std;
 
 // solve the Root node with CG loop
-void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& root_node)
-{
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) {
 	printf("\n###########################################\n");
 	printf("###########################################\n");
 	printf("################## Root Node #################\n");
@@ -33,29 +32,25 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& ro
 		root_node);
 
 	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
-	if (MP_flag == 1)
-	{		
+	if (MP_flag == 1) {
 		while (1) // Column Generation loop
 		{
 			root_node.iter++; // CG loop iter index++
 
-			if (root_node.iter == 100)
-			{
+			if (root_node.iter == 100) {
 				cout << endl;
 			}
 
 			int SP_flag = SolveStockSubProblem(Values, Lists, root_node); // solve the SP of MP
 
 			// Case 1:
-			if (SP_flag == 0)
-			{
+			if (SP_flag == 0) {
 				// No better reduced cost is get from SP anymore
 				 // break CG loop
 				break;
 			}
 			// Case 2:
-			if (SP_flag == 1)
-			{
+			if (SP_flag == 1) {
 				// Better reduced cost is get from SP
 				// continue CG loop and update MP with the new col from SP
 				// solve the new updated MP

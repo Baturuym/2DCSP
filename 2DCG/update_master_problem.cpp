@@ -11,8 +11,7 @@ void SolveUpdateMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
-{
+	IloNumVarArray& Vars_MP) {
 	int K_num = Lists.cutting_stock_cols.size();
 	int P_num = Lists.cutting_strip_cols.size();
 
@@ -37,13 +36,11 @@ void SolveUpdateMasterProblem(
 	-----------------------------------------------------
 	*/
 
-	while (1)
-	{
+	while (1) {
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = (Obj_MP)(obj_para); // 
 
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			IloNum row_para = Lists.new_cutting_stock_col[row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
@@ -52,7 +49,6 @@ void SolveUpdateMasterProblem(
 		string Y_name = "Y_" + to_string(old_strip_cols_num + 1);
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
-
 		//IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // 
 		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOINT, Y_name.c_str()); // 
 		(Vars_MP).add(Var_Y);
@@ -61,8 +57,7 @@ void SolveUpdateMasterProblem(
 
 		// update vectors
 		vector<double>temp_col;
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			double temp_val = Lists.new_cutting_stock_col[row];
 			temp_col.push_back(temp_val);
 		}
@@ -74,13 +69,11 @@ void SolveUpdateMasterProblem(
 	}
 
 	int new_item_cols_num = Lists.new_cutting_strip_cols.size();
-	for (int col = 0; col < new_item_cols_num; col++)
-	{
+	for (int col = 0; col < new_item_cols_num; col++) {
 		IloNum obj_para = 0; // 
 		IloNumColumn CplexCol = (Obj_MP)(obj_para); // 
 
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			IloNum row_para = Lists.new_cutting_strip_cols[col][row];
 			CplexCol += (Cons_MP)[row](row_para); //
 		}
@@ -89,7 +82,6 @@ void SolveUpdateMasterProblem(
 		string X_name = "X_" + to_string(old_item_cols_num + 1);
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity;  // var UB
-
 		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // 
 		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str()); // 
 		(Vars_MP).add(Var_X);
@@ -98,8 +90,7 @@ void SolveUpdateMasterProblem(
 
 		// update vectors
 		vector<double>temp_col;
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			double temp_val = Lists.new_cutting_strip_cols[col][row];
 			temp_col.push_back(temp_val);
 		}
@@ -119,21 +110,17 @@ void SolveUpdateMasterProblem(
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
 	printf("\n\t Y Solns (stock cutting patterns):\n\n");
-	for (int col = 0; col < K_num; col++)
-	{
+	for (int col = 0; col < K_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			Y_fsb_num++;
 			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 		}
 	}
 	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
-	for (int col = K_num; col < K_num + P_num; col++)
-	{
+	for (int col = K_num; col < K_num + P_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			X_fsb_num++;
 			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
@@ -142,18 +129,16 @@ void SolveUpdateMasterProblem(
 	Lists.dual_prices_list.clear();
 
 	printf("\n\t strip_type cons dual prices: \n\n");
-	for (int row = 0; row < J_num; row++)
-	{
+	for (int row = 0; row < J_num; row++) {
 		double dual_val = MP_cplex.getDual(Cons_MP[row]);
-		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		Lists.dual_prices_list.push_back(dual_val);
+		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 	}
 	printf("\n\t item_type cons dual prices: \n\n");
-	for (int row = J_num; row < J_num + N_num; row++)
-	{
+	for (int row = J_num; row < J_num + N_num; row++) {
 		double dual_val = MP_cplex.getDual(Cons_MP[row]);
-		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		Lists.dual_prices_list.push_back(dual_val);
+		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 	}
 
 	printf("\n\t MP-%d:\n", Values.iter);
@@ -173,8 +158,7 @@ void SolveFinalMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
-{
+	IloNumVarArray& Vars_MP) {
 	int K_num = Lists.cutting_stock_cols.size();
 	int P_num = Lists.cutting_strip_cols.size();
 
@@ -194,22 +178,17 @@ void SolveFinalMasterProblem(
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
 	printf("\n\t Y Solns (stock cutting patterns):\n\n");
-	for (int col = 0; col < K_num; col++)
-	{
+	for (int col = 0; col < K_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			Y_fsb_num++;
 			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 		}
 	}
-
 	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
-	for (int col = K_num; col < K_num + P_num; col++)
-	{
+	for (int col = K_num; col < K_num + P_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			X_fsb_num++;
 			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 

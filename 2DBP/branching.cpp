@@ -4,8 +4,7 @@
 using namespace std;
 
 // judge the integerity of the Node_Stc, and find the branch var
-int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
-{
+int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
 	// 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int node_int_flag = -1;
 
@@ -14,12 +13,10 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
 
 	node_int_flag = ChooseVarToBranch(Values, Lists, this_node); // branch this Node
 
-	if (this_node.node_pruned_flag == 1)
-	{
+	if (this_node.node_pruned_flag == 1) {
 		tree_search_flag = 1;
 	}
-	else
-	{
+	else {
 		if (node_int_flag == 0)  // NOT ALL non-zero-solns are int in this Node
 		{
 			int var_idx = this_node.var_to_branch_idx;
@@ -47,13 +44,11 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
 				}
 				else // other Nodes with all int-solns
 				{
-					if (this_node.node_lower_bound < Values.tree_optimal_lower_bound)
-					{
+					if (this_node.node_lower_bound < Values.tree_optimal_lower_bound) {
 						Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 						printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 					}
-					if (this_node.node_lower_bound >= Values.tree_optimal_lower_bound)
-					{
+					if (this_node.node_lower_bound >= Values.tree_optimal_lower_bound) {
 						this_node.node_pruned_flag = 1;
 						printf("\n\t Node_%d has to be pruned\n", this_node.index);
 					}
@@ -73,18 +68,15 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
 }
 
 
-int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
-{
+int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& this_node) {
 	int node_int_flag = 1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	double soln_val;
 
 	// find the var-to-branch of this Node
 	int all_solns_num = this_node.all_solns_val_list.size();
-	for (int col = 0; col < all_solns_num; col++)
-	{
+	for (int col = 0; col < all_solns_num; col++) {
 		soln_val = this_node.all_solns_val_list[col];
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			int soln_int_val = int(soln_val); // judge the integerity
 			if (soln_int_val != soln_val) // not an integer
 			{

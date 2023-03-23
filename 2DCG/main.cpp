@@ -4,8 +4,7 @@
 #include "2DCG.h"
 using namespace std;
 
-int main()
-{
+int main() {
 	All_Values Values;
 	All_Lists Lists;
 

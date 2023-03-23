@@ -4,14 +4,12 @@
 #include "2DCG.h"
 using namespace std;
 
-void OutPutResults(All_Values& Values, All_Lists& Lists)
-{
+void OutPutResults(All_Values& Values, All_Lists& Lists) {
 	int stocks_num = Lists.occupied_stocks_list.size();
 	int items_num = Lists.occupied_items_list.size();
 	int strips_num = Lists.all_strips_list.size();
 
-	for (int pos = 0; pos < stocks_num; pos++)
-	{
+	for (int pos = 0; pos < stocks_num; pos++) {
 		int LL = Lists.occupied_stocks_list[0].length;
 		int WW = Lists.occupied_stocks_list[0].width;
 
@@ -22,10 +20,8 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 		printf("\t%d\t0\n", LL);
 
 		printf("\n\tSTOCK_%d, Stripes:\n", Lists.occupied_stocks_list[pos].stock_idx);
-		for (size_t i = 0; i < strips_num; i++)
-		{
-			if (Lists.all_strips_list[i].stock_idx == pos)
-			{
+		for (size_t i = 0; i < strips_num; i++) {
+			if (Lists.all_strips_list[i].stock_idx == pos) {
 				int X = Lists.all_strips_list[i].pos_x;
 				int Y = Lists.all_strips_list[i].pos_y;
 				int L = Lists.all_strips_list[i].length;
@@ -41,10 +37,8 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 		}
 
 		printf("\n\tSTOCK_%d, Item:\n", Lists.occupied_stocks_list[pos].stock_idx);
-		for (size_t i = 0; i < items_num; i++)
-		{
-			if (Lists.occupied_items_list[i].stock_idx == pos)
-			{
+		for (size_t i = 0; i < items_num; i++) {
+			if (Lists.occupied_items_list[i].stock_idx == pos) {
 				int X = Lists.occupied_items_list[i].pos_x;
 				int Y = Lists.occupied_items_list[i].pos_y;
 				int L = Lists.occupied_items_list[i].length;
@@ -65,8 +59,7 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 	ofstream f_out;//输出文件
 
 	// 输出结果信息到txt文件，用于画图
-	for (int pos = 0; pos < stocks_num; pos++)
-	{
+	for (int pos = 0; pos < stocks_num; pos++) {
 		s_out.str("");
 		s_out << "D:/CuttingTXT/Stock_" << pos << ".txt";
 		out_str = s_out.str();
@@ -77,21 +70,19 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 
 		f_out << 0 << "\t" << 0 << "\t" << "x" << endl;
 		f_out << 0 << "\t" << WW << "\t" << "x" << endl;
-		f_out <<LL << "\t" <<WW << "\t" << "x" << endl;
-		f_out <<LL << "\t" << 0 << "\t" << "x" << endl;
+		f_out << LL << "\t" << WW << "\t" << "x" << endl;
+		f_out << LL << "\t" << 0 << "\t" << "x" << endl;
 
 		// 输出母板s中子板信息
-		for (size_t i = 0; i < items_num; i++)
-		{
-			if (Lists.occupied_items_list[i].stock_idx == pos)
-			{
+		for (size_t i = 0; i < items_num; i++) {
+			if (Lists.occupied_items_list[i].stock_idx == pos) {
 				int X = Lists.occupied_items_list[i].pos_x;
 				int Y = Lists.occupied_items_list[i].pos_y;
 				int L = Lists.occupied_items_list[i].length;
 				int W = Lists.occupied_items_list[i].width;
 				int item_type_idx = Lists.occupied_items_list[i].item_type_idx;
 
-				f_out << X << "\t" << Y << "\t" <<"I" << item_type_idx << endl;
+				f_out << X << "\t" << Y << "\t" << "I" << item_type_idx << endl;
 				f_out << X << "\t" << Y + W << "\t" << "I" << item_type_idx << endl;
 				f_out << X + L << "\t" << Y + W << "\t" << "I" << item_type_idx << endl;
 				f_out << X + L << "\t" << Y << "\t" << "I" << item_type_idx << endl;
@@ -99,10 +90,8 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 		}
 
 		// 输出母板s中板条信息
-		for (size_t i = 0; i < strips_num; i++)
-		{
-			if (Lists.all_strips_list[i].stock_idx == pos)
-			{
+		for (size_t i = 0; i < strips_num; i++) {
+			if (Lists.all_strips_list[i].stock_idx == pos) {
 				int X = Lists.all_strips_list[i].pos_x;
 				int Y = Lists.all_strips_list[i].pos_y;
 				int L = Lists.all_strips_list[i].length;
@@ -110,7 +99,7 @@ void OutPutResults(All_Values& Values, All_Lists& Lists)
 				int strip_type_idx = Lists.all_strips_list[i].strip_type_idx;
 
 				f_out << X << "\t" << Y << "\t" << "S" << strip_type_idx << endl;
-				f_out << X << "\t" << Y +W << "\t" << "S" << strip_type_idx << endl;
+				f_out << X << "\t" << Y + W << "\t" << "S" << strip_type_idx << endl;
 				f_out << X + L << "\t" << Y + W << "\t" << "S" << strip_type_idx << endl;
 				f_out << X + L << "\t" << Y << "\t" << "S" << strip_type_idx << endl;
 			}

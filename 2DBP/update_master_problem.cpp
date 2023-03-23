@@ -12,8 +12,7 @@ void SolveUpdateMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node_Stc& this_node)
-{
+	Node_Stc& this_node) {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
 
@@ -38,14 +37,12 @@ void SolveUpdateMasterProblem(
 	-----------------------------------------------------
 	*/
 
-	while (1)
-	{
+	while (1) {
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = (Obj_MP)(obj_para); // 
 		vector<double>temp_col;
 
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			IloNum row_para = this_node.new_cutting_stock_col[row];
 			CplexCol += (Cons_MP)[row](row_para); //
 			temp_col.push_back(row_para);
@@ -68,13 +65,11 @@ void SolveUpdateMasterProblem(
 	}
 
 	int new_item_cols_num = this_node.new_cutting_strip_cols.size();
-	for (int col = 0; col < new_item_cols_num; col++)
-	{
+	for (int col = 0; col < new_item_cols_num; col++) {
 		IloNum obj_para = 0; // 
 		IloNumColumn CplexCol = (Obj_MP)(obj_para); // 
 		vector<double>temp_col;
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			IloNum row_para = this_node.new_cutting_strip_cols[col][row];
 			CplexCol += (Cons_MP)[row](row_para); //
 			temp_col.push_back(row_para);
@@ -103,21 +98,17 @@ void SolveUpdateMasterProblem(
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
 	printf("\n\t Y Solns (stock cutting patterns):\n\n");
-	for (int col = 0; col < K_num; col++)
-	{
+	for (int col = 0; col < K_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			Y_fsb_num++;
 			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 		}
 	}
 	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
-	for (int col = K_num; col < K_num + P_num; col++)
-	{
+	for (int col = K_num; col < K_num + P_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			X_fsb_num++;
 			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
@@ -126,15 +117,13 @@ void SolveUpdateMasterProblem(
 	this_node.dual_prices_list.clear();
 
 	printf("\n\t strip_type cons dual prices: \n\n");
-	for (int row = 0; row < J_num; row++)
-	{
+	for (int row = 0; row < J_num; row++) {
 		double dual_val = MP_cplex.getDual(Cons_MP[row]);
 		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		this_node.dual_prices_list.push_back(dual_val);
 	}
 	printf("\n\t item_type cons dual prices: \n\n");
-	for (int row = J_num; row < J_num + N_num; row++)
-	{
+	for (int row = J_num; row < J_num + N_num; row++) {
 		double dual_val = MP_cplex.getDual(Cons_MP[row]);
 		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		this_node.dual_prices_list.push_back(dual_val);
@@ -157,8 +146,7 @@ void SolveFinalMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node_Stc& this_node)
-{
+	Node_Stc& this_node) {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
 
@@ -194,21 +182,17 @@ void SolveFinalMasterProblem(
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
 	printf("\n\t Y Solns (stock cutting patterns):\n\n");
-	for (int col = 0; col < K_num; col++)
-	{
+	for (int col = 0; col < K_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			Y_fsb_num++;
 			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 		}
 	}
 	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
-	for (int col = K_num; col < K_num + P_num; col++)
-	{
+	for (int col = K_num; col < K_num + P_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
-		{
+		if (soln_val > 0) {
 			X_fsb_num++;
 			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
@@ -218,8 +202,7 @@ void SolveFinalMasterProblem(
 	int branched_cols_num = this_node.branched_int_val_list.size();
 	int var_idx = -1;
 	double var_int_val = -1;
-	for (int k = 0; k < branched_cols_num; k++)
-	{
+	for (int k = 0; k < branched_cols_num; k++) {
 		var_idx = this_node.branched_idx_list[k] + 1;
 		var_int_val = this_node.branched_int_val_list[k];
 		printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);

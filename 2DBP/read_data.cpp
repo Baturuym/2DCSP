@@ -4,20 +4,17 @@
 using namespace std;
 
 
-void SplitString(const string& line_string, vector<string>& string_list, const string& data_string)
-{
+void SplitString(const string& line_string, vector<string>& string_list, const string& data_string) {
 	string::size_type pos1, pos2;
 	pos2 = line_string.find(data_string);
 	pos1 = 0;
 	string_list.clear();
-	while (string::npos != pos2)
-	{
+	while (string::npos != pos2) {
 		string_list.push_back(line_string.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + data_string.size();
 		pos2 = line_string.find(data_string, pos1);
 	}
-	if (pos1 != line_string.length())
-	{
+	if (pos1 != line_string.length()) {
 		string_list.push_back(line_string.substr(pos1));
 	}
 }
@@ -37,8 +34,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 
 	ifstream fin(in_str.c_str());
 
-	if (fin)
-	{
+	if (fin) {
 		getline(fin, line);
 		SplitString(line, data_inline, "\t"); // 第1行
 		Values.stocks_num = atoi(data_inline[0].c_str()); // 第1行第1位：母板数量
@@ -54,8 +50,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 		Values.stock_length = atoi(data_inline[0].c_str()); // 母板长度
 		Values.stock_width = atoi(data_inline[1].c_str()); // 母板宽度
 
-		for (int i = 0; i < Values.stocks_num; i++)
-		{
+		for (int i = 0; i < Values.stocks_num; i++) {
 			Stock_Stc this_stock;
 			this_stock.length = Values.stock_length;
 			this_stock.width = Values.stock_width;
@@ -105,12 +100,9 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 	// 所有子板按照宽度从宽到窄排序
 	Item_Stc  VP;
 	int all_items_num = Lists.all_items_list.size();
-	for (int i = 0; i < all_items_num - 1; i++)
-	{
-		for (int j = i + 1; j < all_items_num; j++)
-		{
-			if (Lists.all_items_list[i].width < Lists.all_items_list[j].width)
-			{
+	for (int i = 0; i < all_items_num - 1; i++) {
+		for (int j = i + 1; j < all_items_num; j++) {
+			if (Lists.all_items_list[i].width < Lists.all_items_list[j].width) {
 				VP = Lists.all_items_list[i];
 				Lists.all_items_list[i] = Lists.all_items_list[j];
 				Lists.all_items_list[j] = VP;

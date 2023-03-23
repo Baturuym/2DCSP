@@ -16,8 +16,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 	int strip_pattern = 0;
 
 #pragma region
-	while (Values.Finish == false)
-	{
+	while (Values.Finish == false) {
 		// 初始化新母板
 		Lists.all_stocks_list.erase(Lists.all_stocks_list.begin()); // 母板池中除去母板0
 
@@ -31,8 +30,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 		new_stock.pos_y = 0; // 
 
 		// Init all strip_types in each stock
-		for (int k = 0; k < strip_types_num; k++)
-		{
+		for (int k = 0; k < strip_types_num; k++) {
 			Strip_Type_Stc this_strip_type;
 			this_strip_type.strip_type_idx = k + 1;
 			new_stock.strip_types_list.push_back(this_strip_type);
@@ -51,13 +49,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 		stock_remain.occupied = 0;
 
 		int all_items_num = Lists.all_items_list.size();
-		for (int j = 0; j < all_items_num; j++)
-		{
+		for (int j = 0; j < all_items_num; j++) {
 			// 子板 j 能不能放入被切母板剩下的区域
 			if (Lists.all_items_list[j].length <= stock_remain.length
 				&& Lists.all_items_list[j].width <= stock_remain.width
-				&& Lists.all_items_list[j].occupied == 0)
-			{
+				&& Lists.all_items_list[j].occupied == 0) {
 				// Init first item in a this_strip, though may not use them all
 				Item_Stc first_item;
 				Lists.all_items_list[j].occupied = 1;
@@ -93,8 +89,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				new_strip.items_in_strip_list.push_back(first_item); // a this_strip's first item defined this this_strip
 
 				// Init all item_types in each this_strip, though may not use them all
-				for (int k = 0; k < item_types_num; k++)
-				{
+				for (int k = 0; k < item_types_num; k++) {
 					Item_Type_Stc this_item_type;
 					this_item_type.item_type_idx = k + 1;
 					new_strip.item_types_list.push_back(this_item_type);
@@ -118,13 +113,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 				// 在第一个子板的右侧区域，即中间板内部继续填充子板
 				// 直到当前中间板再也无法放入子板为止
-				for (int m = 0; m < all_items_num; m++)
-				{
+				for (int m = 0; m < all_items_num; m++) {
 					// 如果当前子板能够放入第一个子板右侧区域：
 					if (Lists.all_items_list[m].length <= first_item_right_side.length
 						&& Lists.all_items_list[m].width <= first_item_right_side.width
-						&& Lists.all_items_list[m].occupied == 0)
-					{
+						&& Lists.all_items_list[m].occupied == 0) {
 						// 新的子板放入中间板
 						Item_Stc new_item;
 						Lists.all_items_list[m].occupied = 1;
@@ -165,8 +158,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				}
 				if (all_strips_num != 0) // 第一个中间板之后其他中间板
 				{
-					for (int s = 0; s < all_strips_num; s++)
-					{
+					for (int s = 0; s < all_strips_num; s++) {
 						//printf("新中间板%d与中间板%d做对比\n", new_strip.index,s);
 						int cnt01 = 0;
 						int cnt02 = 0;
@@ -219,13 +211,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				// 使用的子板总数
 				int occupied_items_num = 0;
 				int all_items_num = Lists.all_items_list.size();
-				for (int k = 0; k < all_items_num; k++)
-				{
+				for (int k = 0; k < all_items_num; k++) {
 					occupied_items_num += Lists.all_items_list[k].occupied;
 				}
 				// 如果所有子板都被使用了
-				if (occupied_items_num == all_items_num)
-				{
+				if (occupied_items_num == all_items_num) {
 					Values.Finish = true;
 				}
 			}
@@ -234,35 +224,29 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 		//********计算母板总切割损耗成本********//
 		int strip_total_cut_distance = 0;
 		int strips_num_in_stock = new_stock.strips_list.size();
-		for (int j = 0; j < strips_num_in_stock; j++)
-		{
+		for (int j = 0; j < strips_num_in_stock; j++) {
 			Strip_Stc this_strip = new_stock.strips_list[j];
 
 			int item_total_cut_distance = 0;
 			int items_num_in_strip = this_strip.items_in_strip_list.size();
-			for (int k = 0; k < items_num_in_strip; k++)
-			{
+			for (int k = 0; k < items_num_in_strip; k++) {
 				Item_Stc this_item = this_strip.items_in_strip_list[k];
 
-				if (this_item.width < this_strip.width)
-				{
+				if (this_item.width < this_strip.width) {
 					this_item.cutting_distance = this_item.length + this_item.width;
 				}
-				if (this_item.width == this_strip.width)
-				{
+				if (this_item.width == this_strip.width) {
 					this_item.cutting_distance = this_item.width;
 				}
 
 				item_total_cut_distance = item_total_cut_distance + this_item.cutting_distance;
 			}
 
-			if (this_strip.pos_x + this_strip.width < new_stock.pos_x + new_stock.width)
-			{
+			if (this_strip.pos_x + this_strip.width < new_stock.pos_x + new_stock.width) {
 				this_strip.cutting_distance = item_total_cut_distance + this_strip.length;
 				this_strip.material_cutting_loss = this_strip.cutting_distance * Values.unit_cut_loss;
 			}
-			if (this_strip.pos_x + this_strip.width == new_stock.pos_x + new_stock.width)
-			{
+			if (this_strip.pos_x + this_strip.width == new_stock.pos_x + new_stock.width) {
 				this_strip.cutting_distance = item_total_cut_distance;
 				this_strip.material_cutting_loss = this_strip.cutting_distance * Values.unit_cut_loss;
 			}
@@ -275,14 +259,12 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 		//********计算母板总面积浪费成本********//
 		int strip_total_waste_area = 0;
-		for (int j = 0; j < strips_num_in_stock; j++)
-		{
+		for (int j = 0; j < strips_num_in_stock; j++) {
 			Strip_Stc this_strip = new_stock.strips_list[j];
 
 			int item_total_used_area = 0;
 			int items_num_in_strip = this_strip.items_in_strip_list.size();
-			for (int k = 0; k < items_num_in_strip; k++)
-			{
+			for (int k = 0; k < items_num_in_strip; k++) {
 				item_total_used_area = item_total_used_area + this_strip.items_in_strip_list[k].area;
 			}
 
@@ -305,8 +287,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 		if (occupied_stocks_num != 0) // 第一个中间板之后其他母板
 		{
-			for (int s = 0; s < occupied_stocks_num; s++)
-			{
+			for (int s = 0; s < occupied_stocks_num; s++) {
 				int cnt01 = 0;
 				int cnt02 = 0;
 				int cnt03 = 0;
@@ -367,34 +348,27 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 	int N_num = item_types_num;
 
 	// Init model matrix
-	for (int col = 0; col < K_num + P_num; col++)
-	{
+	for (int col = 0; col < K_num + P_num; col++) {
 		vector<double>temp_col;
-		for (int row = 0; row < J_num + N_num; row++)
-		{
+		for (int row = 0; row < J_num + N_num; row++) {
 			// Matrix C & Matrix 0
-			if (col < K_num)
-			{
+			if (col < K_num) {
 				// 1. Matrix C
-				if (row < J_num)
-				{
+				if (row < J_num) {
 					double temp_val =
 						root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
 					temp_col.push_back(temp_val);
 				}
 				// 2. Matrix 0
-				if (row >= J_num)
-				{
+				if (row >= J_num) {
 					double temp_val = 0; //
 					temp_col.push_back(temp_val);
 				}
 			}
 			// Matrix B & Matrix D
-			if (col >= K_num)
-			{
+			if (col >= K_num) {
 				// 3. Matrix D
-				if (row < J_num)
-				{
+				if (row < J_num) {
 					int col_pos = col - K_num;
 					int item_type_idx = row + 1;
 					int strip_type_idx = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
@@ -411,8 +385,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 				}
 				// 4.Matrix B
-				if (row >= J_num)
-				{
+				if (row >= J_num) {
 					int col_pos = col - K_num;
 					int row_pos = row - J_num;
 					double temp_val =
@@ -427,21 +400,17 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 	cout << endl;
 
-	for (int col = 0; col < K_num; col++)
-	{
+	for (int col = 0; col < K_num; col++) {
 		vector<double>temp_col;
-		for (int row = 0; row < J_num + N_num; row++)
-		{
+		for (int row = 0; row < J_num + N_num; row++) {
 			// 1. Matrix C
-			if (row < J_num)
-			{
+			if (row < J_num) {
 				double temp_val =
 					root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // 系数为中间板种类使用次数
 				temp_col.push_back(temp_val);
 			}
 			// 2. Matrix 0
-			if (row >= J_num)
-			{
+			if (row >= J_num) {
 				double temp_val = 0; //
 				temp_col.push_back(temp_val);
 			}
@@ -452,14 +421,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 
 	cout << endl;
 
-	for (int col = K_num; col < K_num + P_num; col++)
-	{
+	for (int col = K_num; col < K_num + P_num; col++) {
 		vector<double>temp_col;
-		for (int row = 0; row < J_num + N_num; row++)
-		{
+		for (int row = 0; row < J_num + N_num; row++) {
 			// 3. Matrix D
-			if (row < J_num)
-			{
+			if (row < J_num) {
 				int col_pos = col - K_num;
 				int item_type_index = row + 1;
 				int strip_type_index = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
@@ -475,8 +441,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 				}
 			}
 			// 4.Matrix B
-			if (row >= J_num)
-			{
+			if (row >= J_num) {
 				int col_pos = col - K_num;
 				int row_pos = row - J_num;
 				double temp_val =
@@ -488,8 +453,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node) 
 		root_node.cutting_strip_cols.push_back(temp_col); // 第二阶段列
 	}
 
-	for (int k = 0; k < item_types_num; k++)
-	{
+	for (int k = 0; k < item_types_num; k++) {
 		Strip_Type_Stc temp_stp;
 		temp_stp.width = Lists.all_item_types_list[k].width;
 		temp_stp.length = Values.stock_length;
