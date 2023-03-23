@@ -6,11 +6,11 @@ using namespace std;
 // solve the Root node with CG loop
 void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
-	printf("\n##########################################################\n");
-	printf("##########################################################\n");
-	printf("####################### ROOT Node ######################\n");
-	printf("##########################################################\n");
-	printf("##########################################################\n\n");
+	printf("\n###########################################\n");
+	printf("###########################################\n");
+	printf("################## ROOT Node #################\n");
+	printf("###########################################\n");
+	printf("###########################################\n\n");
 
 	// Init CPLEX
 	IloEnv Env_MP; // Init environment
@@ -44,7 +44,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 				cout << endl;
 			}
 
-			int SP_flag = SolveOuterSubProblem(Values, Lists, root_node); // solve the SP of MP
+			int SP_flag = SolveStockSubProblem(Values, Lists, root_node); // solve the SP of MP
 
 			// Case 1:
 			if (SP_flag == 0)

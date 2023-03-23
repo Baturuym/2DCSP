@@ -37,7 +37,7 @@ void NewNodeColumnGeneration(
 		{
 			this_node.iter++;
 
-			int SP_flag = SolveOuterSubProblem(Values, Lists, this_node);
+			int SP_flag = SolveStockSubProblem(Values, Lists, this_node);
 
 			if (SP_flag == 0)
 			{

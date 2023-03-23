@@ -154,23 +154,24 @@ bool SolveRootNodeFirstMasterProblem(
 		for (int row = 0; row < J_num; row++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
-			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
+			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 		printf("\n\t item_type cons dual prices: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++)
 		{
-			double dual_val = MP_cplex.getDual(Cons_MP[row]);
-			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
+			double dual_val = MP_cplex.getDual(Cons_MP[row]);			
 			root_node.dual_prices_list.push_back(dual_val);
+			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 
 		printf("\n\t Node_%d MP-1:\n", root_node.index);
 		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-		printf("\n\t NUM of all solns = %d", K_num + P_num);
-		printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
-		printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
-		printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
+		printf("\n\t Number of all solns = %d", K_num + P_num);
+		printf("\n\t Number of all fsb-solns = %d", Y_fsb_num + X_fsb_num);
+		printf("\n\t Number of Y fsb-solns = %d", Y_fsb_num);
+		printf("\n\t Number of X fsb-solns = %d", X_fsb_num);
+
 	}
 	cout << endl;
 

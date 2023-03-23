@@ -4,15 +4,15 @@
 #include "2DBP.h"
 using namespace std;
 
-int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
+int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 {
 	int parent_branch_flag = -1;
 	int pos = -1;
-	int nodes_num = Lists.all_nodes_list.size();
+	int all_nodes_num = Lists.all_nodes_list.size();
 
 	if (Values.branch_status == 3) // search for a previously generated unbranched unpruned Node
 	{
-		for (int k = 0; k < nodes_num; k++)
+		for (int k = 0; k < all_nodes_num; k++)
 		{
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 &&
 				Lists.all_nodes_list[k].node_pruned_flag != 1) // unbranched unpruned
@@ -38,11 +38,11 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		{
 			if (Values.branch_status == 1) // the the Left Node of Root Node
 			{
-				pos = nodes_num - 1; // sub left index = parent index + 1
+				pos = all_nodes_num - 1; // sub left index = parent index + 1
 			}
 			if (Values.branch_status == 2) // the the Right Node of Root Node
 			{
-				pos = nodes_num - 2; // sub right index = parent index + 2
+				pos = all_nodes_num - 2; // sub right index = parent index + 2
 			}
 		}
 
@@ -52,11 +52,11 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 			{
 				if (Values.branch_status == 1)
 				{
-					pos = nodes_num - 2; // sub left index = parent index + 2
+					pos = all_nodes_num - 2; // sub left index = parent index + 2
 				}
 				if (Values.branch_status == 2)
 				{
-					pos = nodes_num - 3;  // sub right index = parent index + 3
+					pos = all_nodes_num - 3;  // sub right index = parent index + 3
 				}
 			}
 
@@ -64,11 +64,11 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 			{
 				if (Values.branch_status == 1)
 				{
-					pos = nodes_num - 1; // sub left index = parent index + 1
+					pos = all_nodes_num - 1; // sub left index = parent index + 1
 				}
 				if (Values.branch_status == 2)
 				{
-					pos = nodes_num - 2; // sub right index = parent index + 2
+					pos = all_nodes_num - 2; // sub right index = parent index + 2
 				}
 			}
 		}
@@ -85,8 +85,10 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 	{
 		parent_branch_flag = 1;
 
-		Lists.all_nodes_list[pos].node_branched_flag = 1;
+		parent_node = Lists.all_nodes_list[pos];
+		parent_node.node_lower_bound = 1;
 
+		/*
 		parent_node.index = Lists.all_nodes_list[pos].index;
 		parent_node.node_lower_bound = Lists.all_nodes_list[pos].node_lower_bound;
 
@@ -155,6 +157,7 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 				parent_node.branched_int_val_list.push_back(temp_val);
 			}
 		}
+		*/
 
 		printf("\n\t The Node to branch is Node_%d\n", parent_node.index);
 	}
@@ -165,9 +168,9 @@ int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node)
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&parent_node)
 {
-	int nodes_num = Lists.all_nodes_list.size();
+	int all_nodes_num = Lists.all_nodes_list.size();
 
-	new_node.index = nodes_num + 1;
+	new_node.index = all_nodes_num + 1;
 	new_node.node_lower_bound = -1;
 
 	if (Values.branch_status == 1)
@@ -183,17 +186,18 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	new_node.parent_branching_flag = Values.branch_status;
 	new_node.parent_var_to_branch_val = parent_node.var_to_branch_soln_val;
 
-	printf("\n##########################################################\n");
-	printf("##########################################################\n");
-	printf("####################### NEW NODE_%d #######################\n", new_node.index);
-	printf("##########################################################\n");
-	printf("##########################################################\n\n");
+	printf("\n###########################################\n");
+	printf("###########################################\n");
+	printf("################## NEW NODE_%d ##################\n", new_node.index);
+	printf("###########################################\n");
+	printf("###########################################\n\n");
 
 	new_node.var_to_branch_idx = -1;
 	new_node.var_to_branch_soln_val = -1;
 	new_node.var_to_branch_int_val_floor = -1;
 	new_node.var_to_branch_int_val_ceil = -1;
 	new_node.var_to_branch_int_val_final = -1;
+
 	// Init model matrix of the Node-to-branch
 	int all_cols_num = parent_node.model_matrix.size();
 	int all_rows_num = parent_node.model_matrix[0].size();
@@ -266,14 +270,20 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	
 	// Clear all other lists to init them
 	new_node.all_solns_val_list.clear();
+	new_node.dual_prices_list.clear();
+
+	new_node.new_cutting_stock_col.clear();
+	new_node.new_cutting_strip_cols.clear();
+
+	/*
+	new_node.ISP_one_new_col.clear();
+	new_node.new_col.clear();
+	new_node.new_cols_list.clear();
 	new_node.fsb_solns_val_list.clear();
 	new_node.fsb_solns_idx_list.clear();
 	new_node.int_solns_idx_list.clear();
 	new_node.int_solns_val_list.clear();
-
-	new_node.dual_prices_list.clear();
-	new_node.new_col.clear();
-	//new_node.new_cols_list.clear();
+	*/
 
 	cout << endl;
 }

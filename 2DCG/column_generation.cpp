@@ -19,7 +19,7 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 	{
 		int loop_continue_flag = -1;
 
-		loop_continue_flag = SolveOuterSubProblem(Values, Lists); // 求解子问题
+		loop_continue_flag = SolveStockSubProblem(Values, Lists); // 求解子问题
 
 		// 如果求解SP1和SP2都没有得到负费用列
 		if (loop_continue_flag == 0)

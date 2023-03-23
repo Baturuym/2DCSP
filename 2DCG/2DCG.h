@@ -195,9 +195,9 @@ void SolveFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
-int SolveOuterSubProblem(All_Values& Values, All_Lists& Lists);
+int SolveStockSubProblem(All_Values& Values, All_Lists& Lists);
 
-void SolveInnerSubProblem(All_Values& Values, All_Lists& Lists);
+void SolveStripSubProblem(All_Values& Values, All_Lists& Lists);
 
 // 生成+求解新的主问题
 void SolveUpdateMasterProblem(

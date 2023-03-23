@@ -158,10 +158,10 @@ void SolveUpdateMasterProblem(
 
 	printf("\n\t MP-%d:\n", Values.iter);
 	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n\t NUM of all solns = %d", K_num + P_num);
-	printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
-	printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
-	printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
+	printf("\n\t Number of all solns = %d", K_num + P_num);
+	printf("\n\t Number of Y fsb-solns = %d", Y_fsb_num);
+	printf("\n\t Number of X fsb-solns = %d", X_fsb_num);
+	printf("\n\t Number of all fsb-solns = %d", Y_fsb_num + X_fsb_num);
 
 	cout << endl;
 }
@@ -218,10 +218,10 @@ void SolveFinalMasterProblem(
 
 	printf("\n\t MP-final:\n");
 	printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n\t NUM of all solns = %d", K_num + P_num);
-	printf("\n\t NUM of Y fsb solns = %d", Y_fsb_num);
-	printf("\n\t NUM of X fsb solns = %d", X_fsb_num);
-	printf("\n\t NUM of all fsb solns = %d", Y_fsb_num + X_fsb_num);
+	printf("\n\t Number of all solns = %d", K_num + P_num);
+	printf("\n\t Number of Y fsb-solns = %d", Y_fsb_num);
+	printf("\n\t Number of X fsb-solns = %d", X_fsb_num);
+	printf("\n\t Number of all fsb-solns = %d", Y_fsb_num + X_fsb_num);
 
 	cout << endl;
 }
