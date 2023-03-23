@@ -54,13 +54,13 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 
 		for (int i = 0; i < Values.stocks_num; i++)
 		{
-			StockProperties this_stock;
+			Stock_Stc this_stock;
 			this_stock.length = Values.stock_length;
 			this_stock.width = Values.stock_width;
 			this_stock.area = Values.stock_length * Values.stock_width;
 			this_stock.pos_x = 0;
 			this_stock.pos_y = 0;
-			Lists.stock_pool_list.insert(Lists.stock_pool_list.begin(), this_stock);
+			Lists.all_stocks_list.insert(Lists.all_stocks_list.begin(), this_stock);
 		}
 
 		int item_index = 1;
@@ -74,7 +74,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 			int item_type_demand_num = atoi(data_inline[2].c_str());
 			for (int k = 0; k < item_type_demand_num; k++) // 子板需求量
 			{
-				ItemProperties this_item;
+				Item_Stc this_item;
 				this_item.item_type_idx = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
 				this_item.item_idx = item_index; // 子板序号，从1开始
 				this_item.demand = atoi(data_inline[2].c_str()); // 子板行第3位：子板需求		
@@ -91,7 +91,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 				Values.items_num++;
 			}
 
-			ItemTypeProperties this_item_type;
+			Item_Type_Stc this_item_type;
 			this_item_type.item_type_idx = atoi(data_inline[3].c_str());
 			this_item_type.demand = atoi(data_inline[2].c_str());
 			this_item_type.width = atoi(data_inline[1].c_str());
@@ -101,7 +101,7 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 	}
 
 	// 所有子板按照宽度从宽到窄排序
-	ItemProperties  VP;
+	Item_Stc  VP;
 	int all_items_num = Lists.all_items_list.size();
 	for (int i = 0; i < all_items_num - 1; i++)
 	{

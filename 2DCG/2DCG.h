@@ -24,7 +24,7 @@ using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
-struct ItemTypeProperties
+struct Item_Type_Stc
 {
 	int item_type_idx = -1;
 	double demand = -1;
@@ -34,7 +34,7 @@ struct ItemTypeProperties
 	int this_item_type_num = 0;
 };
 
-struct StripTypeProperties
+struct Strip_Type_Stc
 {
 	int strip_type_idx = -1;
 
@@ -43,13 +43,13 @@ struct StripTypeProperties
 	int this_strip_type_num = 0;
 };
 
-struct StockTypeProperties
+struct Stock_Type_Stc
 {
 	int stock_type_idx = -1;
 	int this_stock_type_num = 0;
 };
 
-struct ItemProperties
+struct Item_Stc
 {
 	int item_idx = -1;
 	int item_type_idx = -1;
@@ -71,14 +71,14 @@ struct ItemProperties
 	int material_cutting_loss = -1;
 };
 
-struct StripProperties
+struct Strip_Stc
 {
 	int strip_idx = -1;
 	int strip_type_idx = -1;
 	int pattern = -1;
 
-	vector<ItemProperties> items_in_strip_list;
-	vector<ItemTypeProperties> item_types_list;
+	vector<Item_Stc> items_in_strip_list;
+	vector<Item_Type_Stc> item_types_list;
 
 	int length = -1;
 	int width = -1;
@@ -96,14 +96,14 @@ struct StripProperties
 	int material_area_loss = -1;
 };
 
-struct StockProperties
+struct Stock_Stc
 {
 	int stock_idx = -1;
 	int stock_type_idx = 0;
 	int pattern = -1;
 
-	vector<StripProperties> strips_list;
-	vector<StripTypeProperties> strip_types_list;
+	vector<Strip_Stc> strips_list;
+	vector<Strip_Type_Stc> strip_types_list;
 
 	int length = -1;
 	int width = -1;
@@ -147,19 +147,19 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<StockProperties> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<StripProperties> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<Stock_Stc> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<Strip_Stc> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
-	vector<ItemTypeProperties> all_item_types_list;
-	vector<StripTypeProperties> all_strip_types_list;
+	vector<Item_Type_Stc> all_item_types_list;
+	vector<Strip_Type_Stc> all_strip_types_list;
 
-	vector<ItemProperties> all_items_list;
-	vector<StripProperties> all_strips_list;
+	vector<Item_Stc> all_items_list;
+	vector<Strip_Stc> all_strips_list;
 
-	vector<StockProperties> occupied_stocks_list;
-	vector<ItemProperties> occupied_items_list;
+	vector<Stock_Stc> occupied_stocks_list;
+	vector<Item_Stc> occupied_items_list;
 
-	vector<StockProperties> stock_pool_list;
+	vector<Stock_Stc> all_stocks_list;
 
 	vector<vector<double>> model_matrix; // 存储系数矩阵的所有列
 	vector<vector<double>> cutting_stock_cols; // 存储第一阶段方案的所有列
@@ -182,7 +182,7 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 void ReadData(All_Values& Values, All_Lists& Lists);
 
-void InitModelMatrix(All_Values& Values, All_Lists& Lists);
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists);
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 

@@ -3,14 +3,14 @@
 #include "2DBP.h"
 using namespace std;
 
-// judge the integerity of the Node, and find the branch var
-int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
-{	
+// judge the integerity of the Node_Stc, and find the branch var
+int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
+{
 	// 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int node_int_flag = -1;
 
 	// 0 -- continue to branch this Node; 1 -- search another generated Node
-	int tree_search_flag = -1; 
+	int tree_search_flag = -1;
 
 	node_int_flag = ChooseVarToBranch(Values, Lists, this_node); // branch this Node
 
@@ -38,9 +38,9 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
 				Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 				printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 			}
-			else // this Node is not Root Node
+			if (this_node.index > 1) // this Node is not Root Node
 			{
-				if (Values.tree_optimal_lower_bound == -1) // this Node is the first Node with all int-solns
+				if (Values.tree_optimal_lower_bound == -1) // this Node is the first Node_Stc with all int-solns
 				{
 					Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 					printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
@@ -52,7 +52,7 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
 						Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 						printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 					}
-					else
+					if (this_node.node_lower_bound >= Values.tree_optimal_lower_bound)
 					{
 						this_node.node_pruned_flag = 1;
 						printf("\n\t Node_%d has to be pruned\n", this_node.index);
@@ -69,11 +69,11 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node)
 	Lists.all_strips_list.clear();
 
 	// 0 -- continue to branch this Node; 1 -- search another generated Node
-	return tree_search_flag; 
+	return tree_search_flag;
 }
 
 
-int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node)
+int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
 {
 	int node_int_flag = 1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	double soln_val;

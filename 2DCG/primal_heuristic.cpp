@@ -4,7 +4,7 @@
 #include "2DCG.h"
 using namespace std;
 
-void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启发式
 {
 	int item_types_num = Values.item_types_num;
 	int strip_types_num = Values.strip_types_num;
@@ -21,12 +21,12 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 	while (Values.Finish == false)
 	{
 		// 初始化新母板
-		Lists.stock_pool_list.erase(Lists.stock_pool_list.begin()); // 母板池中除去母板0
+		Lists.all_stocks_list.erase(Lists.all_stocks_list.begin()); // 母板池中除去母板0
 
 		// Init one stock
-		StockProperties new_stock;
-		new_stock.length = Lists.stock_pool_list[0].length; // 
-		new_stock.width = Lists.stock_pool_list[0].width; // 
+		Stock_Stc new_stock;
+		new_stock.length = Lists.all_stocks_list[0].length; // 
+		new_stock.width = Lists.all_stocks_list[0].width; // 
 		new_stock.area = new_stock.length * new_stock.width; // 
 		new_stock.stock_idx = stock_index; // 
 		new_stock.pos_x = 0; // 
@@ -35,13 +35,13 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 		// Init all strip_types in each stock
 		for (int k = 0; k < strip_types_num; k++)
 		{
-			StripTypeProperties this_strip_type;
+			Strip_Type_Stc this_strip_type;
 			this_strip_type.strip_type_idx = k + 1;
 			new_stock.strip_types_list.push_back(this_strip_type);
 		}
 
 		// Init a new stock
-		ItemProperties stock_remain;
+		Item_Stc stock_remain;
 
 		stock_remain.length = new_stock.length;
 		stock_remain.width = new_stock.width;
@@ -61,7 +61,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				&& Lists.all_items_list[j].occupied == 0)
 			{
 				// Init first item in a this_strip, though may not use them all
-				ItemProperties first_item;
+				Item_Stc first_item;
 				Lists.all_items_list[j].occupied = 1;
 
 				first_item.item_type_idx = Lists.all_items_list[j].item_type_idx;
@@ -81,7 +81,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				Lists.occupied_items_list.push_back(first_item); // 确定的子板放入结果表
 
 				// Init a this_strip acoording to its first item
-				StripProperties new_strip;
+				Strip_Stc new_strip;
 				new_strip.strip_idx = strip_index;
 				new_strip.strip_type_idx = first_item.item_type_idx;
 
@@ -97,7 +97,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				// Init all item_types in each this_strip, though may not use them all
 				for (int k = 0; k < item_types_num; k++)
 				{
-					ItemTypeProperties this_item_type;
+					Item_Type_Stc this_item_type;
 					this_item_type.item_type_idx = k + 1;
 					new_strip.item_types_list.push_back(this_item_type);
 				}
@@ -106,7 +106,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 				new_strip.item_types_list[type_pos].this_item_type_num++;
 
 				// 横向切断式切割后，第一个子板的右侧区域
-				ItemProperties first_item_right_side;
+				Item_Stc first_item_right_side;
 
 				first_item_right_side.length = stock_remain.length - first_item.length; // 区域长度 = 母板长度 - 第一块子板长度
 				first_item_right_side.width = first_item.width; // 区域宽度 = 第一块子板宽度
@@ -128,7 +128,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 						&& Lists.all_items_list[m].occupied == 0)
 					{
 						// 新的子板放入中间板
-						ItemProperties new_item;
+						Item_Stc new_item;
 						Lists.all_items_list[m].occupied = 1;
 
 						new_item.item_type_idx = Lists.all_items_list[m].item_type_idx; // 子板编号
@@ -238,13 +238,13 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 		int strips_num_in_stock = new_stock.strips_list.size();
 		for (int j = 0; j < strips_num_in_stock; j++)
 		{
-			StripProperties this_strip = new_stock.strips_list[j];
+			Strip_Stc this_strip = new_stock.strips_list[j];
 
 			int item_total_cut_distance = 0;
 			int items_num_in_strip = this_strip.items_in_strip_list.size();
 			for (int k = 0; k < items_num_in_strip; k++)
 			{
-				ItemProperties this_item = this_strip.items_in_strip_list[k];
+				Item_Stc this_item = this_strip.items_in_strip_list[k];
 
 				if (this_item.width < this_strip.width)
 				{
@@ -279,7 +279,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 		int strip_total_waste_area = 0;
 		for (int j = 0; j < strips_num_in_stock; j++)
 		{
-			StripProperties this_strip = new_stock.strips_list[j];
+			Strip_Stc this_strip = new_stock.strips_list[j];
 
 			int item_total_used_area = 0;
 			int items_num_in_strip = this_strip.items_in_strip_list.size();
@@ -492,7 +492,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists) // 切断式切割启
 
 	for (int k = 0; k < item_types_num; k++)
 	{
-		StripTypeProperties temp_stc;
+		Strip_Type_Stc temp_stc;
 		temp_stc.width = Lists.all_item_types_list[k].width;
 		temp_stc.length = Values.stock_length;
 

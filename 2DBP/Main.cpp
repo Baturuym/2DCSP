@@ -15,11 +15,11 @@ int main()
 
 	ReadData(Values, Lists);
 
-	Node root_node; // Init Root Node
-	root_node.index = 1; // Node index
+	Node_Stc root_node; // Init Root Node
+	root_node.index = 1; // Node_Stc index
 	Values.branch_status = 0;
 
-	InitModelMatrix(Values, Lists, root_node); // generate Root Node matrix
+	PrimalHeuristic(Values, Lists, root_node); // generate Root Node matrix
 	RootNodeColumnGeneration(Values, Lists, root_node);
 	Values.search_flag = FinishNode(Values, Lists, root_node); // find the branch var of Root Node
 	Lists.all_nodes_list.push_back(root_node);

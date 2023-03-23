@@ -10,10 +10,10 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 
 	while (1)
 	{
-		if (Values.search_flag == 0) // search_flag set to branch current Parent Node
-		{		
-			Node parent_node;
-			int parent_branch_flag= ChooseNodeToBranch(Values, Lists, parent_node); // decide the Node to branch
+		if (Values.search_flag == 0) // search_flag set to branch current Parent Node_Stc
+		{
+			Node_Stc parent_node;
+			int parent_branch_flag = ChooseNodeToBranch(Values, Lists, parent_node); // decide the Node_Stc to branch
 
 			if (parent_branch_flag == 0)
 			{
@@ -23,8 +23,8 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 			}
 			if (parent_branch_flag == 1)
 			{
-				Node new_left_node;
-				Node new_right_node;
+				Node_Stc new_left_node;
+				Node_Stc new_right_node;
 
 				// ATTENTION: always start from the Left Node
 				Values.branch_status = 1;
@@ -32,23 +32,23 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 
 				GenerateNewNode(Values, Lists, new_left_node, parent_node); // set the Left Node
 				NewNodeColumnGeneration(Values, Lists, new_left_node, parent_node); // solve the Left Node with CG loop
-				
+
 				int left_search_flag = FinishNode(Values, Lists, new_left_node); // finish the Left Node
 				Lists.all_nodes_list.push_back(new_left_node);
 
 				// Then the Right Node
 				Values.branch_status = 2;
 				Values.node_num++;
-				
+
 				GenerateNewNode(Values, Lists, new_right_node, parent_node);  // set the Right Node
 				NewNodeColumnGeneration(Values, Lists, new_right_node, parent_node); // solve the Right Node with CG loop
-				
-				int right_search_flag = FinishNode(Values, Lists, new_right_node);  // finish the RightNode
+
+				int right_search_flag = FinishNode(Values, Lists, new_right_node);  // finish the Right Node
 				Lists.all_nodes_list.push_back(new_right_node);
 
 				Values.root_flag = 0; // ATTENTION: 
 
-				// ATTETION: the var-to-branch val of the Parent Node decide which Node to fathom in next while-iter
+				// ATTETION: the var-to-branch val of the Parent Node_Stc decide which Node_Stc to fathom in next while-iter
 				double parent_branch_val = parent_node.var_to_branch_soln_val;
 				if (parent_branch_val <= 1)
 				{
@@ -63,32 +63,31 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 				}
 				if (parent_branch_val > 1)
 				{
-					if (new_left_node.node_lower_bound < new_right_node.node_lower_bound) // choose the Node with better LB to fathom
+					// choose the Node_Stc with better LB to fathom
+					if (new_left_node.node_lower_bound < new_right_node.node_lower_bound)
 					{
 						Values.search_flag = left_search_flag;
-
 						if (Values.search_flag != 1)
 						{
 							Values.fathom_flag = 1; //  fathom the Left Node and branch it in next while-iter
 
-							printf("\n\t Left Node_%d LB %.4f < Right Node_%d LB %.4f \n\n\t continue to fathom RIGHT Node_%d\n",
+							printf("\n\t Left Node_%d LB %.4f < Right Node_%d LB %.4f\n",
 								new_left_node.index, new_left_node.node_lower_bound,
-								new_right_node.index, new_right_node.node_lower_bound,
-								new_right_node.index);
+								new_right_node.index, new_right_node.node_lower_bound);
+							printf("\n\t continue to fathom RIGHT Node_%d\n", new_right_node.index);
 						}
 					}
 					if (new_left_node.node_lower_bound >= new_right_node.node_lower_bound)
 					{
 						Values.search_flag = right_search_flag;
-
 						if (Values.search_flag != 1)
 						{
 							Values.fathom_flag = 2; // fathom_flag set to fathom the Right Node and branch it in next while-iter
 
-							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f \n\n\t continue to fathom RIGHT Node_%d\n",
+							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f\n",
 								new_left_node.index, new_left_node.node_lower_bound,
-								new_right_node.index, new_right_node.node_lower_bound,
-								new_right_node.index);
+								new_right_node.index, new_right_node.node_lower_bound);
+							printf("\n\t continue to fathom RIGHT Node_%d\n", new_right_node.index);
 						}
 					}
 				}

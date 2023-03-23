@@ -4,13 +4,13 @@
 #include "2DBP.h"
 using namespace std;
 
-int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
+int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& parent_node)
 {
 	int parent_branch_flag = -1;
 	int pos = -1;
 	int all_nodes_num = Lists.all_nodes_list.size();
 
-	if (Values.branch_status == 3) // search for a previously generated unbranched unpruned Node
+	if (Values.branch_status == 3) // search for a previously generated unbranched unpruned Node_Stc
 	{
 		for (int k = 0; k < all_nodes_num; k++)
 		{
@@ -32,9 +32,9 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		}
 	}
 
-	if (Values.branch_status != 3) // continue to branch the Parent Node
+	if (Values.branch_status != 3) // continue to branch the Parent Node_Stc
 	{
-		if (Values.root_flag == 1) // the Parent Node is Root Node
+		if (Values.root_flag == 1) // the Parent Node_Stc is Root Node
 		{
 			if (Values.branch_status == 1) // the the Left Node of Root Node
 			{
@@ -46,9 +46,9 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 			}
 		}
 
-		if (Values.root_flag != 1) // the Parent Node is not Root Node
+		if (Values.root_flag != 1) // the Parent Node_Stc is not Root Node
 		{
-			if (Values.fathom_flag == 1) // the Parent Node is a Left Node
+			if (Values.fathom_flag == 1) // the Parent Node_Stc is a Left Node
 			{
 				if (Values.branch_status == 1)
 				{
@@ -60,7 +60,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 				}
 			}
 
-			if (Values.fathom_flag == 2) // the Parent Node is a Right Node
+			if (Values.fathom_flag == 2) // the Parent Node_Stc is a Right Node
 			{
 				if (Values.branch_status == 1)
 				{
@@ -79,7 +79,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 	{
 		parent_branch_flag = 0;
 
-		printf("\n\t No Node to branch! \n");
+		printf("\n\t No Node_Stc to branch! \n");
 	}
 	else
 	{
@@ -101,7 +101,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		parent_node.var_to_branch_int_val_floor = Lists.all_nodes_list[pos].var_to_branch_int_val_floor;
 		parent_node.var_to_branch_int_val_ceil = Lists.all_nodes_list[pos].var_to_branch_int_val_ceil;
 
-		// Init model matrix of the Parent Node
+		// Init model matrix of the Parent Node_Stc
 		int all_cols_num = Lists.all_nodes_list[pos].model_matrix.size();
 		int all_rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
 		for (int col = 0; col < all_cols_num; col++) 
@@ -159,14 +159,14 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		}
 		*/
 
-		printf("\n\t The Node to branch is Node_%d\n", parent_node.index);
+		printf("\n\t The Node_Stc to branch is Node_%d\n", parent_node.index);
 	}
 	
 	return parent_branch_flag;
 }
 
 
-void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&parent_node)
+void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node_Stc& new_node, Node_Stc&parent_node)
 {
 	int all_nodes_num = Lists.all_nodes_list.size();
 
@@ -198,7 +198,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	new_node.var_to_branch_int_val_ceil = -1;
 	new_node.var_to_branch_int_val_final = -1;
 
-	// Init model matrix of the Node-to-branch
+	// Init model matrix of the Node_Stc-to-branch
 	int all_cols_num = parent_node.model_matrix.size();
 	int all_rows_num = parent_node.model_matrix[0].size();
 	for (int col = 0; col < all_cols_num; col++)
@@ -236,7 +236,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 		new_node.cutting_strip_cols.push_back(temp_col);
 	}
 
-	// Init branched-vars list and their col-index list of the Node-to-branch
+	// Init branched-vars list and their col-index list of the Node_Stc-to-branch
 	int branched_vars_num = parent_node.branched_idx_list.size();
 	for (int col = 0; col < branched_vars_num; col++)
 	{

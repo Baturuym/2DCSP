@@ -13,7 +13,7 @@ bool SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node& root_node)
+	Node_Stc& root_node)
 {
 
 	int K_num = root_node.cutting_stock_cols.size();
@@ -160,7 +160,7 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n\t item_type cons dual prices: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++)
 		{
-			double dual_val = MP_cplex.getDual(Cons_MP[row]);			
+			double dual_val = MP_cplex.getDual(Cons_MP[row]);
 			root_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}

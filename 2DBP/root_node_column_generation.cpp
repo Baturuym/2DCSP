@@ -4,11 +4,11 @@
 using namespace std;
 
 // solve the Root node with CG loop
-void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node)
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& root_node)
 {
 	printf("\n###########################################\n");
 	printf("###########################################\n");
-	printf("################## ROOT Node #################\n");
+	printf("################## Root Node #################\n");
 	printf("###########################################\n");
 	printf("###########################################\n\n");
 
@@ -71,7 +71,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 			}
 		}
 
-		// solve the last MP to get optimal int-solns and optimal lower bound of the Node
+		// solve the last MP to get optimal int-solns and optimal lower bound of the Node_Stc
 		SolveFinalMasterProblem(
 			Values,
 			Lists,

@@ -36,7 +36,7 @@ using namespace std;
 
 // stock --> strip --> item
 
-struct ItemTypeProperties
+struct Item_Type_Stc
 {
 	int item_type_idx = -1;
 	double demand = -1;
@@ -46,7 +46,7 @@ struct ItemTypeProperties
 	int this_item_type_num = 0;
 };
 
-struct StripTypeProperties
+struct Strip_Type_Stc
 {
 	int strip_type_idx = -1;
 
@@ -55,13 +55,13 @@ struct StripTypeProperties
 	int this_strip_type_num = 0;
 };
 
-struct StockTypeProperties
+struct Stock_Type_Stc
 {
 	int stock_type_idx = -1;
 	int this_stock_type_num = 0;
 };
 
-struct ItemProperties
+struct Item_Stc
 {
 	int item_idx = -1;
 	int item_type_idx = -1;
@@ -83,14 +83,14 @@ struct ItemProperties
 	int material_cutting_loss = -1;
 };
 
-struct StripProperties
+struct Strip_Stc
 {
 	int strip_idx = -1;
 	int strip_type_idx = -1;
 	int pattern = -1;
 
-	vector<ItemProperties> items_in_strip_list;
-	vector<ItemTypeProperties> item_types_list;
+	vector<Item_Stc> items_in_strip_list;
+	vector<Item_Type_Stc> item_types_list;
 
 	int length = -1;
 	int width = -1;
@@ -108,14 +108,14 @@ struct StripProperties
 	int material_area_loss = -1;
 };
 
-struct StockProperties
+struct Stock_Stc
 {
 	int stock_idx = -1;
 	int stock_type_idx = 0;
 	int pattern = -1;
 
-	vector<StripProperties> strips_list;
-	vector<StripTypeProperties> strip_types_list;
+	vector<Strip_Stc> strips_list;
+	vector<Strip_Type_Stc> strip_types_list;
 
 	int length = -1;
 	int width = -1;
@@ -131,29 +131,29 @@ struct StockProperties
 	int material_area_loss = -1;
 };
 
-// Node
-struct Node
+// Node_Stc
+struct Node_Stc
 {
 	int index = -1;
 
-	// Values of the Parent Node of one Node
+	// Values of the Parent Node_Stc of this Node
 	int parent_index = -1;
 	int parent_branching_flag = -1;
 	double parent_var_to_branch_val = -1;
 
-	// Values of Node status
+	// Values of Node_Stc status
 	double node_lower_bound = -1; // LB of this Node
-	int node_branched_flag = -1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
+	int node_branched_flag = -1; // flag: this Node is the left or the Right Node of its Parent Node_Stc, 1 -- left, 2 -- right
 	int node_pruned_flag = -1; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
 
-	// Values of final branching of one Node
+	// Values of final branching of this Node
 	int var_to_branch_idx = -1; // var-to-branch's col-index of this Node
 	double var_to_branch_soln_val = -1; // var-to-branch's soln-val of this Node
 	double var_to_branch_int_val_floor = -1; // var-to-branch's floored int-val of this Node
 	double var_to_branch_int_val_ceil = -1; // var-to-branch's ceiled int-val of this Node
 	double var_to_branch_int_val_final = -1; // var-to-branch's final int-val (floored or ceiled)
 
-	// Lists of final branching of one Node
+	// Lists of final branching of this Node
 	vector<int> branched_idx_list; // all branched-vars' col-index on the route from this Node to Root Node
 	vector<double> branched_int_val_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
 	vector<double> branched_vars_soln_val_list; // all branched-vars' soln-val on the route from this Node to Root Node
@@ -165,7 +165,7 @@ struct Node
 	//vector<double> int_solns_val_list; // final all int-solns of this Node
 	//vector<int> int_solns_idx_list;  // final col-index of int-solns of this Node
 
-	// Lists of one Column Generation iter of one Node
+	// Lists of one Column Generation iter of this Node
 	int iter = -1;
 	vector<vector<double>> model_matrix; // model matrix in this CG iter
 	vector<double> dual_prices_list; // dual prices of Master Problem cons in this CG iter
@@ -174,8 +174,8 @@ struct Node
 
 	/*-------------------------------------*/
 
-	vector<StockProperties> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<StripProperties> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<Stock_Stc> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<Strip_Stc> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
 	vector<vector<double>> cutting_stock_cols; // 存储第一阶段方案的所有列
 	vector<vector<double>> cutting_strip_cols; // 存储第二阶段方案的所有列
@@ -223,8 +223,8 @@ struct All_Values
 	int branch_status = -1;
 
 	// flag of branching or searching
-	// 0 -- contiinue to branch current Node
-	// 1 -- stop at current Node and search for a previously generated Node
+	// 0 -- contiinue to branch generated Node
+	// 1 -- stop at generated Node and search for a previously generated Node
 	int search_flag = -1;
 
 	// flag of fathoming
@@ -238,28 +238,26 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<Node> all_nodes_list; // list of all Nodes generated
+	vector<Node_Stc> all_nodes_list; // list of all Nodes generated
 
-	vector<StockProperties> stock_pool_list;
+	vector<Stock_Stc> all_stocks_list;
+	vector<Strip_Stc> all_strips_list;
+	vector<Item_Stc> all_items_list;
 
-	vector<StripTypeProperties> all_strip_types_list; 
-	vector<ItemTypeProperties> all_item_types_list; 
+	vector<Strip_Type_Stc> all_strip_types_list;
+	vector<Item_Type_Stc> all_item_types_list;
 
-	vector<StripProperties> all_strips_list;
-	vector<ItemProperties> all_items_list;
-
-	vector<StockProperties> occupied_stocks_list;
-	vector<ItemProperties> occupied_items_list;
-
+	vector<Stock_Stc> occupied_stocks_list;
+	vector<Item_Stc> occupied_items_list;
 };
 
 void SplitString(const string& s, vector<string>& v, const string& c);
 
 void ReadData(All_Values& Values, All_Lists& Lists);
 
-void InitModelMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node_Stc& root_node);
 
-void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node);
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& root_node);
 
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -269,13 +267,13 @@ bool SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node& root_node);
+	Node_Stc& root_node);
 
-//bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+//bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
 
 void SolveUpdateMasterProblem(
 	All_Values& Values,
@@ -285,7 +283,7 @@ void SolveUpdateMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node& this_node);
+	Node_Stc& this_node);
 
 void SolveFinalMasterProblem(
 	All_Values& Values,
@@ -295,19 +293,19 @@ void SolveFinalMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node& this_node);
+	Node_Stc& this_node);
 
-int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node);
+int FinishNode(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
 
-int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node);
+int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& this_node);
 
 int BranchAndPriceTree(All_Values& Values, All_Lists& Lists);
 
-int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
+int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node_Stc& parent_node);
 
-void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
+void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node_Stc& new_node, Node_Stc& parent_node);
 
-void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
+void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node_Stc& this_node, Node_Stc& parent_node);
 
 bool SolveNewNodeFirstMasterProblem(
 	All_Values& Values,
@@ -317,8 +315,8 @@ bool SolveNewNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node& this_node,
-	Node& parent_node);
+	Node_Stc& this_node,
+	Node_Stc& parent_node);
 
 
 

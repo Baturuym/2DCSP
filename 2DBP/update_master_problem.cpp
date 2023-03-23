@@ -12,7 +12,7 @@ void SolveUpdateMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node& this_node)
+	Node_Stc& this_node)
 {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
@@ -157,7 +157,7 @@ void SolveFinalMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node& this_node)
+	Node_Stc& this_node)
 {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
@@ -175,18 +175,18 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
+	this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node_Stc LB in the last MP
 	printf("\n\t OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
 	/*
 	for (int col = 0; col < all_cols_num; col++)
 	{
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-		this_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
+		this_node.all_solns_val_list.push_back(soln_val); // Node_Stc all solns (including zero-solns)
 		if (soln_val > 0)
 		{
-			this_node.fsb_solns_val_list.push_back(soln_val); // Node feasible (i.e. non-zero-solns) solns 
-			this_node.fsb_solns_idx_list.push_back(col); 	// Node fsb-solns' index
+			this_node.fsb_solns_val_list.push_back(soln_val); // Node_Stc feasible (i.e. non-zero-solns) solns
+			this_node.fsb_solns_idx_list.push_back(col); 	// Node_Stc fsb-solns' index
 		}
 	}
 	*/

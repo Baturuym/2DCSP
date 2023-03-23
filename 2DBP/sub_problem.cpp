@@ -4,7 +4,7 @@
 #include "2DBP.h"
 using namespace std;
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
+int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
 {
 
 	int K_num = this_node.cutting_stock_cols.size();
@@ -133,7 +133,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 			this_node.ISP_obj_val = -1;
 			this_node.ISP_solns_list.clear();
 			this_node.new_cutting_strip_cols.clear();
-			SolveStripSubProblem(Values, Lists,this_node);
+			SolveStripSubProblem(Values, Lists, this_node);
 
 			int feasible_flag = 0;
 
@@ -142,7 +142,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 
 			for (int k = 0; k < J_num; k++) // all current stk-cut-patterns
 			{
-				double a_val =this_node.dual_prices_list[k];
+				double a_val = this_node.dual_prices_list[k];
 				//SolveStripSubProblem(Values, Lists);
 
 				if (this_node.ISP_obj_val > a_val + RC_EPS) //
@@ -213,7 +213,7 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists,Node&this_node)
 	return SP_flag; // 函数最终的返回值
 }
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
+void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node_Stc& this_node)
 {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
