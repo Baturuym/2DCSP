@@ -13,12 +13,11 @@ void SolveUpdateMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
 	Node& this_node) {
+
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
-
 	int J_num = Values.strip_types_num;
 	int N_num = Values.item_types_num;
-
 	int all_cols_num = K_num + P_num;
 	int all_rows_num = J_num + N_num;
 
@@ -118,15 +117,15 @@ void SolveUpdateMasterProblem(
 
 	printf("\n\t strip_type cons dual prices: \n\n");
 	for (int row = 0; row < J_num; row++) {
-		double dual_val = MP_cplex.getDual(Cons_MP[row]);
-		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
+		double dual_val = MP_cplex.getDual(Cons_MP[row]);		
 		this_node.dual_prices_list.push_back(dual_val);
+		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 	}
 	printf("\n\t item_type cons dual prices: \n\n");
 	for (int row = J_num; row < J_num + N_num; row++) {
-		double dual_val = MP_cplex.getDual(Cons_MP[row]);
-		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
+		double dual_val = MP_cplex.getDual(Cons_MP[row]);	
 		this_node.dual_prices_list.push_back(dual_val);
+		printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 	}
 
 	printf("\n\t Node_%d MP-1:\n", this_node.index);
@@ -149,11 +148,9 @@ void SolveFinalMasterProblem(
 
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
-
-	int item_types_num = Values.item_types_num;
-	int strip_types_num = Values.strip_types_num;
-
-	int all_rows_num = item_types_num + strip_types_num;
+	int N_num = Values.item_types_num;
+	int J_num = Values.strip_types_num;
+	int all_rows_num = N_num + J_num;
 	int all_cols_num = K_num + P_num;
 
 	printf("\n\n///////////////// MP_final CPLEX solving START /////////////////\n");

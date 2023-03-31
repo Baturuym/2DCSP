@@ -62,14 +62,12 @@ void ReadData(All_Values& Values, All_Lists& Lists) // 启发式读取数据
 		int item_index = 1;
 		int item_types_num = Values.item_types_num;
 
-		for (int i = 0; i < item_types_num; i++) // 所有子板行
-		{
+		for (int i = 0; i < item_types_num; i++) {  // 所有子板行
 			getline(fin, line);
 			SplitString(line, data_inline, "\t");
 
 			int item_type_demand_num = atoi(data_inline[2].c_str());
-			for (int k = 0; k < item_type_demand_num; k++) // 子板需求量
-			{
+			for (int k = 0; k < item_type_demand_num; k++) {   // 子板需求量
 				Item_Stc this_item;
 				this_item.item_type_idx = atoi(data_inline[3].c_str()); // 子板行第4位：子板种类
 				this_item.item_idx = item_index; // 子板序号，从1开始

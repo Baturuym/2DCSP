@@ -31,8 +31,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 		Vars_MP,
 		root_node);
 
-	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
-	if (MP_flag == 1) {
+	if (MP_flag == 1) { 	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
 		while (1) // Column Generation loop
 		{
 			root_node.iter++; // CG loop iter index++
@@ -44,16 +43,12 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 			int SP_flag = SolveWidthSubProblem(Values, Lists, root_node); // solve the SP of MP
 
 			// Case 1:
-			if (SP_flag == 0) {
-				// No better reduced cost is get from SP anymore
-				 // break CG loop
-				break;
+			if (SP_flag == 0) { // No better reduced cost is get from SP anymore	
+				break; 	 // break CG loop
 			}
 			// Case 2:
-			if (SP_flag == 1) {
-				// Better reduced cost is get from SP
+			if (SP_flag == 1) { // Better reduced cost is get from SP	
 				// continue CG loop and update MP with the new col from SP
-				// solve the new updated MP
 				SolveUpdateMasterProblem(
 					Values,
 					Lists,
@@ -62,11 +57,10 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 					Obj_MP,
 					Cons_MP,
 					Vars_MP,
-					root_node);
+					root_node); // solve the new updated MP
 			}
 		}
-
-		// solve the last MP to get optimal int-solns and optimal lower bound of the Node
+	
 		SolveFinalMasterProblem(
 			Values,
 			Lists,
@@ -75,7 +69,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 			Obj_MP,
 			Cons_MP,
 			Vars_MP,
-			root_node);
+			root_node); // solve the last MP to get optimal int-solns and optimal lower bound of the Node
 	}
 
 	// clear all CPLEX objects to release memory. 
