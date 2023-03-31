@@ -24,7 +24,7 @@ namespace CuttingFig
 		{
 			Graphics g = panel1.CreateGraphics();
 			g.Clear(panel1.BackColor);
-			g.Dispose();
+			g.DLSPose();
 
 			OpenFileDialog dialog = new OpenFileDialog();
 			dialog.Multiselect = true;
@@ -75,7 +75,7 @@ namespace CuttingFig
 		{
 			Graphics g = panel1.CreateGraphics();
 			g.Clear(panel1.BackColor);
-			g.Dispose();
+			g.DLSPose();
 		}
 
 		private void panel1_Paint_1(object sender, PaintEventArgs e)

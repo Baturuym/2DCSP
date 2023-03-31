@@ -1,10 +1,9 @@
-﻿
-// 2022-11-17
-
+﻿// 2022-11-17
 #include "2DBP.h"
 using namespace std;
 
 int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) {
+
 	int parent_branch_flag = -1;
 	int pos = -1;
 	int all_nodes_num = Lists.all_nodes_list.size();
@@ -155,7 +154,6 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	return parent_branch_flag;
 }
 
-
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node) {
 	int all_nodes_num = Lists.all_nodes_list.size();
 
@@ -253,7 +251,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	new_node.new_cutting_strip_cols.clear();
 
 	/*
-	new_node.ISP_one_new_col.clear();
+	new_node.LSP_one_new_col.clear();
 	new_node.new_col.clear();
 	new_node.new_cols_list.clear();
 	new_node.fsb_solns_val_list.clear();

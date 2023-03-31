@@ -176,9 +176,9 @@ struct Node {
 	vector<double> new_cutting_stock_col;
 	vector<vector<double>> new_cutting_strip_cols;
 
-	double ISP_obj_val = -1;
-	//vector<double> ISP_one_new_col;
-	vector<double> ISP_solns_list;
+	double LSP_obj_val = -1;
+	//vector<double> LSP_one_new_col;
+	vector<double> LSP_solns_list;
 
 };
 
@@ -262,9 +262,9 @@ bool SolveRootNodeFirstMasterProblem(
 
 //bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 void SolveUpdateMasterProblem(
 	All_Values& Values,

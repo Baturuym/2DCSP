@@ -3,7 +3,6 @@
 #include "2DBP.h"
 using namespace std;
 
-
 void SplitString(const string& line_string, vector<string>& string_list, const string& data_string) {
 	string::size_type pos1, pos2;
 	pos2 = line_string.find(data_string);

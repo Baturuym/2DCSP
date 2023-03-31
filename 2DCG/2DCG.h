@@ -142,7 +142,7 @@ struct All_Values
 	bool Finish;
 
 	int iter = -1;
-	double ISP_obj_val = -1;
+	double LSP_obj_val = -1;
 };
 
 struct All_Lists
@@ -171,8 +171,8 @@ struct All_Lists
 
 	vector<double> dual_prices_list;
 
-	vector<double> ISP_new_col;
-	vector<double> ISP_solns_list;
+	vector<double> LSP_new_col;
+	vector<double> LSP_solns_list;
 
 };
 
@@ -195,9 +195,9 @@ void SolveFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists);
+int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists);
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists);
+void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists);
 
 // 生成+求解新的主问题
 void SolveUpdateMasterProblem(

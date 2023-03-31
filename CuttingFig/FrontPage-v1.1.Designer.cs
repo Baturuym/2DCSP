@@ -10,14 +10,14 @@
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
+		/// <param name="dLSPosing">true if managed resources should be dLSPosed; otherwise, false.</param>
+		protected override void DLSPose(bool dLSPosing)
 		{
-			if (disposing && (components != null))
+			if (dLSPosing && (components != null))
 			{
-				components.Dispose();
+				components.DLSPose();
 			}
-			base.Dispose(disposing);
+			base.DLSPose(dLSPosing);
 		}
 
 		#region Windows Form Designer generated code

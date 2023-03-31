@@ -4,7 +4,7 @@
 #include "2DBP.h"
 using namespace std;
 
-int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
+int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
@@ -32,9 +32,9 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 
 	int SP_flag = -1;
 
-	IloEnv Env_KSP; // KSP环境
-	IloModel Model_KSP(Env_KSP); // KSP模型
-	IloNumVarArray Vars_Ga(Env_KSP); // KSP决策变量
+	IloEnv Env_WSP; // WSP环境
+	IloModel Model_WSP(Env_WSP); // WSP模型
+	IloNumVarArray Vars_Ga(Env_WSP); // WSP决策变量
 
 	for (int j = 0; j < J_num; j++) // 
 	{
@@ -43,65 +43,65 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 		IloNum var_max = IloInfinity; // var UB
 		string Ga_name = "G_" + to_string(j + 1);
 
-		IloNumVar Var_Ga(Env_KSP, var_min, var_max, ILOINT, Ga_name.c_str()); //
+		IloNumVar Var_Ga(Env_WSP, var_min, var_max, ILOINT, Ga_name.c_str()); //
 		Vars_Ga.add(Var_Ga); // 
 	}
 
-	// KSP obj
-	IloExpr obj_sum(Env_KSP);
+	// WSP obj
+	IloExpr obj_sum(Env_WSP);
 	for (int j = 0; j < J_num; j++) // vars num = strip_types num
 	{
 		double a_val = this_node.dual_prices_list[j];
 		obj_sum += a_val * Vars_Ga[j]; //  obj: sum (a_j * G_j)
 	}
 
-	IloObjective Obj_KSP = IloMaximize(Env_KSP, obj_sum);
-	Model_KSP.add(Obj_KSP); // 
+	IloObjective Obj_WSP = IloMaximize(Env_WSP, obj_sum);
+	Model_WSP.add(Obj_WSP); // 
 	obj_sum.end();
 
-	// KSP only one con
-	IloExpr con_sum(Env_KSP);
+	// WSP only one con
+	IloExpr con_sum(Env_WSP);
 	for (int j = 0; j < J_num; j++) {
 		double ws_val = Lists.all_strip_types_list[j].width;
 		con_sum += ws_val * Vars_Ga[j]; // con: sum (ws_j * G_j) <= W
 	}
 
-	Model_KSP.add(con_sum <= Values.stock_width);
+	Model_WSP.add(con_sum <= Values.stock_width);
 	con_sum.end();
 
-	printf("\n///////////////// KSP_%d CPLEX solving START /////////////////\n\n", this_node.iter);
-	IloCplex Cplex_KSP(Env_KSP);
-	Cplex_KSP.extract(Model_KSP);
-	Cplex_KSP.exportModel("Outer Sub Problem.lp"); // 
-	bool KSP_flag = Cplex_KSP.solve(); // 
-	printf("\n///////////////// KSP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// WSP_%d CPLEX solving START /////////////////\n\n", this_node.iter);
+	IloCplex Cplex_WSP(Env_WSP);
+	Cplex_WSP.extract(Model_WSP);
+	Cplex_WSP.exportModel("Outer Sub Problem.lp"); // 
+	bool WSP_flag = Cplex_WSP.solve(); // 
+	printf("\n///////////////// WSP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
 
-	if (KSP_flag == 0) {
-		printf("\n\t KSP_%d is NOT FEASIBLE\n", this_node.iter);
+	if (WSP_flag == 0) {
+		printf("\n\t WSP_%d is NOT FEASIBLE\n", this_node.iter);
 	}
 	else {
-		printf("\n\t KSP_%d is FEASIBLE\n", this_node.iter);
-		printf("\n\t Obj = %f\n", Cplex_KSP.getValue(Obj_KSP));
+		printf("\n\t WSP_%d is FEASIBLE\n", this_node.iter);
+		printf("\n\t Obj = %f\n", Cplex_WSP.getValue(Obj_WSP));
 
-		double KSP_obj_val = Cplex_KSP.getValue(Obj_KSP);
-		vector<double> KSP_solns_list;
+		double WSP_obj_val = Cplex_WSP.getValue(Obj_WSP);
+		vector<double> WSP_solns_list;
 
-		// print KSP solns
+		// print WSP solns
 		this_node.new_cutting_stock_col.clear();
-		printf("\n\t KSP_%d VARS:\n\n", this_node.iter);
+		printf("\n\t WSP_%d VARS:\n\n", this_node.iter);
 		for (int j = 0; j < J_num; j++) // this_strip rows
 		{
-			double soln_val = Cplex_KSP.getValue(Vars_Ga[j]);
+			double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
 			printf("\t var_G_%d = %f\n", j + 1, soln_val);
 			this_node.new_cutting_stock_col.push_back(soln_val);
-			KSP_solns_list.push_back(soln_val);
+			WSP_solns_list.push_back(soln_val);
 		}
 
-		// print KSP new col
-		printf("\n\t KSP_%d new col:\n\n", this_node.iter);
+		// print WSP new col
+		printf("\n\t WSP_%d new col:\n\n", this_node.iter);
 		for (int j = 0; j < J_num + N_num; j++) {
 			if (j < J_num) {
-				double soln_val = Cplex_KSP.getValue(Vars_Ga[j]);
+				double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
 				printf("\t row_%d = %f\n", j + 1, soln_val);
 			}
 			else {
@@ -110,23 +110,23 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 			}
 		}
 
-		if (KSP_obj_val > 1 + RC_EPS) // 则求解KSP获得的新列加入当前MP，不用求解ISP
+		if (WSP_obj_val > 1 + RC_EPS) // 则求解WSP获得的新列加入当前MP，不用求解LSP
 		{
-			printf("\n\n\t KSP reduced cost = %f > 1,  \n", KSP_obj_val);
+			printf("\n\n\t WSP reduced cost = %f > 1,  \n", WSP_obj_val);
 			printf("\n\t No need to solve Inner-SP\n");
 
 			SP_flag = 1;
 		}
 
-		else // 则继续求解这张中间板对应的ISP，看能否求出新列
+		else // 则继续求解这张中间板对应的LSP，看能否求出新列
 		{
-			printf("\n\t KSP reduced cost = %f <=1 \n", KSP_obj_val);
-			printf("\n\t Continue to solve ISP\n");
+			printf("\n\t WSP reduced cost = %f <=1 \n", WSP_obj_val);
+			printf("\n\t Continue to solve LSP\n");
 
-			this_node.ISP_obj_val = -1;
-			this_node.ISP_solns_list.clear();
+			this_node.LSP_obj_val = -1;
+			this_node.LSP_solns_list.clear();
 			this_node.new_cutting_strip_cols.clear();
-			SolveStripSubProblem(Values, Lists, this_node);
+			SolveLengthSubProblem(Values, Lists, this_node);
 
 			int feasible_flag = 0;
 
@@ -136,14 +136,14 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 			for (int k = 0; k < J_num; k++) // all current stk-cut-patterns
 			{
 				double a_val = this_node.dual_prices_list[k];
-				//SolveStripSubProblem(Values, Lists);
+				//SolveLengthSubProblem(Values, Lists);
 
-				if (this_node.ISP_obj_val > a_val + RC_EPS) //
+				if (this_node.LSP_obj_val > a_val + RC_EPS) //
 				{
 					feasible_flag = 1;
 
-					printf("\n\t KSP_%d_PSP_%d reduced cost = %f > strip_type con_%d dual = %f:\n",
-						this_node.iter, k + 1, this_node.ISP_obj_val, k + 1, a_val);
+					printf("\n\t WSP_%d_LSP_%d reduced cost = %f > strip_type con_%d dual = %f:\n",
+						this_node.iter, k + 1, this_node.LSP_obj_val, k + 1, a_val);
 
 					vector<double> temp_col; // 
 					for (int j = 0; j < J_num; j++) //  all current stp-cut-patterns 
@@ -159,29 +159,29 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 
 					for (int i = 0; i < N_num; i++) // 
 					{
-						double D_soln_val = this_node.ISP_solns_list[i];
+						double D_soln_val = this_node.LSP_solns_list[i];
 						temp_col.push_back(D_soln_val); // 
 					}
 
-					printf("\n\t KSP_%d_PSP_%d new col:\n\n", this_node.iter, k + 1);
-					for (int row = 0; row < J_num + N_num; row++) // 输出ISP的新列
+					printf("\n\t WSP_%d_LSP_%d new col:\n\n", this_node.iter, k + 1);
+					for (int row = 0; row < J_num + N_num; row++) // 输出LSP的新列
 					{
 						printf("\t row_%d = %f\n", row + 1, temp_col[row]);
 					}
-					printf("\n\t Add KSP_%d_PSP_%d new col to MP\n\n", this_node.iter, k + 1);
+					printf("\n\t Add WSP_%d_LSP_%d new col to MP\n\n", this_node.iter, k + 1);
 
 					this_node.new_cutting_strip_cols.push_back(temp_col);
 
 					cout << endl;
 				}
 				else {
-					printf("\n\t KSP_%d_PSP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
-						this_node.iter, k + 1, this_node.ISP_obj_val, k + 1, a_val);
+					printf("\n\t WSP_%d_LSP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
+						this_node.iter, k + 1, this_node.LSP_obj_val, k + 1, a_val);
 				}
 			}
 
 			if (feasible_flag == 0) {
-				printf("\n\t KSP_%d_PSP has no new col \n\n", this_node.iter);
+				printf("\n\t WSP_%d_LSP has no new col \n\n", this_node.iter);
 				printf("\n\t Column Generation loop break\n");
 
 				cout << endl;
@@ -191,19 +191,19 @@ int SolveStockSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 		}
 	}
 
-	Obj_KSP.removeAllProperties();
-	Obj_KSP.end();
+	Obj_WSP.removeAllProperties();
+	Obj_WSP.end();
 	Vars_Ga.clear();
 	Vars_Ga.end();
-	Model_KSP.removeAllProperties();
-	Model_KSP.end();
-	Env_KSP.removeAllProperties();
-	Env_KSP.end();
+	Model_WSP.removeAllProperties();
+	Model_WSP.end();
+	Env_WSP.removeAllProperties();
+	Env_WSP.end();
 
 	return SP_flag; // 函数最终的返回值
 }
 
-void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
+void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	int K_num = this_node.cutting_stock_cols.size();
 	int P_num = this_node.cutting_strip_cols.size();
 
@@ -230,9 +230,9 @@ void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	int final_return = -1;
 
-	IloEnv Env_PSP; // ISP环境
-	IloModel Model_PSP(Env_PSP); // ISP模型
-	IloNumVarArray Vars_De(Env_PSP); // ISP
+	IloEnv Env_LSP; // LSP环境
+	IloModel Model_LSP(Env_LSP); // LSP模型
+	IloNumVarArray Vars_De(Env_LSP); // LSP
 
 	for (int i = 0; i < N_num; i++) // 
 	{
@@ -240,12 +240,12 @@ void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 		IloNum  var_max = IloInfinity; // 
 		string De_name = "D_" + to_string(i + 1);
 
-		IloNumVar Var_De(Env_PSP, var_min, var_max, ILOINT, De_name.c_str()); // ISP决策变量，整数
-		Vars_De.add(Var_De); // ISP决策变量加入list
+		IloNumVar Var_De(Env_LSP, var_min, var_max, ILOINT, De_name.c_str()); // LSP决策变量，整数
+		Vars_De.add(Var_De); // LSP决策变量加入list
 	}
 
 	// Inner-SP's obj
-	IloExpr obj_sum(Env_PSP);
+	IloExpr obj_sum(Env_LSP);
 	for (int i = 0; i < N_num; i++)  // 
 	{
 		int row_pos = i + N_num;
@@ -253,52 +253,52 @@ void SolveStripSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 		obj_sum += b_val * Vars_De[i]; // 连加：对偶价格*决策变量
 	}
 
-	IloObjective Obj_PSP = IloMaximize(Env_PSP, obj_sum); //
-	Model_PSP.add(Obj_PSP); //
+	IloObjective Obj_LSP = IloMaximize(Env_LSP, obj_sum); //
+	Model_LSP.add(Obj_LSP); //
 	obj_sum.end();
 
 	// Inner-SP's only one con
-	IloExpr con_sum(Env_PSP);
+	IloExpr con_sum(Env_LSP);
 	for (int i = 0; i < N_num; i++) // 
 	{
 		double li_val = Lists.all_item_types_list[i].length;
 		con_sum += li_val * Vars_De[i];
 	}
 
-	Model_PSP.add(con_sum <= Values.stock_length);
+	Model_LSP.add(con_sum <= Values.stock_length);
 	con_sum.end();
 
-	printf("\n///////////////// KSP_%d_PSP CPLEX solving START /////////////////\n\n", this_node.iter);
-	IloCplex Cplex_PSP(Env_PSP);
-	Cplex_PSP.extract(Model_PSP);
-	Cplex_PSP.exportModel("Inner Sub Problem.lp"); // 输出ISP的lp模型
-	bool ISP_flag = Cplex_PSP.solve(); // 求解ISP
-	printf("\n///////////////// KSP_%d_PSP CPLEX solving OVER /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// WSP_%d_LSP CPLEX solving START /////////////////\n\n", this_node.iter);
+	IloCplex Cplex_LSP(Env_LSP);
+	Cplex_LSP.extract(Model_LSP);
+	Cplex_LSP.exportModel("Inner Sub Problem.lp"); // 输出LSP的lp模型
+	bool LSP_flag = Cplex_LSP.solve(); // 求解LSP
+	printf("\n///////////////// WSP_%d_LSP CPLEX solving OVER /////////////////\n\n", this_node.iter);
 
-	if (ISP_flag == 0) {
-		printf("\n\t KSP_%d_PSP is NOT FEASIBLE\n", this_node.iter);
+	if (LSP_flag == 0) {
+		printf("\n\t WSP_%d_LSP is NOT FEASIBLE\n", this_node.iter);
 	}
 	else {
-		printf("\n\t KSP_%d_PSP is FEASIBLE\n", this_node.iter);
+		printf("\n\t WSP_%d_LSP is FEASIBLE\n", this_node.iter);
 
-		printf("\n\t Obj = %f\n", Cplex_PSP.getValue(Obj_PSP));
-		this_node.ISP_obj_val = Cplex_PSP.getValue(Obj_PSP);
+		printf("\n\t Obj = %f\n", Cplex_LSP.getValue(Obj_LSP));
+		this_node.LSP_obj_val = Cplex_LSP.getValue(Obj_LSP);
 
-		printf("\n\t KSP_%d_PSP VARS:\n\n", this_node.iter);
+		printf("\n\t WSP_%d_LSP VARS:\n\n", this_node.iter);
 		for (int i = 0; i < N_num; i++) {
-			double soln_val = Cplex_PSP.getValue(Vars_De[i]);
+			double soln_val = Cplex_LSP.getValue(Vars_De[i]);
 			printf("\t var_D_%d = %f\n", i + 1, soln_val);
 
-			this_node.ISP_solns_list.push_back(soln_val);
+			this_node.LSP_solns_list.push_back(soln_val);
 		}
 	}
 
-	Obj_PSP.removeAllProperties();
-	Obj_PSP.end();
+	Obj_LSP.removeAllProperties();
+	Obj_LSP.end();
 	Vars_De.clear();
 	Vars_De.end();
-	Model_PSP.removeAllProperties();
-	Model_PSP.end();
-	Env_PSP.removeAllProperties();
-	Env_PSP.end();
+	Model_LSP.removeAllProperties();
+	Model_LSP.end();
+	Env_LSP.removeAllProperties();
+	Env_LSP.end();
 }

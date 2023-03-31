@@ -34,7 +34,7 @@ void NewNodeColumnGeneration(
 		while (1) {
 			this_node.iter++;
 
-			int SP_flag = SolveStockSubProblem(Values, Lists, this_node);
+			int SP_flag = SolveWidthSubProblem(Values, Lists, this_node);
 
 			if (SP_flag == 0) {
 				break;
