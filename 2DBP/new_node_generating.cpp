@@ -8,10 +8,10 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	int pos = -1;
 	int all_nodes_num = Lists.all_nodes_list.size();
 
-	if (Values.branch_status == 3) {   // search for a previously generated unbranched unpruned Node
+	if (Values.branch_status == 3) { // search for a previously generated unbranched unpruned Node
 		for (int k = 0; k < all_nodes_num; k++) {
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 &&
-				Lists.all_nodes_list[k].node_pruned_flag != 1) {  // unbranched unpruned
+				Lists.all_nodes_list[k].node_pruned_flag != 1) { // unbranched unpruned
 				if (Lists.all_nodes_list[k].node_lower_bound < Values.tree_optimal_lower_bound) {
 					pos = k; // branch this previously generated Node_(k+1)
 					cout << endl;
@@ -25,17 +25,17 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 		}
 	}
 
-	if (Values.branch_status != 3) {  // continue to branch the Parent Node
-		if (Values.root_flag == 1) {  // the Parent Node is Root Node
-			if (Values.branch_status == 1) {  // the the Left Node of Root Node
+	if (Values.branch_status != 3) { // continue to branch the Parent Node
+		if (Values.root_flag == 1) { // the Parent Node is Root Node
+			if (Values.branch_status == 1) { // the the Left Node of Root Node
 				pos = all_nodes_num - 1;  // sub left index = parent index + 1
 			}
-			if (Values.branch_status == 2) {  // the the Right Node of Root Node
+			if (Values.branch_status == 2) { // the the Right Node of Root Node
 				pos = all_nodes_num - 2; // sub right index = parent index + 2
 			}
 		}
 
-		if (Values.root_flag != 1) {  // the Parent Node is not Root Node
+		if (Values.root_flag != 1) { // the Parent Node is not Root Node
 			if (Values.fathom_flag == 1) { // the Parent Node is a Left Node
 				if (Values.branch_status == 1) {
 					pos = all_nodes_num - 2; // sub left index = parent index + 2
@@ -44,7 +44,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 					pos = all_nodes_num - 3;  // sub right index = parent index + 3
 				}
 			}
-			if (Values.fathom_flag == 2) {   // the Parent Node is a Right Node
+			if (Values.fathom_flag == 2) { // the Parent Node is a Right Node
 				if (Values.branch_status == 1) {
 					pos = all_nodes_num - 1; // sub left index = parent index + 1
 				}

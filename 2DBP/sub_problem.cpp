@@ -45,7 +45,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 
 	
 	IloExpr obj_sum(Env_WSP); // WSP obj
-	for (int j = 0; j < J_num; j++) {  // vars num = strip_types num
+	for (int j = 0; j < J_num; j++) { // vars num = strip_types num
 		double a_val = this_node.dual_prices_list[j];
 		obj_sum += a_val * Vars_Ga[j]; //  obj: sum (a_j * G_j)
 	}
@@ -81,7 +81,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 		 
 		this_node.new_cutting_stock_col.clear(); // print WSP solns
 		printf("\n\t WSP_%d VARS:\n\n", this_node.iter);
-		for (int j = 0; j < J_num; j++) {   // this_strip rows
+		for (int j = 0; j < J_num; j++) { // this_strip rows
 			double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
 			printf("\t var_G_%d = %f\n", j + 1, soln_val);
 			this_node.new_cutting_stock_col.push_back(soln_val);
@@ -100,13 +100,13 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 			}
 		}
 
-		if (WSP_obj_val > 1 + RC_EPS) {  // 则求解WSP获得的新列加入当前MP，不用求解LSP
+		if (WSP_obj_val > 1 + RC_EPS) { // 则求解WSP获得的新列加入当前MP，不用求解LSP
 			printf("\n\n\t WSP reduced cost = %f > 1,  \n", WSP_obj_val);
 			printf("\n\t No need to solve Inner-SP\n");
 
 			SP_flag = 1;
 		}
-		else {   // 则继续求解这张中间板对应的LSP，看能否求出新列
+		else { // 则继续求解这张中间板对应的LSP，看能否求出新列
 			printf("\n\t WSP reduced cost = %f <=1 \n", WSP_obj_val);
 			printf("\n\t Continue to solve LSP\n");
 
@@ -118,7 +118,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 
 			int feasible_flag = 0;
 
-			for (int k = 0; k < J_num; k++) {   // all current stk-cut-patterns
+			for (int k = 0; k < J_num; k++) { // all current stk-cut-patterns
 				double a_val = this_node.dual_prices_list[k];
 				//SolveLengthSubProblem(Values, Lists);
 
@@ -128,8 +128,8 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 						this_node.iter, k + 1, this_node.LSP_obj_val, k + 1, a_val);
 
 					vector<double> temp_col; // 
-					for (int j = 0; j < J_num; j++) {  //  all current stp-cut-patterns 
-						if (k == j) {  // this stp-cut-pattern p is USED in stk-cut-pattern k
+					for (int j = 0; j < J_num; j++) { //  all current stp-cut-patterns 
+						if (k == j) { // this stp-cut-pattern p is USED in stk-cut-pattern k
 							temp_col.push_back(-1); // used
 						}
 						else {
@@ -142,7 +142,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) 
 					}
 
 					printf("\n\t WSP_%d_LSP_%d new col:\n\n", this_node.iter, k + 1);
-					for (int row = 0; row < J_num + N_num; row++) {   // 输出LSP的新列
+					for (int row = 0; row < J_num + N_num; row++) { // 输出LSP的新列
 						printf("\t row_%d = %f\n", row + 1, temp_col[row]);
 					}
 					printf("\n\t Add WSP_%d_LSP_%d new col to MP\n\n", this_node.iter, k + 1);

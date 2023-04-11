@@ -186,6 +186,8 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists);
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 
+void DisplayMasterProblem(All_Values& Values, All_Lists& Lists);
+
 void SolveFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,

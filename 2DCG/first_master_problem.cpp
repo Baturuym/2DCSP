@@ -24,6 +24,8 @@ void SolveFirstMasterProblem(
 	int all_cols_num = K_num + P_num;
 	int all_rows_num = J_num + N_num;
 
+	
+
 	/*			      pattern columns
 	---------------------------------------------
 	|          P_num         |          K_num         |
@@ -56,30 +58,27 @@ void SolveFirstMasterProblem(
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
 	}
-
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);
 	Model_MP.add(Cons_MP);
-
 	con_min.end();
 	con_max.end();
 
+	printf("\n\t MP-1 model:\n");
+	DisplayMasterProblem(Values, Lists);
+
 	// Matrix C & Matrix  0
-	for (int col = 0; col < K_num; col++) 	// col 1 -> col K_num
-	{
+	for (int col = 0; col < K_num; col++) {  // col 1 -> col K_num
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
-
-		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
-		{
+		for (int row = 0; row < J_num + N_num; row++) {   // row 1 -> row J_num+N_num // row 1 -> row J_num+N_num
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
 
-		string Y_name = "Y_" + to_string(col + 1);
+		string var_name = "Y_" + to_string(col + 1);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
-
-		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str());
+		IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, var_name.c_str());
 		//IloNumVar Var_Y(CplexCol, var_min, var_max, ILOINT, Y_name.c_str());
 		Vars_MP.add(Var_Y);
 
@@ -88,23 +87,19 @@ void SolveFirstMasterProblem(
 
 
 	// Matrix D & Matrix  B
-	for (int col = K_num; col < K_num + P_num; col++) // col K_num+1 -> col K_num+P_num
-	{
+	for (int col = K_num; col < K_num + P_num; col++) {  // col K_num+1 -> col K_num+P_num
 		IloNum obj_para = 0; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
-
-		for (int row = 0; row < J_num + N_num; row++) // row 1 -> row J_num+N_num
-		{
+		for (int row = 0; row < J_num + N_num; row++) {  // row 1 -> row J_num+N_num
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
 
-		string X_name = "X_" + to_string(col + 1 - K_num);
+		string var_name = "X_" + to_string(col + 1 - K_num);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
-
-		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
-		IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str());
+		IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, var_name.c_str());
+		//IloNumVar Var_X(CplexCol, var_min, var_max, ILOINT, X_name.c_str());
 		Vars_MP.add(Var_X);
 		CplexCol.end();
 	}
@@ -117,45 +112,52 @@ void SolveFirstMasterProblem(
 	printf("\n///////////////// MP_1 CPLEX solving OVER /////////////////\n\n");
 
 	if (MP_flag == 0) {
-		printf("\n\t The FIRST MP has NO feasible solution\n");
+		printf("\n\t MP_1 has NO feasible solution\n");
 	}
 	else {
-		printf("\n\t The FIRST MP has feasible solution\n");
+		printf("\n\t MP_1 has feasible solution\n");
+		printf("\n\t Obj = %f\n",MP_cplex.getValue(Obj_MP));
 
 		int Y_fsb_num = 0;
 		int X_fsb_num = 0;
-		printf("\n\t Y Solns (stock cutting patterns):\n\n");
+		printf("\n\t Y solns:\n\n");
 		for (int col = 0; col < K_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) {
 				Y_fsb_num++;
-				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
+				printf("\t var_y_%d = %f\n", col + 1, soln_val);
 			}
 		}
 
-		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
+		printf("\n\t X solns:\n\n");
 		for (int col = K_num; col < K_num + P_num; col++) {
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) {
 				X_fsb_num++;
-				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
+				printf("\t var_x_%d = %f\n", col + 1 - K_num, soln_val);
 			}
 		}
 
 		Lists.dual_prices_list.clear();
 
-		printf("\n\t strip_type cons dual prices: \n\n");
+		printf("\n\t strip cons dual: \n\n");
 		for (int row = 0; row < J_num; row++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
-			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
+			if (dual_val == -0) {
+				dual_val = 0;
+			}		
 			Lists.dual_prices_list.push_back(dual_val);
+			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 
-		printf("\n\t item_type cons dual prices: \n\n");
+		printf("\n\t item cons dual: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[row]);
-			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
+			if (dual_val == -0) {
+				dual_val = 0;
+			}	
 			Lists.dual_prices_list.push_back(dual_val);
+			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 
 		printf("\n\t MP-1:\n");

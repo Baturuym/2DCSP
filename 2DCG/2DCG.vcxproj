@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="column_generation.cpp" />
+    <ClCompile Include="display_model.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
     <ClCompile Include="input_data.cpp" />
     <ClCompile Include="main.cpp" />

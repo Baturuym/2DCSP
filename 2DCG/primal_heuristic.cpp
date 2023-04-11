@@ -334,19 +334,19 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
 
-	/*			    pattern columns
-	-----------------------------------------
-	|		K_num			|		P_num			|
-	| cut-stk-ptn cols	| stp-cut-ptn cols	|
-	-----------------------------------------------------
-	|							|							|				|
-	|			 C				|			D				|  J_num	|	strip_type cons >= 0
-	|							|							|				|
-	|----------------------------------------------------
-	|							|							|				|
-	|			 0				|			B				|  N_num	|	item_type cons >= item_type demands
-	|							|							|				|
-	-----------------------------------------------------
+	/*			      pattern columns
+	---------------------------------------------
+	|          P_num         |          K_num         |
+	|  cut-stk-ptn cols  |  cut-stp-ptn cols  |
+	--------------------------------------------------------
+	|                             |                              |             |
+	|               C            |              D              | J_num | strip_type cons >= 0
+	|                             |                              |             |
+	|-------------------------------------------------------
+	|                             |                              |	            |
+	|              0             |               B             | N_num | item_type cons >= item_type demand
+	|                             |                              |             |
+	---------------------------------------------------------
 	*/
 
 	// Init model matrix
