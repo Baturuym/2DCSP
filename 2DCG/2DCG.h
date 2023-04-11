@@ -197,6 +197,8 @@ void SolveFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
+void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP);
+
 int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists);
 
 void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists);

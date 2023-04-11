@@ -74,8 +74,12 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 		printf("\n\t WSP_%d is NOT FEASIBLE\n", Values.iter);
 	}
 	else {
-		printf("\n\t WSP_%d is FEASIBLE\n", Values.iter);
-		printf("\n\t Obj = %f\n", Cplex_WSP.getValue(Obj_WSP));
+		printf("\n\n\t WSP_%d is FEASIBLE\n", Values.iter);
+
+		printf("\n\t WSP_%d model:\n\n", Values.iter);
+		DisplaySubProblem(Values, Lists, 1);
+
+		printf("\n\n\t Obj = %f\n", Cplex_WSP.getValue(Obj_WSP));
 
 		double WSP_obj_val = Cplex_WSP.getValue(Obj_WSP);
 		vector<double> WSP_solns_list;
@@ -111,7 +115,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 
 		if (WSP_obj_val > 1 + RC_EPS) { // 则求解WSP获得的新列加入当前MP，不用求解LSP
 			printf("\n\n\t WSP reduced cost = %f > 1,  \n", WSP_obj_val);
-			printf("\n\t No need to solve Inner-SP\n");
+			printf("\n\t No need to solve LSP\n");
 
 			loop_continue_flag = 1;
 		}
@@ -257,6 +261,10 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
 	}
 	else {
 		printf("\n\t WSP_%d_LSP is FEASIBLE\n", Values.iter);
+
+		printf("\n\t WSP_%d_LSP model:\n\n", Values.iter);
+		DisplaySubProblem(Values, Lists, 2);
+		printf("\n");
 
 		printf("\n\t Obj = %f\n", Cplex_LSP.getValue(Obj_LSP));
 		Values.LSP_obj_val = Cplex_LSP.getValue(Obj_LSP);

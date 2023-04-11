@@ -151,22 +151,24 @@ void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP) {
 	int all_rows_num = J_num + N_num;
 
 	if (Name_SP == 1) {
-		printf("\n\nCurrent Outer SP:  \n\n");
+		printf("\t ");
 		for (int k = 0; k < J_num; k++) {
 			printf("v%d\t", k);
 		}
 		printf("\n");
+		printf("\t ");
 		for (int k = 0; k < J_num; k++) {
 			printf("%d\t", Lists.all_item_types_list[k].length);
 		}
 		printf("<=\t%d", Values.stock_length);
 	}
 	if (Name_SP == 2) {
-		printf("\n\nCurrent Inner SP:  \n\n");
+		printf("\t ");
 		for (int k = 0; k < J_num; k++) {
 			printf("w%d\t", k);
 		}
 		printf("\n");
+		printf("\t ");
 		for (int k = 0; k < J_num; k++) {
 			printf("%d\t", Lists.all_item_types_list[k].width);
 		}
