@@ -5,9 +5,9 @@ using namespace std;
 
 // judge the integerity of the Node, and find the branch var
 int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
+
 	// 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int node_int_flag = -1;
-
 	// 0 -- continue to branch this Node; 1 -- search another generated Node
 	int tree_search_flag = -1;
 
@@ -17,38 +17,32 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
 		tree_search_flag = 1;
 	}
 	else {
-		if (node_int_flag == 0)  // NOT ALL non-zero-solns are int in this Node
-		{
+		if (node_int_flag == 0) { // NOT ALL non-zero-solns are int in this Node
 			int var_idx = this_node.var_to_branch_idx;
 			this_node.branched_idx_list.push_back(var_idx);
 
-			double var_val = this_node.var_to_branch_soln_val;
-			this_node.branched_vars_soln_val_list.push_back(var_val);
+			double var_val = this_node.var_to_branch_soln;
+			this_node.branched_solns_ist.push_back(var_val);
 
 			tree_search_flag = 0;
 		}
 
-		if (node_int_flag == 1)  // ALL non-zero-solns are int in this Node
-		{
-			if (this_node.index == 1) // this node is Root Node 
-			{
-				Values.tree_optimal_lower_bound = this_node.node_lower_bound;
-				printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+		if (node_int_flag == 1) {  // ALL non-zero-solns are int in this Node
+			if (this_node.index == 1) {   // this node is Root Node 
+				Values.optimal_LB = this_node.LB;
+				printf("\n\t Current Optimal Lower Bound = %f\n", Values.optimal_LB);
 			}
-			if (this_node.index > 1) // this Node is not Root Node
-			{
-				if (Values.tree_optimal_lower_bound == -1) // this Node is the first Node with all int-solns
-				{
-					Values.tree_optimal_lower_bound = this_node.node_lower_bound;
-					printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+			if (this_node.index > 1) {  // this Node is not Root Node
+				if (Values.optimal_LB == -1) {  // this Node is the first Node with all int-solns
+					Values.optimal_LB = this_node.LB;
+					printf("\n\t Current Optimal Lower Bound = %f\n", Values.optimal_LB);
 				}
-				else // other Nodes with all int-solns
-				{
-					if (this_node.node_lower_bound < Values.tree_optimal_lower_bound) {
-						Values.tree_optimal_lower_bound = this_node.node_lower_bound;
-						printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+				else {  // other Nodes with all int-solns
+					if (this_node.LB < Values.optimal_LB) {
+						Values.optimal_LB = this_node.LB;
+						printf("\n\t Current Optimal Lower Bound = %f\n", Values.optimal_LB);
 					}
-					if (this_node.node_lower_bound >= Values.tree_optimal_lower_bound) {
+					if (this_node.LB >= Values.optimal_LB) {
 						this_node.node_pruned_flag = 1;
 						printf("\n\t Node_%d has to be pruned\n", this_node.index);
 					}
@@ -78,14 +72,13 @@ int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node) {
 		soln_val = this_node.all_solns_val_list[col];
 		if (soln_val > 0) {
 			int soln_int_val = int(soln_val); // judge the integerity
-			if (soln_int_val != soln_val) // not an integer
-			{
-				printf("\n\t Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
+			if (soln_int_val != soln_val) { // not an integer
 
+				printf("\n\t Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
 				this_node.var_to_branch_idx = col; // set the var-to-branch-col index
-				this_node.var_to_branch_soln_val = soln_val; // set the var-to-branch	
-				this_node.var_to_branch_int_val_floor = floor(soln_val);
-				this_node.var_to_branch_int_val_ceil = ceil(soln_val);
+				this_node.var_to_branch_soln = soln_val; // set the var-to-branch	
+				this_node.var_to_branch_floor = floor(soln_val);
+				this_node.var_to_branch_ceil = ceil(soln_val);
 
 				node_int_flag = 0; // continue BP algorithm
 

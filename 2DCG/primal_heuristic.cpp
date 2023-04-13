@@ -17,7 +17,6 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启
 	int strip_index = 0;
 	int strip_pattern = 0;
 
-#pragma region
 	while (Values.Finish == false) {
 		// 初始化新母板
 		Lists.all_stocks_list.erase(Lists.all_stocks_list.begin()); // 母板池中除去母板0
@@ -342,7 +341,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists) // 切断式切割启
 		vector<double>temp_col;
 		for (int row = 0; row < J_num + N_num; row++) {
 
-			if (col < K_num) { 	// Matrix C & Matrix 0
+			if (col < K_num) { // Matrix C & Matrix 0
 
 				if (row < J_num) { // 1. Matrix C
 					double temp_val =

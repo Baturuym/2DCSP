@@ -5,6 +5,7 @@ using namespace std;
 
 // solve the Root node with CG loop
 void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node) {
+
 	printf("\n###########################################\n");
 	printf("###########################################\n");
 	printf("################## Root Node #################\n");

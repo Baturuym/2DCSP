@@ -11,14 +11,14 @@
 		/// Clean up any resources being used.
 		/// </summary>
 		/// <param name="dLSPosing">true if managed resources should be dLSPosed; otherwise, false.</param>
-		protected override void DLSPose(bool dLSPosing)
-		{
-			if (dLSPosing && (components != null))
-			{
-				components.DLSPose();
-			}
-			base.DLSPose(dLSPosing);
-		}
+		//protected override void DLSPose(bool dLSPosing)
+		//{
+		//	if (dLSPosing && (components != null))
+		//	{
+		//		components.DLSPose();
+		//	}
+		//	base.DLSPose(dLSPosing);
+		//}
 
 		#region Windows Form Designer generated code
 

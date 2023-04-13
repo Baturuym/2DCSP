@@ -16,7 +16,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 
 			if (parent_branch_flag == 0) {
 				printf("\n\t Branch and Bound SOLVING OVER!!\n");
-				printf("\n\t Final Optimal Lower Bound = %f\n\n\n", Values.tree_optimal_lower_bound);
+				printf("\n\t Final Optimal Lower Bound = %f\n\n\n", Values.optimal_LB);
 				break;
 			}
 
@@ -44,7 +44,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 				Values.root_flag = 0; // ATTENTION: 
 
 				// ATTETION: the var-to-branch val of the Parent Node decide which Node to fathom in next while-iter
-				double parent_branch_val = parent_node.var_to_branch_soln_val;
+				double parent_branch_val = parent_node.var_to_branch_soln;
 				if (parent_branch_val <= 1) {
 
 					Values.search_flag = right_search_flag;
@@ -55,23 +55,23 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 					}
 				}
 				if (parent_branch_val > 1) { // choose the Node with better LB to fathom
-					if (new_left_node.node_lower_bound < new_right_node.node_lower_bound) {
+					if (new_left_node.LB < new_right_node.LB) {
 						Values.search_flag = left_search_flag;
 						if (Values.search_flag != 1) { // continue to fathom the Left Node and branch it in next while-iter
 							Values.fathom_flag = 1;
 							printf("\n\t Left Node_%d LB %.4f < Right Node_%d LB %.4f\n",
-								new_left_node.index, new_left_node.node_lower_bound,
-								new_right_node.index, new_right_node.node_lower_bound);
+								new_left_node.index, new_left_node.LB,
+								new_right_node.index, new_right_node.LB);
 							printf("\n\t continue to fathom RIGHT Node_%d\n", new_right_node.index);
 						}
 					}
-					if (new_left_node.node_lower_bound >= new_right_node.node_lower_bound) {
+					if (new_left_node.LB >= new_right_node.LB) {
 						Values.search_flag = right_search_flag;
 						if (Values.search_flag != 1) { // continue to set to fathom the Right Node and branch it in next while-iter
 							Values.fathom_flag = 2;
 							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f\n",
-								new_left_node.index, new_left_node.node_lower_bound,
-								new_right_node.index, new_right_node.node_lower_bound);
+								new_left_node.index, new_left_node.LB,
+								new_right_node.index, new_right_node.LB);
 							printf("\n\t continue to fathom RIGHT Node_%d\n", new_right_node.index);
 						}
 					}
@@ -85,7 +85,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 			Values.fathom_flag = -1; // ATTENTION: better deactivate fathom_flag
 			Values.search_flag = 0; // ATTENTION: search_flag set to continue to the next while-iter
 			printf("\n\t Solns of this Node are all INTEGERS! \n");
-			printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+			printf("\n\t Current Optimal Lower Bound = %f\n", Values.optimal_LB);
 		}
 
 		if (Values.node_num > 30) {

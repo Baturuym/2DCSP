@@ -61,7 +61,7 @@ void OutPutResults(All_Values& Values, All_Lists& Lists) {
 	// 输出结果信息到txt文件，用于画图
 	for (int pos = 0; pos < stocks_num; pos++) {
 		s_out.str("");
-		s_out << "D:/CuttingTXT/Stock_" << pos << ".txt";
+		s_out << "C:/Users/YMZhao/Desktop/2DCSP/Stock_" << pos << ".txt";
 		out_str = s_out.str();
 		f_out.open(out_str, ios::out);
 

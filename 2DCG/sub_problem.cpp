@@ -76,7 +76,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 	else {
 		printf("\n\n\t WSP_%d is FEASIBLE\n", Values.iter);
 
-		printf("\n\t WSP_%d model:\n\n", Values.iter);
+		
 		DisplaySubProblem(Values, Lists, 1);
 
 		printf("\n\n\t Obj = %f\n", Cplex_WSP.getValue(Obj_WSP));
@@ -143,7 +143,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 				if (Values.LSP_obj_val > a_val + RC_EPS) {
 					feasible_flag = 1;
 
-					printf("\n\t WSP_%d_LSP_%d reduced cost = %f > strip_type con_%d dual = %f:\n",
+					printf("\n\t WSP_%d_LSP_%d obj = %f > strip con_%d dual = %f:\n",
 						Values.iter, k + 1, Values.LSP_obj_val, k + 1, a_val);
 
 					vector<double> temp_col; // 
@@ -175,7 +175,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 					cout << endl;
 				}
 				else {
-					printf("\n\t WSP_%d_LSP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
+					printf("\n\t WSP_%d_LSP_%d obj = %f < strip con_%d dual = %f:\n",
 						Values.iter, k + 1, Values.LSP_obj_val, k + 1, a_val);
 					cout << endl;
 				}

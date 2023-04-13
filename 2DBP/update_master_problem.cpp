@@ -160,7 +160,7 @@ void SolveFinalMasterProblem(
 	MP_cplex.solve(); // 求解当前MP
 	printf("\n///////////////// MP_final CPLEX solving OVER /////////////////\n\n");
 
-	this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
+	this_node.LB = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 	printf("\n\t OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
 	/*
@@ -196,12 +196,12 @@ void SolveFinalMasterProblem(
 	}
 
 	printf("\n\t BRANCHED VARS: \n\n");
-	int branched_cols_num = this_node.branched_int_val_list.size();
+	int branched_cols_num = this_node.branched_int_list.size();
 	int var_idx = -1;
 	double var_int_val = -1;
 	for (int k = 0; k < branched_cols_num; k++) {
 		var_idx = this_node.branched_idx_list[k] + 1;
-		var_int_val = this_node.branched_int_val_list[k];
+		var_int_val = this_node.branched_int_list[k];
 		printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);
 	}
 

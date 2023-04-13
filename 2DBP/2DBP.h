@@ -135,21 +135,21 @@ struct Node {
 	double parent_var_to_branch_val = -1;
 
 	// Values of Node status
-	double node_lower_bound = -1; // LB of this Node
+	double LB = -1; // LB of this Node
 	int node_branched_flag = -1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
 	int node_pruned_flag = -1; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
 
 	// Values of final branching of this Node
 	int var_to_branch_idx = -1; // var-to-branch's col-index of this Node
-	double var_to_branch_soln_val = -1; // var-to-branch's soln-val of this Node
-	double var_to_branch_int_val_floor = -1; // var-to-branch's floored int-val of this Node
-	double var_to_branch_int_val_ceil = -1; // var-to-branch's ceiled int-val of this Node
-	double var_to_branch_int_val_final = -1; // var-to-branch's final int-val (floored or ceiled)
+	double var_to_branch_soln = -1; // var-to-branch's soln-val of this Node
+	double var_to_branch_floor = -1; // var-to-branch's floored int-val of this Node
+	double var_to_branch_ceil = -1; // var-to-branch's ceiled int-val of this Node
+	double var_to_branch_final = -1; // var-to-branch's final int-val (floored or ceiled)
 
 	// Lists of final branching of this Node
 	vector<int> branched_idx_list; // all branched-vars' col-index on the route from this Node to Root Node
-	vector<double> branched_int_val_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
-	vector<double> branched_vars_soln_val_list; // all branched-vars' soln-val on the route from this Node to Root Node
+	vector<double> branched_int_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
+	vector<double> branched_solns_ist; // all branched-vars' soln-val on the route from this Node to Root Node
 	//vector<vector<int>>branched_cols_list;
 
 	vector<double> all_solns_val_list; // final all (include 0) solns of this Node
@@ -206,7 +206,7 @@ struct All_Values {
 	int final_cut_loss = -1;
 	int final_area_loss = -1;
 
-	double tree_optimal_lower_bound = -1; // current optimal lower bound of BP Tree
+	double optimal_LB = -1; // current optimal lower bound of BP Tree
 
 	// flag of left or right or searching
 	// 1 -- new the Left Node,

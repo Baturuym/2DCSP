@@ -10,6 +10,7 @@ int main() {
 
 	ReadData(Values, Lists); // 读取数据
 	PrimalHeuristic(Values, Lists); // 初始启发式，获得一组初始的切割方案，作为初始MP的系数矩阵
+	OutPutResults(Values, Lists);
 	ColumnGeneration(Values, Lists);
 
 	return 0;

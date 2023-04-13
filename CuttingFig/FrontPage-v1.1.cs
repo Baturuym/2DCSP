@@ -24,12 +24,12 @@ namespace CuttingFig
 		{
 			Graphics g = panel1.CreateGraphics();
 			g.Clear(panel1.BackColor);
-			g.DLSPose();
+			//g.DLSPose();
 
 			OpenFileDialog dialog = new OpenFileDialog();
 			dialog.Multiselect = true;
 
-			dialog.InitialDirectory = @"D:\CuttingTXT";
+			dialog.InitialDirectory = @"C:/Users/YMZhao/Desktop/2DCSP";
 
 			dialog.Filter = "txt文件(*.*)|*.txt*";
 			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -75,7 +75,7 @@ namespace CuttingFig
 		{
 			Graphics g = panel1.CreateGraphics();
 			g.Clear(panel1.BackColor);
-			g.DLSPose();
+			//g.DLSPose();
 		}
 
 		private void panel1_Paint_1(object sender, PaintEventArgs e)
@@ -128,6 +128,7 @@ namespace CuttingFig
 	}
 }
 
+/*
 // 20211014
 // 问题1：画图之后刷新panel
 // 问题2：启发式生成txt编号
@@ -138,3 +139,4 @@ namespace CuttingFig
 // 从此只要是选0，0和1同时出现；只要是选1，0消失1出现
 
 // 最终发现确实是List的问题，每一次画完图需要Clear();
+*/

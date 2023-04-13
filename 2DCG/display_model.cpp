@@ -151,28 +151,31 @@ void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP) {
 	int all_rows_num = J_num + N_num;
 
 	if (Name_SP == 1) {
-		printf("\t ");
-		for (int k = 0; k < J_num; k++) {
-			printf("v%d\t", k);
+		printf("\n\t WSP_%d obj MAX:\n\n", Values.iter);
+		for (int k = 0; k < J_num-1; k++) {
+			printf("\t %f v_%d+\n",Lists.dual_prices_list[k],k+1);
 		}
-		printf("\n");
-		printf("\t ");
-		for (int k = 0; k < J_num; k++) {
-			printf("%d\t", Lists.all_item_types_list[k].length);
+		printf("\t %f v_%d\n", Lists.dual_prices_list[J_num-1], J_num);
+
+		printf("\n\t WSP_%d con:\n\n\t ", Values.iter);
+		for (int k = 0; k < J_num-1; k++) {
+			printf("%d v_%d + ", Lists.all_item_types_list[k].length,k+1);
 		}
-		printf("<=\t%d", Values.stock_length);
+		printf("%d v_%d <= %d\n", Lists.all_item_types_list[J_num-1].length,J_num, Values.stock_length);
 	}
+
 	if (Name_SP == 2) {
-		printf("\t ");
-		for (int k = 0; k < J_num; k++) {
-			printf("w%d\t", k);
+		printf("\n\t WSP_%d LSP obj MAX:\n\n", Values.iter);
+		for (int k = 0; k < N_num - 1; k++) {
+			printf("\t %f w_%d+\n", Lists.dual_prices_list[k], k+1);
 		}
-		printf("\n");
-		printf("\t ");
-		for (int k = 0; k < J_num; k++) {
-			printf("%d\t", Lists.all_item_types_list[k].width);
+		printf("\t %f w_%d\n\n", Lists.dual_prices_list[N_num-1], N_num);
+
+		printf("\n\t WSP_%d LSP con:\n\n\t ", Values.iter);
+		for (int k = 0; k < J_num-1; k++) {
+			printf("%d w_%d + ",Lists.all_item_types_list[k].width,k+1);
 		}
-		printf("<=\t%d", Values.stock_width);
+		printf("%d w_%d <= %d",Lists.all_item_types_list[J_num-1].width, J_num, Values.stock_width);
 		printf("\n\n");
 	}
 }

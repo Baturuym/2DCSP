@@ -76,8 +76,8 @@ bool SolveNewNodeFirstMasterProblem(
 
 		// Case 1 
 		if (col == parent_node.var_to_branch_idx) { // var of this col is the var-to-branch of Parent Node
-			IloNum var_min = this_node.var_to_branch_int_val_final;
-			IloNum var_max = this_node.var_to_branch_int_val_final;
+			IloNum var_min = this_node.var_to_branch_final;
+			IloNum var_max = this_node.var_to_branch_final;
 			IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // Init and set var
 			Vars_MP.add(Var_Y);
 			printf("\n\t Y_var_%d is set as %f, to be branched", col + 1, var_min);
@@ -86,13 +86,13 @@ bool SolveNewNodeFirstMasterProblem(
 		// Case 2
 		else { // var of this col is not the var-to-branch of Parent Node
 			// Case 2.1: var of this col is NOT a branched - var in previous Nodes	
-			int branched_vars_num = parent_node.branched_int_val_list.size();
+			int branched_vars_num = parent_node.branched_int_list.size();
 			bool find_flag = 0;
 			for (int index = 0; index < branched_vars_num; index++) { // loop of all branched-vars in previous Nodes
 				int branched_idx = parent_node.branched_idx_list[index];
 				if (col == branched_idx) { // var of this col is a branched-var in Parent Node
-					IloNum var_min = parent_node.branched_int_val_list[index];
-					IloNum var_max = parent_node.branched_int_val_list[index];
+					IloNum var_min = parent_node.branched_int_list[index];
+					IloNum var_max = parent_node.branched_int_list[index];
 					IloNumVar Var_Y(CplexCol, var_min, var_max, ILOFLOAT, Y_name.c_str()); // Init and set var
 					Vars_MP.add(Var_Y);
 					printf("\n\t Y_var_%d is set as %f, branched", col + 1, var_min);
@@ -126,8 +126,8 @@ bool SolveNewNodeFirstMasterProblem(
 
 		// Case 1
 		if (col + K_num == parent_node.var_to_branch_idx) { // var of this col is the var-to-branch of Parent Node
-			IloNum var_min = this_node.var_to_branch_int_val_final;
-			IloNum var_max = this_node.var_to_branch_int_val_final;
+			IloNum var_min = this_node.var_to_branch_final;
+			IloNum var_max = this_node.var_to_branch_final;
 			IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
 			Vars_MP.add(Var_X);
 			printf("\n\t X_var_%d is set as %f, to be branched", col + 1, var_min);
@@ -135,7 +135,7 @@ bool SolveNewNodeFirstMasterProblem(
 
 		// Case 2
 		else { // var of this col is not the var-to-branch of Parent Node
-			int branched_vars_num = parent_node.branched_int_val_list.size();
+			int branched_vars_num = parent_node.branched_int_list.size();
 			bool find_flag = 0;
 
 			// Case 2.1
@@ -143,8 +143,8 @@ bool SolveNewNodeFirstMasterProblem(
 				// loop of all branched-vars in previous Nodes
 				int branched_idx = parent_node.branched_idx_list[pos];
 				if (col == branched_idx) { // var of this col is a branched-var in Parent Node
-					IloNum var_min = parent_node.branched_int_val_list[pos];
-					IloNum var_max = parent_node.branched_int_val_list[pos];
+					IloNum var_min = parent_node.branched_int_list[pos];
+					IloNum var_max = parent_node.branched_int_list[pos];
 					IloNumVar Var_X(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
 					Vars_MP.add(Var_X);
 
@@ -203,10 +203,10 @@ bool SolveNewNodeFirstMasterProblem(
 		}
 
 		printf("\n\t BRANCHED VARS: \n\n");
-		int branched_vars_num = this_node.branched_int_val_list.size();
+		int branched_vars_num = this_node.branched_int_list.size();
 		for (int k = 0; k < branched_vars_num; k++) {
 			printf("\t var_X_%d = %f branched \n",
-				this_node.branched_idx_list[k] + 1, this_node.branched_int_val_list[k]);
+				this_node.branched_idx_list[k] + 1, this_node.branched_int_list[k]);
 		}
 
 		this_node.dual_prices_list.clear(); // ATTENTION: must clear dual_prices_list
