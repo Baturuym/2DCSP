@@ -201,7 +201,7 @@ void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP);
 
 int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists);
 
-void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists);
+void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, int strip_type_idx);
 
 // 生成+求解新的主问题
 void SolveUpdateMasterProblem(

@@ -24,13 +24,13 @@
     <ClCompile Include="first_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="input_data.cpp">
+    <ClCompile Include="input.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="output_results.cpp">
+    <ClCompile Include="output_heuristic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="primal_heuristic.cpp">
@@ -45,6 +45,9 @@
     <ClCompile Include="display_model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="output_final.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2DCG.h">
@@ -53,12 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Final Master Problem.lp">
-      <Filter>模型</Filter>
-    </None>
-    <None Include="Inner Sub Problem.lp">
-      <Filter>模型</Filter>
-    </None>
-    <None Include="Outer Sub Problem.lp">
       <Filter>模型</Filter>
     </None>
     <None Include="The First Master Problem.lp">

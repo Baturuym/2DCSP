@@ -63,21 +63,20 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 	Model_WSP.add(con_sum <= Values.stock_width);
 	con_sum.end();
 
-	printf("\n///////////////// WSP_%d CPLEX solving START /////////////////\n\n", Values.iter);
+	printf("\n///////////////// SP_%d CPLEX solving START /////////////////\n\n", Values.iter);
 	IloCplex Cplex_WSP(Env_WSP);
 	Cplex_WSP.extract(Model_WSP);
-	Cplex_WSP.exportModel("Outer Sub Problem.lp"); // 
+	Cplex_WSP.exportModel("Width Sub Problem.lp"); // 
 	bool WSP_flag = Cplex_WSP.solve(); // 
-	printf("\n///////////////// WSP_%d CPLEX solving OVER /////////////////\n\n", Values.iter);
+	printf("\n///////////////// SP_%d CPLEX solving OVER /////////////////\n\n", Values.iter);
 
 	if (WSP_flag == 0) {
-		printf("\n\t WSP_%d is NOT FEASIBLE\n", Values.iter);
+		printf("\n\t SP_%d is NOT FEASIBLE\n", Values.iter);
 	}
 	else {
-		printf("\n\n\t WSP_%d is FEASIBLE\n", Values.iter);
-
+		printf("\n\n\t SP_%d is FEASIBLE\n", Values.iter);
 		
-		DisplaySubProblem(Values, Lists, 1);
+		//DisplaySubProblem(Values, Lists, 1);
 
 		printf("\n\n\t Obj = %f\n", Cplex_WSP.getValue(Obj_WSP));
 
@@ -86,7 +85,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 
 		// print WSP solns
 		Lists.new_cutting_stock_col.clear();
-		printf("\n\t WSP_%d VARS:\n\n", Values.iter);
+		printf("\n\t SP_%d VARS:\n\n", Values.iter);
 		for (int j = 0; j < J_num; j++) { // this_strip rows
 			double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
 			if (soln_val == -0) {
@@ -98,7 +97,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 		}
 
 		// print WSP new col
-		printf("\n\t WSP_%d new col:\n\n", Values.iter);
+		printf("\n\t SP_%d new col:\n\n", Values.iter);
 		for (int j = 0; j < J_num + N_num; j++) {
 			if (j < J_num) {
 				double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
@@ -114,13 +113,13 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 		}
 
 		if (WSP_obj_val > 1 + RC_EPS) { // 则求解WSP获得的新列加入当前MP，不用求解LSP
-			printf("\n\n\t WSP reduced cost = %f > 1,  \n", WSP_obj_val);
+			printf("\n\n\t SP reduced cost = %f > 1,  \n", WSP_obj_val);
 			printf("\n\t No need to solve LSP\n");
 
 			loop_continue_flag = 1;
 		}
 		else { // 则继续求解这张中间板对应的LSP，看能否求出新列
-			printf("\n\t WSP reduced cost = %f <=1 \n", WSP_obj_val);
+			printf("\n\t SP reduced cost = %f <=1 \n", WSP_obj_val);
 			printf("\n\t Continue to solve LSP\n");
 
 			Values.LSP_obj_val = -1;
@@ -129,21 +128,22 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 			Lists.LSP_solns_list.clear();
 			Lists.LSP_new_col.clear();
 
-			SolveLengthSubProblem(Values, Lists);
-
 			int feasible_flag = 0;
 
 			int K_num = Lists.cutting_stock_cols.size();
 			int P_num = Lists.cutting_strip_cols.size();
 
 			for (int k = 0; k < J_num; k++) { // all current stk-cut-patterns
+
+				SolveLengthSubProblem(Values, Lists, k+1);
+
 				double a_val = Lists.dual_prices_list[k];
 				//SolveLengthSubProblem(Values, Lists);
 
 				if (Values.LSP_obj_val > a_val + RC_EPS) {
 					feasible_flag = 1;
 
-					printf("\n\t WSP_%d_LSP_%d obj = %f > strip con_%d dual = %f:\n",
+					printf("\n\t SP_%d_%d obj = %f > strip con_%d dual = %f:\n",
 						Values.iter, k + 1, Values.LSP_obj_val, k + 1, a_val);
 
 					vector<double> temp_col; // 
@@ -164,25 +164,25 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 						temp_col.push_back(D_soln_val); // 
 					}
 
-					printf("\n\t WSP_%d_LSP_%d new col:\n\n", Values.iter, k + 1);
+					printf("\n\t SP_%d_%d new col:\n\n", Values.iter, k + 1);
 					for (int row = 0; row < J_num + N_num; row++) {
 						printf("\t row_%d = %f\n", row + 1, temp_col[row]);  // 输出LSP的新列
 					}
-					printf("\n\t Add WSP_%d_LSP_%d new col to MP\n\n", Values.iter, k + 1);
+					printf("\n\t Add SP_%d_%d new col to MP\n\n", Values.iter, k + 1);
 
 					Lists.new_cutting_strip_cols.push_back(temp_col);
 
 					cout << endl;
 				}
 				else {
-					printf("\n\t WSP_%d_LSP_%d obj = %f < strip con_%d dual = %f:\n",
+					printf("\n\t SP_%d_%d obj = %f < strip con_%d dual = %f:\n",
 						Values.iter, k + 1, Values.LSP_obj_val, k + 1, a_val);
 					cout << endl;
 				}
 			}
 
 			if (feasible_flag == 0) {
-				printf("\n\t WSP_%d_LSP has no new col \n\n", Values.iter);
+				printf("\n\t Every SP_%d_* has no new col \n\n", Values.iter);
 				printf("\n\t Column Generation loop break\n");
 				cout << endl;
 			}
@@ -203,7 +203,7 @@ int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists) {
 	return loop_continue_flag; // 函数最终的返回值
 }
 
-void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
+void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, int strip_type_idx) {
 	int all_cols_num = Lists.model_matrix.size();
 
 	int strip_types_num = Values.strip_types_num;
@@ -216,7 +216,7 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
 
 	IloEnv Env_LSP; // LSP环境
 	IloModel Model_LSP(Env_LSP); // LSP模型
-	IloNumVarArray Vars_De(Env_LSP); // LSP
+	IloNumVarArray De_Vars(Env_LSP); // LSP
 
 	for (int i = 0; i < N_num; i++) // 
 	{
@@ -225,7 +225,7 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
 		string De_name = "D_" + to_string(i + 1);
 
 		IloNumVar Var_De(Env_LSP, var_min, var_max, ILOINT, De_name.c_str()); // LSP决策变量，整数
-		Vars_De.add(Var_De); // LSP决策变量加入list
+		De_Vars.add(Var_De); // LSP决策变量加入list
 	}
 
 	// Inner-SP's obj
@@ -233,38 +233,45 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
 	for (int i = 0; i < N_num; i++) {
 		int row_pos = i + N_num;
 		double b_val = Lists.dual_prices_list[row_pos];
-		obj_sum += b_val * Vars_De[i]; // 连加：对偶价格*决策变量
+		obj_sum += b_val * De_Vars[i]; // 连加：对偶价格*决策变量
 	}
 	IloObjective Obj_LSP = IloMaximize(Env_LSP, obj_sum); //
 	Model_LSP.add(Obj_LSP); //
 	obj_sum.end();
 
 	// Inner-SP's only one con
-	IloExpr con_sum(Env_LSP);
+	IloExpr sum_1(Env_LSP);
 	for (int i = 0; i < N_num; i++) {
-		double li_val = Lists.all_item_types_list[i].length;
-		con_sum += li_val * Vars_De[i];
+		double l_val = Lists.all_item_types_list[i].length;
+		sum_1 += l_val * De_Vars[i];
 	}
+	Model_LSP.add(sum_1 <= Values.stock_length);
+	sum_1.end();
 
-	Model_LSP.add(con_sum <= Values.stock_length);
-	con_sum.end();
+	IloExpr sum_2(Env_LSP);
+	for (int i = 0; i < N_num; i++) {
+		double w_val = Lists.all_item_types_list[i].width;
+		sum_2 += w_val * De_Vars[i];
+	}
+	Model_LSP.add(sum_2 <= Lists.all_strip_types_list[strip_type_idx].width);
+	sum_2.end();
 
-	printf("\n///////////////// WSP_%d_LSP CPLEX solving START /////////////////\n\n", Values.iter);
+	printf("\n///////////////// SP_%d_%d CPLEX solving START /////////////////\n\n", Values.iter,strip_type_idx);
 	IloCplex Cplex_LSP(Env_LSP);
 	Cplex_LSP.extract(Model_LSP);
-	Cplex_LSP.exportModel("Inner Sub Problem.lp"); // 输出LSP的lp模型
+	Cplex_LSP.exportModel("Length Sub Problem.lp"); // 输出LSP的lp模型
 	bool LSP_flag = Cplex_LSP.solve(); // 求解LSP
-	printf("\n///////////////// WSP_%d_LSP CPLEX solving OVER /////////////////\n\n", Values.iter);
+	printf("\n///////////////// SP_%d_%d CPLEX solving OVER /////////////////\n\n", Values.iter, strip_type_idx);
 
 	if (LSP_flag == 0) {
-		printf("\n\t WSP_%d_LSP is NOT FEASIBLE\n", Values.iter);
+		printf("\n\t SP_%d_%d is NOT FEASIBLE\n", Values.iter, strip_type_idx);
 	}
 	else {
-		printf("\n\t WSP_%d_LSP is FEASIBLE\n", Values.iter);
+		printf("\n\t SP_%d_%d is FEASIBLE\n", Values.iter, strip_type_idx);
 
-		printf("\n\t WSP_%d_LSP model:\n\n", Values.iter);
-		DisplaySubProblem(Values, Lists, 2);
-		printf("\n");
+		//printf("\n\t WSP_%d_LSP_%d model:\n\n", Values.iter, strip_type_idx);
+		//DisplaySubProblem(Values, Lists, 2);
+		//printf("\n");
 
 		printf("\n\t Obj = %f\n", Cplex_LSP.getValue(Obj_LSP));
 		Values.LSP_obj_val = Cplex_LSP.getValue(Obj_LSP);
@@ -273,9 +280,9 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
 			Lists.LSP_new_col.push_back(-1);
 		}
 
-		printf("\n\t WSP_%d_LSP VARS:\n\n", Values.iter);
+		printf("\n\t SP_%d_%d VARS:\n\n", Values.iter, strip_type_idx);
 		for (int i = 0; i < N_num; i++) {
-			double soln_val = Cplex_LSP.getValue(Vars_De[i]);
+			double soln_val = Cplex_LSP.getValue(De_Vars[i]);
 			if (soln_val == -0) {
 				soln_val = 0;
 			}
@@ -287,8 +294,8 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists) {
 
 	Obj_LSP.removeAllProperties();
 	Obj_LSP.end();
-	Vars_De.clear();
-	Vars_De.end();
+	De_Vars.clear();
+	De_Vars.end();
 	Model_LSP.removeAllProperties();
 	Model_LSP.end();
 	Env_LSP.removeAllProperties();

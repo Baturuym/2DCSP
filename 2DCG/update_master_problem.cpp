@@ -170,7 +170,7 @@ void SolveFinalMasterProblem(
 	All_Lists& Lists,
 	IloEnv& Env_MP,
 	IloModel& Model_MP,
-	IloObjective& Obj_MP,
+	IloObjective& Obj_MP, 
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP) {
 	int K_num = Lists.cutting_stock_cols.size();
@@ -181,6 +181,9 @@ void SolveFinalMasterProblem(
 
 	int all_rows_num = item_types_num + strip_types_num;
 	int all_cols_num = K_num + P_num;
+
+	printf("\nMP-%d model:\n", Values.iter);
+	DisplayMasterProblem(Values, Lists);
 
 	printf("\n\n///////////////// MP_final CPLEX solving START /////////////////\n");
 	IloCplex MP_cplex(Model_MP);

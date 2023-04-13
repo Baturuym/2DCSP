@@ -204,14 +204,14 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node
 
 	IloEnv Env_LSP; // LSP环境
 	IloModel Model_LSP(Env_LSP); // LSP模型
-	IloNumVarArray Vars_De(Env_LSP); // LSP
+	IloNumVarArray De_Vars(Env_LSP); // LSP
 
 	for (int i = 0; i < N_num; i++) {
 		IloNum  var_min = 0; // 
 		IloNum  var_max = IloInfinity; // 
 		string De_name = "D_" + to_string(i + 1);
 		IloNumVar Var_De(Env_LSP, var_min, var_max, ILOINT, De_name.c_str()); // LSP决策变量，整数
-		Vars_De.add(Var_De); // LSP决策变量加入list
+		De_Vars.add(Var_De); // LSP决策变量加入list
 	}
 
 	// Inner-SP's obj
@@ -219,7 +219,7 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node
 	for (int i = 0; i < N_num; i++) {
 		int row_pos = i + N_num;
 		double b_val = this_node.dual_prices_list[row_pos];
-		obj_sum += b_val * Vars_De[i]; // 连加：对偶价格*决策变量
+		obj_sum += b_val * De_Vars[i]; // 连加：对偶价格*决策变量
 	}
 	IloObjective Obj_LSP = IloMaximize(Env_LSP, obj_sum); //
 	Model_LSP.add(Obj_LSP); //
@@ -229,7 +229,7 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node
 	IloExpr con_sum(Env_LSP);
 	for (int i = 0; i < N_num; i++) {
 		double li_val = Lists.all_item_types_list[i].length;
-		con_sum += li_val * Vars_De[i];
+		con_sum += li_val * De_Vars[i];
 	}
 	Model_LSP.add(con_sum <= Values.stock_length);
 	con_sum.end();
@@ -250,7 +250,7 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node
 		printf("\n\t WSP_%d_LSP VARS:\n\n", this_node.iter);
 
 		for (int i = 0; i < N_num; i++) {
-			double soln_val = Cplex_LSP.getValue(Vars_De[i]);
+			double soln_val = Cplex_LSP.getValue(De_Vars[i]);
 			this_node.LSP_solns_list.push_back(soln_val);
 			printf("\t var_D_%d = %f\n", i + 1, soln_val);
 		}
@@ -258,8 +258,8 @@ void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node
 
 	Obj_LSP.removeAllProperties();
 	Obj_LSP.end();
-	Vars_De.clear();
-	Vars_De.end();
+	De_Vars.clear();
+	De_Vars.end();
 	Model_LSP.removeAllProperties();
 	Model_LSP.end();
 	Env_LSP.removeAllProperties();

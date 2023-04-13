@@ -32,7 +32,7 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
 				Values.optimal_LB = this_node.LB;
 				printf("\n\t Current Optimal Lower Bound = %f\n", Values.optimal_LB);
 			}
-			if (this_node.index > 1) {  // this Node is not Root Node
+			if (this_node.index > 1) { // this Node is not Root Node
 				if (Values.optimal_LB == -1) {  // this Node is the first Node with all int-solns
 					Values.optimal_LB = this_node.LB;
 					printf("\n\t Current Optimal Lower Bound = %f\n", Values.optimal_LB);
@@ -60,7 +60,6 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	// 0 -- continue to branch this Node; 1 -- search another generated Node
 	return tree_search_flag;
 }
-
 
 int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	int node_int_flag = 1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int

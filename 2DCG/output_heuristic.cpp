@@ -4,7 +4,7 @@
 #include "2DCG.h"
 using namespace std;
 
-void OutPutResults(All_Values& Values, All_Lists& Lists) {
+void nch(All_Values& Values, All_Lists& Lists) {
 	int stocks_num = Lists.occupied_stocks_list.size();
 	int items_num = Lists.occupied_items_list.size();
 	int strips_num = Lists.all_strips_list.size();

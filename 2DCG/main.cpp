@@ -5,6 +5,7 @@
 using namespace std;
 
 int main() {
+
 	All_Values Values;
 	All_Lists Lists;
 
@@ -13,5 +14,6 @@ int main() {
 	OutPutResults(Values, Lists);
 	ColumnGeneration(Values, Lists);
 
+	system("pause");
 	return 0;
 }

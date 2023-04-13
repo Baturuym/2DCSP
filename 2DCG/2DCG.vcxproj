@@ -134,9 +134,10 @@
     <ClCompile Include="column_generation.cpp" />
     <ClCompile Include="display_model.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
-    <ClCompile Include="input_data.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="output_results.cpp" />
+    <ClCompile Include="output_final.cpp" />
+    <ClCompile Include="output_heuristic.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
     <ClCompile Include="sub_problem.cpp" />
     <ClCompile Include="update_master_problem.cpp" />
@@ -146,8 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Final Master Problem.lp" />
-    <None Include="Inner Sub Problem.lp" />
-    <None Include="Outer Sub Problem.lp" />
     <None Include="The First Master Problem.lp" />
     <None Include="Update Master Problem.lp" />
   </ItemGroup>
