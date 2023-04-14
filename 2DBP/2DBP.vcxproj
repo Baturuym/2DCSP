@@ -137,9 +137,10 @@
     <ClCompile Include="new_node_column_generation.cpp" />
     <ClCompile Include="new_node_first_master_problem.cpp" />
     <ClCompile Include="new_node_generating.cpp" />
+    <ClCompile Include="output_models.cpp" />
     <ClCompile Include="output_results.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
-    <ClCompile Include="read_data.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="root_node_column_generation.cpp" />
     <ClCompile Include="root_node_first_master_problem.cpp" />
     <ClCompile Include="sub_problem.cpp" />

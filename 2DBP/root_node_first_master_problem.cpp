@@ -15,8 +15,8 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumVarArray& Vars_MP,
 	Node& root_node) {
 
-	int K_num = root_node.cutting_stock_cols.size();
-	int P_num = root_node.cutting_strip_cols.size();
+	int K_num = root_node.Y_cols_list.size();
+	int P_num = root_node.X_cols_list.size();
 
 	int J_num = Values.strip_types_num;
 	int N_num = Values.item_types_num;
@@ -113,6 +113,7 @@ bool SolveRootNodeFirstMasterProblem(
 	else {
 		printf("\n\t MP_1 is FEASIBLE\n");
 
+		int sum_vars = 0;
 		int Y_fsb_num = 0;
 		int X_fsb_num = 0;
 		printf("\n\t Y Solns (stock cutting patterns):\n\n");
@@ -121,6 +122,7 @@ bool SolveRootNodeFirstMasterProblem(
 			if (soln_val > 0) { // only print feasible solns
 				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 				Y_fsb_num++;
+				sum_vars++;
 			}
 		}
 		printf("\n\t X Solns (this_strip cutting patterns):\n\n");
@@ -129,26 +131,35 @@ bool SolveRootNodeFirstMasterProblem(
 			if (soln_val > 0) { // only print feasible solns
 				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 				X_fsb_num++;
+				sum_vars++;
 			}
 		}
 
 		root_node.dual_prices_list.clear(); // ATTENTION: must clear dual_prices_list
 
-		printf("\n\t strip_type cons dual prices: \n\n");
+		printf("\n\t strip cons dual: \n\n");
+		double dual_val = -1;
 		for (int row = 0; row < J_num; row++) {
-			double dual_val = MP_cplex.getDual(Cons_MP[row]);
+			dual_val = MP_cplex.getDual(Cons_MP[row]);
+			if (dual_val == -0) {
+				dual_val = 0;
+			}
 			root_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
-		printf("\n\t item_type cons dual prices: \n\n");
+		printf("\n\t item cons dual: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++) {
-			double dual_val = MP_cplex.getDual(Cons_MP[row]);
+			dual_val = MP_cplex.getDual(Cons_MP[row]);
+			if (dual_val == -0) {
+				dual_val = 0;
+			}
 			root_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 
 		printf("\n\t Node_%d MP-1:\n", root_node.index);
 		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
+		printf("\n\t Sum of all solns = %d", sum_vars);
 		printf("\n\t Number of all solns = %d", K_num + P_num);
 		printf("\n\t Number of all fsb-solns = %d", Y_fsb_num + X_fsb_num);
 		printf("\n\t Number of Y fsb-solns = %d", Y_fsb_num);

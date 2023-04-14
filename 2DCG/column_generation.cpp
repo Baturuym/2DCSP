@@ -5,6 +5,7 @@
 using namespace std;
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
+
 	IloEnv Env_MP; // MP环境
 	IloModel Model_MP(Env_MP); // MP模型
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // MP目标函数
@@ -17,7 +18,7 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 	while (1) {
 		int loop_continue_flag = -1;
 
-		loop_continue_flag = SolveWidthSubProblem(Values, Lists); // 求解子问题
+		loop_continue_flag = SolveStageOneSubProblem(Values, Lists); // 求解子问题
 
 		// 如果求解SP1和SP2都没有得到负费用列
 		if (loop_continue_flag == 0) {
@@ -39,6 +40,11 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 				Vars_MP); // 继续求解加入SP生成列的更新MP
 		}
 	}
+
+	Vars_MP.clear();
+	Cons_MP.clear();
+	Obj_MP.removeAllProperties();
+	Model_MP.removeAllProperties();
 
 	Values.iter++;
 	SolveFinalMasterProblem(

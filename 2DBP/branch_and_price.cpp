@@ -36,9 +36,9 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 				// Then the Right Node
 				Values.branch_status = 2;
 				Values.node_num++;
-				GenerateNewNode(Values, Lists, new_right_node, parent_node);  // set the Right Node
+				GenerateNewNode(Values, Lists, new_right_node, parent_node); // set the Right Node
 				NewNodeColumnGeneration(Values, Lists, new_right_node, parent_node); // solve the Right Node with CG loop
-				int right_search_flag = FinishNode(Values, Lists, new_right_node);  // finish the Right Node
+				int right_search_flag = FinishNode(Values, Lists, new_right_node); // finish the Right Node
 				Lists.all_nodes_list.push_back(new_right_node);
 
 				Values.root_flag = 0; // ATTENTION: 
@@ -46,8 +46,8 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 				// ATTETION: the var-to-branch val of the Parent Node decide which Node to fathom in next while-iter
 				double parent_branch_val = parent_node.var_to_branch_soln;
 				if (parent_branch_val <= 1) {
-
 					Values.search_flag = right_search_flag;
+
 					if (Values.search_flag != 1) { // fathom the Right Nodeand branch it in next while - iter
 						Values.fathom_flag = 2;
 						printf("\n\t parent branch val = %.4f < 1, \n\n\t Have to fathom Right Node_%d\n",
@@ -57,6 +57,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 				if (parent_branch_val > 1) { // choose the Node with better LB to fathom
 					if (new_left_node.LB < new_right_node.LB) {
 						Values.search_flag = left_search_flag;
+						
 						if (Values.search_flag != 1) { // continue to fathom the Left Node and branch it in next while-iter
 							Values.fathom_flag = 1;
 							printf("\n\t Left Node_%d LB %.4f < Right Node_%d LB %.4f\n",
@@ -67,6 +68,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 					}
 					if (new_left_node.LB >= new_right_node.LB) {
 						Values.search_flag = right_search_flag;
+						
 						if (Values.search_flag != 1) { // continue to set to fathom the Right Node and branch it in next while-iter
 							Values.fathom_flag = 2;
 							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f\n",
@@ -76,7 +78,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 						}
 					}
 				}
-				Values.branch_status = 1;  // ATTENTION: branch_status set to the Left Node in next while-iter
+				Values.branch_status = 1; // ATTENTION: branch_status set to the Left Node in next while-iter
 			}
 		}
 

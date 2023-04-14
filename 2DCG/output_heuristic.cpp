@@ -4,7 +4,8 @@
 #include "2DCG.h"
 using namespace std;
 
-void nch(All_Values& Values, All_Lists& Lists) {
+void OutputHeuristicResults(All_Values& Values, All_Lists& Lists) {
+
 	int stocks_num = Lists.occupied_stocks_list.size();
 	int items_num = Lists.occupied_items_list.size();
 	int strips_num = Lists.all_strips_list.size();
@@ -92,6 +93,7 @@ void nch(All_Values& Values, All_Lists& Lists) {
 		// 输出母板s中板条信息
 		for (size_t i = 0; i < strips_num; i++) {
 			if (Lists.all_strips_list[i].stock_idx == pos) {
+
 				int X = Lists.all_strips_list[i].pos_x;
 				int Y = Lists.all_strips_list[i].pos_y;
 				int L = Lists.all_strips_list[i].length;

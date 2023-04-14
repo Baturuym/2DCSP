@@ -4,264 +4,296 @@
 #include "2DBP.h"
 using namespace std;
 
-int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
+int SolveStageOneSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node){
 
-	int K_num = this_node.cutting_stock_cols.size();
-	int P_num = this_node.cutting_strip_cols.size();
+	int K_num = this_node.Y_cols_list.size();
+	int P_num = this_node.X_cols_list.size();
+
 	int J_num = Values.strip_types_num;
 	int N_num = Values.item_types_num;
+
 	int all_cols_num = K_num + P_num;
 	int all_rows_num = J_num + N_num;
 
-	/*			    pattern columns
-	-----------------------------------------
-	|		 P_num			|		K_num			|
-	| cut-stk-ptn cols	| cut-stp-ptn cols	|
-	-----------------------------------------------------
-	|							|							|				|
-	|			 C				|			D				|  J_num	|	strip_type cons >= 0
-	|							|							|				|
-	|----------------------------------------------------
-	|							|							|				|
-	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
-	|							|							|				|
-	-----------------------------------------------------
-	*/
+	int loop_continue_flag = -1;
 
-	int SP_flag = -1;
-
-	IloEnv Env_WSP; // WSP环境
-	IloModel Model_WSP(Env_WSP); // WSP模型
-	IloNumVarArray Vars_Ga(Env_WSP); // WSP决策变量
+	IloEnv Env_SP1; // SP1环境
+	IloModel Model_SP1(Env_SP1); // SP1模型
+	IloNumVarArray Ga_Vars(Env_SP1); // SP1决策变量
 
 	for (int j = 0; j < J_num; j++) {
-		// var >= 0
 		IloNum var_min = 0; // var LB
-		IloNum var_max = IloInfinity; // var UB
-		string Ga_name = "G_" + to_string(j + 1);
-		IloNumVar Var_Ga(Env_WSP, var_min, var_max, ILOINT, Ga_name.c_str()); //
-		Vars_Ga.add(Var_Ga); // 
+		IloNum var_max = IloInfinity; // var UB, var >= 0
+		string var_name = "G_" + to_string(j + 1);
+		IloNumVar Var_Ga(Env_SP1, var_min, var_max, ILOINT, var_name.c_str()); //
+		Ga_Vars.add(Var_Ga); // 
 	}
 
-	
-	IloExpr obj_sum(Env_WSP); // WSP obj
+	// SP1 obj
+	IloExpr obj_sum(Env_SP1);
 	for (int j = 0; j < J_num; j++) { // vars num = strip_types num
-		double a_val = this_node.dual_prices_list[j];
-		obj_sum += a_val * Vars_Ga[j]; //  obj: sum (a_j * G_j)
+		double val = this_node.dual_prices_list[j];
+		obj_sum += val * Ga_Vars[j]; //  obj: sum (a_j * G_j)
 	}
-	IloObjective Obj_WSP = IloMaximize(Env_WSP, obj_sum);
-	Model_WSP.add(Obj_WSP); // 
+	IloObjective Obj_SP1 = IloMaximize(Env_SP1, obj_sum);
+	Model_SP1.add(Obj_SP1); // 
 	obj_sum.end();
 
-	IloExpr con_sum(Env_WSP); 	// WSP only one con
+	// SP1 only one con
+	IloExpr con_sum(Env_SP1);
 	for (int j = 0; j < J_num; j++) {
-		double ws_val = Lists.all_strip_types_list[j].width;
-		con_sum += ws_val * Vars_Ga[j]; // con: sum (ws_j * G_j) <= W
+		double val = Lists.all_strip_types_list[j].width;
+		con_sum += val * Ga_Vars[j]; // con: sum (ws_j * G_j) <= W
 	}
-	Model_WSP.add(con_sum <= Values.stock_width);
+	Model_SP1.add(con_sum <= Values.stock_width);
 	con_sum.end();
 
-	printf("\n///////////////// WSP_%d CPLEX solving START /////////////////\n\n", this_node.iter);
-	IloCplex Cplex_WSP(Env_WSP);
-	Cplex_WSP.extract(Model_WSP);
-	Cplex_WSP.exportModel("Outer Sub Problem.lp"); // 
-	bool WSP_flag = Cplex_WSP.solve(); // 
-	printf("\n///////////////// WSP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// SP_%d CPLEX solving START /////////////////\n\n", this_node.iter);
+	IloCplex Cplex_SP1(Env_SP1);
+	Cplex_SP1.extract(Model_SP1);
+	//Cplex_SP1.exportModel("Width Sub Problem.lp"); // 
+	bool SP1_flag = Cplex_SP1.solve(); // 
+	printf("\n///////////////// SP_%d CPLEX solving OVER /////////////////\n\n", this_node.iter);
 
-	if (WSP_flag == 0) {
-		printf("\n\t WSP_%d is NOT FEASIBLE\n", this_node.iter);
+	if (SP1_flag == 0) {
+		printf("\n\t SP_%d is NOT FEASIBLE\n", this_node.iter);
 	}
 	else {
-		printf("\n\t WSP_%d is FEASIBLE\n", this_node.iter);
-		printf("\n\t Obj = %f\n", Cplex_WSP.getValue(Obj_WSP));
+		printf("\n\n\t SP_%d is FEASIBLE\n", this_node.iter);
 
-		double WSP_obj_val = Cplex_WSP.getValue(Obj_WSP);
-		vector<double> WSP_solns_list;
+		printf("\n\n\t Obj = %f\n", Cplex_SP1.getValue(Obj_SP1));
+		double SP1_obj_val = Cplex_SP1.getValue(Obj_SP1);
 
-		 
-		this_node.new_cutting_stock_col.clear(); // print WSP solns
-		printf("\n\t WSP_%d VARS:\n\n", this_node.iter);
+		this_node.new_Y_col.clear();
+		printf("\n\t SP_%d VARS:\n\n", this_node.iter);
 		for (int j = 0; j < J_num; j++) { // this_strip rows
-			double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
+			double soln_val = Cplex_SP1.getValue(Ga_Vars[j]);
+			if (soln_val == -0) {
+				soln_val = 0;
+			}
 			printf("\t var_G_%d = %f\n", j + 1, soln_val);
-			this_node.new_cutting_stock_col.push_back(soln_val);
-			WSP_solns_list.push_back(soln_val);
+			this_node.new_Y_col.push_back(soln_val);
 		}
 
-		printf("\n\t WSP_%d new col:\n\n", this_node.iter); // print WSP new col
+		printf("\n\t SP_%d new col:\n\n", this_node.iter);
 		for (int j = 0; j < J_num + N_num; j++) {
 			if (j < J_num) {
-				double soln_val = Cplex_WSP.getValue(Vars_Ga[j]);
+				double soln_val = Cplex_SP1.getValue(Ga_Vars[j]);
+				if (soln_val == -0) {
+					soln_val = 0;
+				}
 				printf("\t row_%d = %f\n", j + 1, soln_val);
 			}
 			else {
 				printf("\t row_%d = 0\n", j + 1);
-				this_node.new_cutting_stock_col.push_back(0);
+				this_node.new_Y_col.push_back(0);
 			}
 		}
+		if (SP1_obj_val > 1 + RC_EPS) { // 则求解SP1获得的新列加入当前MP，不用求解SP2
+			printf("\n\n\t SP reduced cost = %f > 1,  \n", SP1_obj_val);
+			printf("\n\t No need to solve SP2\n");
 
-		if (WSP_obj_val > 1 + RC_EPS) { // 则求解WSP获得的新列加入当前MP，不用求解LSP
-			printf("\n\n\t WSP reduced cost = %f > 1,  \n", WSP_obj_val);
-			printf("\n\t No need to solve Inner-SP\n");
-
-			SP_flag = 1;
+			this_node.Y_col_flag = 1;
+			loop_continue_flag = 1;
 		}
-		else { // 则继续求解这张中间板对应的LSP，看能否求出新列
-			printf("\n\t WSP reduced cost = %f <=1 \n", WSP_obj_val);
-			printf("\n\t Continue to solve LSP\n");
+		else { // 则继续求解这张中间板对应的SP2，看能否求出新列
+			printf("\n\t SP reduced cost = %f <=1 \n", SP1_obj_val);
+			printf("\n\t Continue to solve SP2\n");
 
-			this_node.LSP_obj_val = -1;
-			this_node.LSP_solns_list.clear();
-			this_node.new_cutting_strip_cols.clear();
-
-			SolveLengthSubProblem(Values, Lists, this_node);
+			this_node.new_Y_col.clear();
+			this_node.new_X_cols_list.clear();
+			this_node.Y_col_flag = 0;
+			this_node.SP2_obj_val = -1;
 
 			int feasible_flag = 0;
+			int SP2_flag = -1;
+			int K_num = this_node.Y_cols_list.size();
+			int P_num = this_node.X_cols_list.size();
 
 			for (int k = 0; k < J_num; k++) { // all current stk-cut-patterns
-				double a_val = this_node.dual_prices_list[k];
-				//SolveLengthSubProblem(Values, Lists);
 
-				if (this_node.LSP_obj_val > a_val + RC_EPS) {
-					feasible_flag = 1;
-					printf("\n\t WSP_%d_LSP_%d reduced cost = %f > strip_type con_%d dual = %f:\n",
-						this_node.iter, k + 1, this_node.LSP_obj_val, k + 1, a_val);
+				SP2_flag = SolveStageTwoSubProblem(Values, Lists, this_node,k + 1);
+				if (SP2_flag == 1) {
+					double a_val = this_node.dual_prices_list[k];
 
-					vector<double> temp_col; // 
-					for (int j = 0; j < J_num; j++) { //  all current stp-cut-patterns 
-						if (k == j) { // this stp-cut-pattern p is USED in stk-cut-pattern k
-							temp_col.push_back(-1); // used
+					if (this_node.SP2_obj_val > a_val + RC_EPS) {
+						feasible_flag = 1;
+						printf("\n\t SP_%d_%d obj = %f > strip con_%d dual = %f:\n",
+							this_node.iter, k + 1, this_node.SP2_obj_val, k + 1, a_val);
+
+						vector<double> temp_col;
+						for (int j = 0; j < J_num; j++) { //  all current stp-cut-patterns 
+							if (k == j) {  // this stp-cut-pattern p is USED in stk-cut-pattern k
+								temp_col.push_back(-1); // used
+							}
+							else {
+								temp_col.push_back(0); // not used
+							}
 						}
-						else {
-							temp_col.push_back(0); // not used
-						}
-					}
-					for (int i = 0; i < N_num; i++) {
-						double D_soln_val = this_node.LSP_solns_list[i];
-						temp_col.push_back(D_soln_val); // 
-					}
 
-					printf("\n\t WSP_%d_LSP_%d new col:\n\n", this_node.iter, k + 1);
-					for (int row = 0; row < J_num + N_num; row++) { // 输出LSP的新列
-						printf("\t row_%d = %f\n", row + 1, temp_col[row]);
+						for (int i = 0; i < N_num; i++) {
+							double soln_val = this_node.SP2_solns_list[i];
+							if (soln_val == -0) {
+								soln_val = 0;
+							}
+							temp_col.push_back(soln_val); // 
+						}
+
+						printf("\n\t SP_%d_%d new col:\n\n", this_node.iter, k + 1);
+						for (int row = 0; row < J_num + N_num; row++) {
+							printf("\t row_%d = %f\n", row + 1, temp_col[row]); // 输出SP2的新列
+						}
+						printf("\n\t Add SP_%d_%d new col to MP\n\n", this_node.iter, k + 1);
+
+						this_node.new_X_cols_list.push_back(temp_col);
+						cout << endl;
 					}
-					printf("\n\t Add WSP_%d_LSP_%d new col to MP\n\n", this_node.iter, k + 1);
-					this_node.new_cutting_strip_cols.push_back(temp_col);
-					cout << endl;
-				}
-				if (this_node.LSP_obj_val <= a_val + RC_EPS) {
-					printf("\n\t WSP_%d_LSP_%d reduced cost = %f < strip_type con_%d dual = %f:\n",
-						this_node.iter, k + 1, this_node.LSP_obj_val, k + 1, a_val);
+					else {
+						printf("\n\t SP_%d_%d Obj = %f < strip con_%d dual = %f:\n",
+							this_node.iter, k + 1, this_node.SP2_obj_val, k + 1, a_val);
+						cout << endl;
+					}
 				}
 			}
 
 			if (feasible_flag == 0) {
-				printf("\n\t WSP_%d_LSP has no new col \n\n", this_node.iter);
+				printf("\n\t Every SP_%d_* has no new col \n\n", this_node.iter);
 				printf("\n\t Column Generation loop break\n");
 				cout << endl;
 			}
-			SP_flag = feasible_flag;
+
+			loop_continue_flag = feasible_flag;
 		}
 	}
 
-	Obj_WSP.removeAllProperties();
-	Obj_WSP.end();
-	Vars_Ga.clear();
-	Vars_Ga.end();
-	Model_WSP.removeAllProperties();
-	Model_WSP.end();
-	Env_WSP.removeAllProperties();
-	Env_WSP.end();
+	Obj_SP1.removeAllProperties();
+	Obj_SP1.end();
+	Ga_Vars.clear();
+	Ga_Vars.end();
+	Model_SP1.removeAllProperties();
+	Model_SP1.end();
+	Env_SP1.removeAllProperties();
+	Env_SP1.end();
 
-	return SP_flag; // 函数最终的返回值
+	return loop_continue_flag; // 函数最终的返回值
 }
 
-void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
+int SolveStageTwoSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node, int strip_type_idx){
 
-	int K_num = this_node.cutting_stock_cols.size();
-	int P_num = this_node.cutting_strip_cols.size();
-	int J_num = Values.strip_types_num;
-	int N_num = Values.item_types_num;
-	int all_cols_num = K_num + P_num;
-	int all_rows_num = J_num + N_num;
+	printf("\n\t SP_%d_%d strip width = %d\n", this_node.iter, strip_type_idx,
+		Lists.all_strip_types_list[strip_type_idx - 1].width);
 
-	/*			    pattern columns
-	-----------------------------------------
-	|		 P_num			|		K_num			|
-	| cut-stk-ptn cols	| cut-stp-ptn cols	|
-	-----------------------------------------------------
-	|							|							|				|
-	|			 C				|			D				|  J_num	|	strip_type cons >= 0
-	|							|							|				|
-	|----------------------------------------------------
-	|							|							|				|
-	|			 0				|			B				|  N_num	|	item_type cons >= item_type demand
-	|							|							|				|
-	-----------------------------------------------------
-	*/
+	int all_cols_num = this_node.model_matrix.size();
+	int strip_types_num = Values.strip_types_num;
+	int item_types_num = Values.item_types_num;
+	int J_num = strip_types_num;
+	int N_num = item_types_num;
 
 	int final_return = -1;
 
-	IloEnv Env_LSP; // LSP环境
-	IloModel Model_LSP(Env_LSP); // LSP模型
-	IloNumVarArray De_Vars(Env_LSP); // LSP
+	IloEnv Env_SP2; // SP2环境
+	IloModel Model_SP2(Env_SP2); // SP2模型
+	IloNumVarArray De_Vars(Env_SP2); // SP2
 
 	for (int i = 0; i < N_num; i++) {
 		IloNum  var_min = 0; // 
 		IloNum  var_max = IloInfinity; // 
-		string De_name = "D_" + to_string(i + 1);
-		IloNumVar Var_De(Env_LSP, var_min, var_max, ILOINT, De_name.c_str()); // LSP决策变量，整数
-		De_Vars.add(Var_De); // LSP决策变量加入list
+		string var_name = "D_" + to_string(i + 1);
+		IloNumVar De_Var(Env_SP2, var_min, var_max, ILOINT, var_name.c_str()); // SP2决策变量，整数
+		De_Vars.add(De_Var); // SP2决策变量加入list
 	}
 
-	// Inner-SP's obj
-	IloExpr obj_sum(Env_LSP);
+	IloObjective Obj_SP2(Env_SP2); // obj
+	IloExpr obj_sum(Env_SP2);
+	IloExpr sum_1(Env_SP2); // con 1
+	double sum_val = 0;
+	vector<int> fsb_idx;
+
 	for (int i = 0; i < N_num; i++) {
-		int row_pos = i + N_num;
-		double b_val = this_node.dual_prices_list[row_pos];
-		obj_sum += b_val * De_Vars[i]; // 连加：对偶价格*决策变量
+		if (Lists.all_item_types_list[i].width
+			<= Lists.all_strip_types_list[strip_type_idx - 1].width) {
+			int row_pos = i + N_num;
+			double b_val = this_node.dual_prices_list[row_pos];
+			if (b_val > 0) {
+				obj_sum += b_val * De_Vars[i]; // 
+				sum_val += b_val;
+				double l_val = Lists.all_item_types_list[i].length;
+				sum_1 += l_val * De_Vars[i];
+				fsb_idx.push_back(i);
+			}
+		}
 	}
-	IloObjective Obj_LSP = IloMaximize(Env_LSP, obj_sum); //
-	Model_LSP.add(Obj_LSP); //
-	obj_sum.end();
-
-	// Inner-SP's only one con
-	IloExpr con_sum(Env_LSP);
-	for (int i = 0; i < N_num; i++) {
-		double li_val = Lists.all_item_types_list[i].length;
-		con_sum += li_val * De_Vars[i];
+	if (sum_val > 0) {
+		Obj_SP2 = IloMaximize(Env_SP2, obj_sum);
+		Model_SP2.add(Obj_SP2);
+		Model_SP2.add(sum_1 <= Values.stock_length);
+		obj_sum.end();
+		sum_1.end();
+		final_return = 1;
 	}
-	Model_LSP.add(con_sum <= Values.stock_length);
-	con_sum.end();
+	if (sum_val == 0) {
+		printf("\n\t SP_%d_%d does NOT EXIST\n", this_node.iter, strip_type_idx);
+		sum_1.end();
+		final_return = 1;
+		Obj_SP2.removeAllProperties();
+		Obj_SP2.end();
+		De_Vars.clear();
+		De_Vars.end();
+		Model_SP2.removeAllProperties();
+		Model_SP2.end();
+		Env_SP2.removeAllProperties();
+		Env_SP2.end();
+		final_return = 0;
+		return final_return;
+	}
 
-	printf("\n///////////////// WSP_%d_LSP CPLEX solving START /////////////////\n\n", this_node.iter);
-	IloCplex Cplex_LSP(Env_LSP);
-	Cplex_LSP.extract(Model_LSP);
-	Cplex_LSP.exportModel("Inner Sub Problem.lp"); // 输出LSP的lp模型
-	bool LSP_flag = Cplex_LSP.solve(); // 求解LSP
-	printf("\n///////////////// WSP_%d_LSP CPLEX solving OVER /////////////////\n\n", this_node.iter);
+	printf("\n///////////////// SP_%d_%d CPLEX solving START /////////////////\n\n", this_node.iter, strip_type_idx);
+	IloCplex Cplex_SP2(Env_SP2);
+	Cplex_SP2.extract(Model_SP2);
+	//Cplex_SP2.exportModel("Length Sub Problem.lp"); // 输出SP2的lp模型
+	bool SP2_flag = Cplex_SP2.solve(); // 求解SP2
+	printf("\n///////////////// SP_%d_%d CPLEX solving OVER /////////////////\n\n", this_node.iter, strip_type_idx);
 
-	if (LSP_flag == 0) {
-		printf("\n\t WSP_%d_LSP is NOT FEASIBLE\n", this_node.iter);
+	if (SP2_flag == 0) {
+		printf("\n\t SP_%d_%d is NOT FEASIBLE\n", this_node.iter, strip_type_idx);
 	}
 	else {
-		printf("\n\t WSP_%d_LSP is FEASIBLE\n", this_node.iter);
-		printf("\n\t Obj = %f\n", Cplex_LSP.getValue(Obj_LSP));
-		printf("\n\t WSP_%d_LSP VARS:\n\n", this_node.iter);
+		printf("\n\t SP_%d_%d is FEASIBLE\n", this_node.iter, strip_type_idx);
+
+		printf("\n\t Obj = %f\n", Cplex_SP2.getValue(Obj_SP2));
+		this_node.SP2_obj_val = Cplex_SP2.getValue(Obj_SP2);
+
+		printf("\n\t SP_%d_%d VARS:\n\n", this_node.iter, strip_type_idx);
+		this_node.SP2_solns_list.clear();
+		int fsb_num = fsb_idx.size();
 
 		for (int i = 0; i < N_num; i++) {
-			double soln_val = Cplex_LSP.getValue(De_Vars[i]);
-			this_node.LSP_solns_list.push_back(soln_val);
-			printf("\t var_D_%d = %f\n", i + 1, soln_val);
+			int fsb_flag = -1;
+			for (int k = 0; k < fsb_num; k++) {
+				if (i == fsb_idx[k]) {
+					fsb_flag = 1;
+					double soln_val = Cplex_SP2.getValue(De_Vars[i]);
+					if (soln_val == -0) {
+						soln_val = 0;
+					}
+					printf("\t var_D_%d = %f\n", i + 1, soln_val);
+					this_node.SP2_solns_list.push_back(soln_val);
+				}
+			}
+			if (fsb_flag != 1) {
+				this_node.SP2_solns_list.push_back(0);
+			}
 		}
 	}
 
-	Obj_LSP.removeAllProperties();
-	Obj_LSP.end();
+	Obj_SP2.removeAllProperties();
+	Obj_SP2.end();
 	De_Vars.clear();
 	De_Vars.end();
-	Model_LSP.removeAllProperties();
-	Model_LSP.end();
-	Env_LSP.removeAllProperties();
-	Env_LSP.end();
+	Model_SP2.removeAllProperties();
+	Model_SP2.end();
+	Env_SP2.removeAllProperties();
+	Env_SP2.end();
+
+	return final_return;
 }

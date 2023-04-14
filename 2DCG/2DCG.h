@@ -142,37 +142,30 @@ struct All_Values
 	bool Finish;
 
 	int iter = -1;
-	double LSP_obj_val = -1;
+	double SP2_obj_val = -1;
+	int Y_col_flag = -1;
 };
 
 struct All_Lists
 {
-	vector<Stock_Stc> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<Strip_Stc> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<Stock_Stc> Y_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<Strip_Stc> X_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
 	vector<Item_Type_Stc> all_item_types_list;
 	vector<Strip_Type_Stc> all_strip_types_list;
-
 	vector<Item_Stc> all_items_list;
 	vector<Strip_Stc> all_strips_list;
-
 	vector<Stock_Stc> occupied_stocks_list;
 	vector<Item_Stc> occupied_items_list;
-
 	vector<Stock_Stc> all_stocks_list;
 
 	vector<vector<double>> model_matrix; // 存储系数矩阵的所有列
-	vector<vector<double>> cutting_stock_cols; // 存储第一阶段方案的所有列
-	vector<vector<double>> cutting_strip_cols; // 存储第二阶段方案的所有列
-	//vector<vector<double>> new_cols; // 存储要加入MP的新列
-
-	vector<double> new_cutting_stock_col;
-	vector<vector<double>> new_cutting_strip_cols;
-
+	vector<vector<double>> Y_cols_list; // 存储第一阶段方案的所有列
+	vector<vector<double>> X_cols_list; // 存储第二阶段方案的所有列
 	vector<double> dual_prices_list;
-
-	vector<double> LSP_new_col;
-	vector<double> LSP_solns_list;
+	vector<double> new_Y_col;
+	vector<double> SP2_solns_list;
+	vector<vector<double>> new_X_cols_list;
 
 };
 
@@ -186,8 +179,6 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists);
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 
-void DisplayMasterProblem(All_Values& Values, All_Lists& Lists);
-
 void SolveFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -197,11 +188,9 @@ void SolveFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
-void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP);
+int SolveStageOneSubProblem(All_Values& Values, All_Lists& Lists);
 
-int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists);
-
-void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, int strip_type_idx);
+int SolveStageTwoSubProblem(All_Values& Values, All_Lists& Lists, int strip_type_idx);
 
 // 生成+求解新的主问题
 void SolveUpdateMasterProblem(
@@ -222,7 +211,15 @@ void SolveFinalMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
-void OutPutResults(All_Values& Values, All_Lists& Lists);
+void OutputMasterProblem(All_Values& Values, All_Lists& Lists);
+
+void OutputDualMasterProblem(All_Values& Values, All_Lists& Lists);
+
+void DisplaySubProblem(All_Values& Values, All_Lists& Lists, int Name_SP);
+
+void OutputHeuristicResults(All_Values& Values, All_Lists& Lists);
+
+void OutputFinalResults(All_Values& Values, All_Lists& Lists);
 
 
 

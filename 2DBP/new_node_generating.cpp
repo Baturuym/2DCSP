@@ -28,7 +28,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	if (Values.branch_status != 3) { // continue to branch the Parent Node
 		if (Values.root_flag == 1) { // the Parent Node is Root Node
 			if (Values.branch_status == 1) { // the the Left Node of Root Node
-				pos = all_nodes_num - 1;  // sub left index = parent index + 1
+				pos = all_nodes_num - 1; // sub left index = parent index + 1
 			}
 			if (Values.branch_status == 2) { // the the Right Node of Root Node
 				pos = all_nodes_num - 2; // sub right index = parent index + 2
@@ -41,7 +41,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 					pos = all_nodes_num - 2; // sub left index = parent index + 2
 				}
 				if (Values.branch_status == 2) {
-					pos = all_nodes_num - 3;  // sub right index = parent index + 3
+					pos = all_nodes_num - 3; // sub right index = parent index + 3
 				}
 			}
 			if (Values.fathom_flag == 2) { // the Parent Node is a Right Node
@@ -105,30 +105,30 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	for (int col = 0; col < all_cols_num; col++) {
 		vector<double> temp_col;
 		for (int row = 0; row < all_rows_num; row++) {
-			double temp_val = parent_node.model_matrix[col][row];
-			temp_col.push_back(temp_val);
+			double val = parent_node.model_matrix[col][row];
+			temp_col.push_back(val);
 		}
 		new_node.model_matrix.push_back(temp_col); 
 	}
 
-	int K_num = parent_node.cutting_stock_cols.size();
+	int K_num = parent_node.Y_cols_list.size();
 	for (int col = 0; col < K_num; col++) {
 		vector<double> temp_col;
 		for (int row = 0; row < all_rows_num; row++) {
-			double temp_val = parent_node.cutting_stock_cols[col][row];
-			temp_col.push_back(temp_val);
+			double val = parent_node.Y_cols_list[col][row];
+			temp_col.push_back(val);
 		}
-		new_node.cutting_stock_cols.push_back(temp_col);
+		new_node.Y_cols_list.push_back(temp_col);
 	}
 
-	int P_num = parent_node.cutting_strip_cols.size();
+	int P_num = parent_node.X_cols_list.size();
 	for (int col = 0; col < P_num; col++) {
 		vector<double> temp_col;
 		for (int row = 0; row < all_rows_num; row++) {
-			double temp_val = parent_node.cutting_strip_cols[col][row];
-			temp_col.push_back(temp_val);
+			double val = parent_node.X_cols_list[col][row];
+			temp_col.push_back(val);
 		}
-		new_node.cutting_strip_cols.push_back(temp_col);
+		new_node.X_cols_list.push_back(temp_col);
 	}
 
 	// Init branched-vars list and their col-index list of the Node-to-branch
@@ -153,8 +153,8 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	else // other Nodes
 	{
 		for (int col = 0; col < branched_vars_num - 1; col++) {
-			double temp_val = parent_node.branched_int_list[col];
-			new_node.branched_int_list.push_back(temp_val);
+			double val = parent_node.branched_int_list[col];
+			new_node.branched_int_list.push_back(val);
 		}
 		new_node.branched_int_list.push_back(final_int_val);
 	}
@@ -163,8 +163,8 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	new_node.all_solns_val_list.clear();
 	new_node.dual_prices_list.clear();
 
-	new_node.new_cutting_stock_col.clear();
-	new_node.new_cutting_strip_cols.clear();
+	new_node.new_Y_col.clear();
+	new_node.new_X_cols_list.clear();
 
 	/*
 	new_node.LSP_one_new_col.clear();

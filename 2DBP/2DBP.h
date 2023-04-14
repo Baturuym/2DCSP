@@ -127,6 +127,7 @@ struct Stock_Stc {
 
 // Node
 struct Node {
+
 	int index = -1;
 
 	// Values of the Parent Node of this Node
@@ -150,35 +151,30 @@ struct Node {
 	vector<int> branched_idx_list; // all branched-vars' col-index on the route from this Node to Root Node
 	vector<double> branched_int_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
 	vector<double> branched_solns_ist; // all branched-vars' soln-val on the route from this Node to Root Node
-	//vector<vector<int>>branched_cols_list;
 
 	vector<double> all_solns_val_list; // final all (include 0) solns of this Node
-	//vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solns of this Node
-	//vector<int> fsb_solns_idx_list; // final col-index of feasible-solns of this Node
-	//vector<double> int_solns_val_list; // final all int-solns of this Node
-	//vector<int> int_solns_idx_list;  // final col-index of int-solns of this Node
+
 
 	// Lists of one Column Generation iter of this Node
 	int iter = -1;
 	vector<vector<double>> model_matrix; // model matrix in this CG iter
 	vector<double> dual_prices_list; // dual prices of Master Problem cons in this CG iter
-	//vector<double> new_col; // one new col from Sub Problem in this CG iter
-	//vector<vector<double>> new_cols_list; // new cols from Sub Problem in this CG iter
 
 	/*-------------------------------------*/
 
-	vector<Stock_Stc> cutting_stock_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<Strip_Stc> cutting_strip_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<Stock_Stc> Y_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<Strip_Stc> X_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
-	vector<vector<double>> cutting_stock_cols; // 存储第一阶段方案的所有列
-	vector<vector<double>> cutting_strip_cols; // 存储第二阶段方案的所有列
+	vector<vector<double>> Y_cols_list; // 存储第一阶段方案的所有列
+	vector<vector<double>> X_cols_list; // 存储第二阶段方案的所有列
 
-	vector<double> new_cutting_stock_col;
-	vector<vector<double>> new_cutting_strip_cols;
+	vector<double> new_Y_col;
+	vector<vector<double>> new_X_cols_list;
 
-	double LSP_obj_val = -1;
+	double SP2_obj_val = -1;
 	//vector<double> LSP_one_new_col;
-	vector<double> LSP_solns_list;
+	vector<double> SP2_solns_list;
+	int Y_col_flag = -1;
 
 };
 
@@ -260,11 +256,11 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumVarArray& Vars_List_MP,
 	Node& root_node);
 
-//bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int SolveWidthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+int SolveStageOneSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-void SolveLengthSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+
+int SolveStageTwoSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node,int strip_type_idx);
 
 void SolveUpdateMasterProblem(
 	All_Values& Values,
@@ -309,6 +305,13 @@ bool SolveNewNodeFirstMasterProblem(
 	Node& this_node,
 	Node& parent_node);
 
+void OutputMasterProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+
+void OutputDualMasterProblem(All_Values& Values, All_Lists& Lists,Node& this_node);
+
+void OutputHeuristicResults(All_Values& Values, All_Lists& Lists);
+
+void OutputFinalResults(All_Values& Values, All_Lists& Lists);
 
 
 

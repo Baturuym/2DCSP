@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="column_generation.cpp" />
-    <ClCompile Include="display_model.cpp" />
+    <ClCompile Include="output_models.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -146,12 +146,13 @@
     <ClInclude Include="2DCG.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Final Master Problem.lp" />
-    <None Include="The First Master Problem.lp" />
-    <None Include="Update Master Problem.lp" />
+    <Text Include="cutdata1207.txt" />
+    <Text Include="Dual Master Problem.txt" />
+    <Text Include="Master Problem.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="cutdata1207.txt" />
+    <None Include="Length Sub Problem.lp" />
+    <None Include="Width Sub Problem.lp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

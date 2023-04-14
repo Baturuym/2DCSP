@@ -153,7 +153,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 				if (all_strips_num == 0) { // µÚÒ»¸öÖÐ¼ä°å
 					new_strip.pattern = strip_pattern;
 					strip_pattern++; // Ö»ÓÐÎ¨Ò»µÄÇÐ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-					root_node.cutting_strip_patterns_list.push_back(new_strip);
+					root_node.X_patterns_list.push_back(new_strip);
 				}
 				if (all_strips_num != 0) { // µÚÒ»¸öÖÐ¼ä°åÖ®ºóÆäËûÖÐ¼ä°å
 					for (int s = 0; s < all_strips_num; s++) {
@@ -181,7 +181,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 					if (Strip_Final_Cnt < item_types_num) { // È·ÈÏÊÇÐÂµÄÇÐ¸îÄ£Ê½
 						new_strip.pattern = strip_pattern;
 						strip_pattern++; // Ö»ÓÐÎ¨Ò»µÄÇÐ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-						root_node.cutting_strip_patterns_list.push_back(new_strip); // µÚ¶þ½×¶ÎÁÐ
+						root_node.X_patterns_list.push_back(new_strip); // µÚ¶þ½×¶ÎÁÐ
 					}
 				}
 
@@ -269,7 +269,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 		if (occupied_stocks_num == 0) { // µÚÒ»¸öÄ¸°å
 			new_stock.pattern = stock_pattern;
 			stock_pattern++; // Ö»ÓÐÎ¨Ò»µÄÇÐ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-			root_node.cutting_stock_patterns_list.push_back(new_stock);
+			root_node.Y_patterns_list.push_back(new_stock);
 		}
 
 		if (occupied_stocks_num != 0) { // µÚÒ»¸öÖÐ¼ä°åÖ®ºóÆäËûÄ¸°å
@@ -298,7 +298,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 			if (Stock_Final_Cnt < strip_types_num) { // È·ÈÏÊÇÐÂµÄÖÐ¼ä°åÖÖÀà
 				new_stock.pattern = stock_pattern;
 				stock_pattern++; // Ö»ÓÐÎ¨Ò»µÄÇÐ¸îÄ£Ê½£¬²Å¶ÔÓ¦Ò»¸öpattern
-				root_node.cutting_stock_patterns_list.push_back(new_stock); // µÚÒ»½×¶ÎÁÐ
+				root_node.Y_patterns_list.push_back(new_stock); // µÚÒ»½×¶ÎÁÐ
 			}
 		}
 
@@ -321,8 +321,8 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 	-----------------------------------------------------
 	*/
 
-	int K_num = root_node.cutting_stock_patterns_list.size();
-	int P_num = root_node.cutting_strip_patterns_list.size();
+	int K_num = root_node.Y_patterns_list.size();
+	int P_num = root_node.X_patterns_list.size();
 
 	int J_num = strip_types_num;
 	int N_num = item_types_num;
@@ -337,15 +337,15 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 
 				// 1. Matrix C
 				if (row < J_num) {
-					double temp_val =
-						root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊýÎªÖÐ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊý
-					temp_col.push_back(temp_val);
+					double val =
+						root_node.Y_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊýÎªÖÐ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊý
+					temp_col.push_back(val);
 				}
 
 				// 2. Matrix 0
 				if (row >= J_num) {
-					double temp_val = 0; //
-					temp_col.push_back(temp_val);
+					double val = 0; //
+					temp_col.push_back(val);
 				}
 			}
 
@@ -356,16 +356,16 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 				if (row < J_num) {
 					int col_pos = col - K_num;
 					int item_type_idx = row + 1;
-					int strip_type_idx = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
+					int strip_type_idx = root_node.X_patterns_list[col_pos].strip_type_idx;
 					if (strip_type_idx == item_type_idx) // 
 					{
-						double temp_val = -1; // ÏµÊýÎª-1
-						temp_col.push_back(temp_val);
+						double val = -1; // ÏµÊýÎª-1
+						temp_col.push_back(val);
 					}
 					else // ÖÐ¼ä°åÖÖÀàºÍ×Ó°åÖÖÀà²»¶ÔÓ¦
 					{
-						double temp_val = 0; // ÏµÊýÎª0
-						temp_col.push_back(temp_val);
+						double val = 0; // ÏµÊýÎª0
+						temp_col.push_back(val);
 					}
 				}
 
@@ -373,9 +373,9 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 				if (row >= J_num) {
 					int col_pos = col - K_num;
 					int row_pos = row - J_num;
-					double temp_val =
-						root_node.cutting_strip_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
-					temp_col.push_back(temp_val);
+					double val =
+						root_node.X_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
+					temp_col.push_back(val);
 				}
 			}
 		}
@@ -391,18 +391,18 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 
 			// 1. Matrix C
 			if (row < J_num) {
-				double temp_val =
-					root_node.cutting_stock_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊýÎªÖÐ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊý
-				temp_col.push_back(temp_val);
+				double val =
+					root_node.Y_patterns_list[col].strip_types_list[row].this_strip_type_num; // ÏµÊýÎªÖÐ¼ä°åÖÖÀàÊ¹ÓÃ´ÎÊý
+				temp_col.push_back(val);
 			}
 
 			// 2. Matrix 0
 			if (row >= J_num) {
-				double temp_val = 0; //
-				temp_col.push_back(temp_val);
+				double val = 0; //
+				temp_col.push_back(val);
 			}
 		}
-		root_node.cutting_stock_cols.push_back(temp_col); // µÚÒ»½×¶ÎÁÐ
+		root_node.Y_cols_list.push_back(temp_col); // µÚÒ»½×¶ÎÁÐ
 	}
 
 	cout << endl;
@@ -415,14 +415,14 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 			if (row < J_num) {
 				int col_pos = col - K_num;
 				int item_type_index = row + 1;
-				int strip_type_index = root_node.cutting_strip_patterns_list[col_pos].strip_type_idx;
+				int strip_type_index = root_node.X_patterns_list[col_pos].strip_type_idx;
 				if (strip_type_index == item_type_index) {
-					double temp_val = -1; // ÏµÊýÎª-1
-					temp_col.push_back(temp_val);
+					double val = -1; // ÏµÊýÎª-1
+					temp_col.push_back(val);
 				}
 				else { // ÖÐ¼ä°åÖÖÀàºÍ×Ó°åÖÖÀà²»¶ÔÓ¦
-					double temp_val = 0; // ÏµÊýÎª0
-					temp_col.push_back(temp_val);
+					double val = 0; // ÏµÊýÎª0
+					temp_col.push_back(val);
 				}
 			}
 
@@ -430,12 +430,12 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 			if (row >= J_num) {
 				int col_pos = col - K_num;
 				int row_pos = row - J_num;
-				double temp_val =
-					root_node.cutting_strip_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
-				temp_col.push_back(temp_val);
+				double val =
+					root_node.X_patterns_list[col_pos].item_types_list[row_pos].this_item_type_num;
+				temp_col.push_back(val);
 			}
 		}
-		root_node.cutting_strip_cols.push_back(temp_col); // µÚ¶þ½×¶ÎÁÐ
+		root_node.X_cols_list.push_back(temp_col); // µÚ¶þ½×¶ÎÁÐ
 	}
 
 	for (int k = 0; k < item_types_num; k++) {

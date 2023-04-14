@@ -41,7 +41,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 				cout << endl;
 			}
 
-			int SP_flag = SolveWidthSubProblem(Values, Lists, root_node); // solve the SP of MP
+			int SP_flag = SolveStageOneSubProblem(Values, Lists, root_node); // solve the SP of MP
 
 			// Case 1:
 			if (SP_flag == 0) { // No better reduced cost is get from SP anymore	

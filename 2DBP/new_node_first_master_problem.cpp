@@ -15,8 +15,8 @@ bool SolveNewNodeFirstMasterProblem(
 	IloNumVarArray& Vars_MP,
 	Node& this_node,
 	Node& parent_node) {
-	int K_num = this_node.cutting_stock_cols.size();
-	int P_num = this_node.cutting_strip_cols.size();
+	int K_num = this_node.Y_cols_list.size();
+	int P_num = this_node.X_cols_list.size();
 
 	int J_num = Values.strip_types_num;
 	int N_num = Values.item_types_num;
@@ -68,7 +68,7 @@ bool SolveNewNodeFirstMasterProblem(
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 		for (int row = 0; row < all_rows_num; row++) {
-			IloNum row_para = this_node.cutting_stock_cols[col][row]; // set rows in this col
+			IloNum row_para = this_node.Y_cols_list[col][row]; // set rows in this col
 			CplexCol += Cons_MP[row](row_para); // set para
 		}
 
@@ -118,7 +118,7 @@ bool SolveNewNodeFirstMasterProblem(
 		IloNum obj_para = 0;
 		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 		for (int row = 0; row < all_rows_num; row++) {
-			IloNum row_para = this_node.cutting_strip_cols[col][row]; // set rows in this col
+			IloNum row_para = this_node.X_cols_list[col][row]; // set rows in this col
 			CplexCol += Cons_MP[row](row_para); // set para
 		}
 
@@ -183,21 +183,25 @@ bool SolveNewNodeFirstMasterProblem(
 		printf("\n\t Node_%d MP-1 is FEASIBLE\n", this_node.index);
 		printf("\n\t OBJ of Node_%d MP-1 is %f\n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
+		int sum_vars = 0;
 		int Y_fsb_num = 0;
 		int X_fsb_num = 0;
+		double soln_val = -1;
 		printf("\n\t Y Solns (stock cutting patterns):\n\n");
 		for (int col = 0; col < K_num; col++) {
-			double soln_val = MP_cplex.getValue(Vars_MP[col]);
+			 soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) {
 				Y_fsb_num++;
+				sum_vars++;
 				printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 			}
 		}
 		printf("\n\t X Solns (strip cutting patterns):\n\n");
 		for (int col = K_num; col < K_num + P_num; col++) {
-			double soln_val = MP_cplex.getValue(Vars_MP[col]);
+			soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) {
 				X_fsb_num++;
+				sum_vars++;
 				printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 			}
 		}
@@ -212,20 +216,28 @@ bool SolveNewNodeFirstMasterProblem(
 		this_node.dual_prices_list.clear(); // ATTENTION: must clear dual_prices_list
 
 		printf("\n\t strip_type cons dual prices: \n\n");
+		double dual_val = -1;
 		for (int row = 0; row < J_num; row++) {
-			double dual_val = MP_cplex.getDual(Cons_MP[row]);
+			 dual_val = MP_cplex.getDual(Cons_MP[row]);
+			if (dual_val == -0) {
+				dual_val = 0;
+			}
 			this_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 		printf("\n\t item_type cons dual prices: \n\n");
 		for (int row = J_num; row < J_num + N_num; row++) {
-			double dual_val = MP_cplex.getDual(Cons_MP[row]);
+			 dual_val = MP_cplex.getDual(Cons_MP[row]);
+			if (dual_val == -0) {
+				dual_val = 0;
+			}
 			this_node.dual_prices_list.push_back(dual_val);
 			printf("\t dual_r_%d = %f\n", row + 1, dual_val);
 		}
 
 		printf("\n\t Node_%d MP-1:\n", this_node.index);
 		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
+		printf("\n\t Sum of all solns = %d", sum_vars);
 		printf("\n\t Number of all solns = %d", K_num + P_num);
 		printf("\n\t Number of all fsb-solns = %d", Y_fsb_num + X_fsb_num);
 		printf("\n\t Number of Y fsb-solns = %d", Y_fsb_num);

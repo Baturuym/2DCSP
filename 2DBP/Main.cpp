@@ -25,7 +25,8 @@ int main() {
 	Lists.all_nodes_list.push_back(root_node);
 	Values.root_flag = 1;
 
-	if (Values.search_flag == 0) {  // continue to BP
+
+	if (Values.search_flag == 0) { // continue to BP
 		Values.branch_status = 1;
 		BranchAndPriceTree(Values, Lists); // Branch and Price loop
 	}

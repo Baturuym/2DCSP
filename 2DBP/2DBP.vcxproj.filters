@@ -36,7 +36,7 @@
     <ClCompile Include="new_node_generating.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="read_data.cpp">
+    <ClCompile Include="input.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="root_node_column_generation.cpp">
@@ -55,6 +55,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="output_results.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="output_models.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

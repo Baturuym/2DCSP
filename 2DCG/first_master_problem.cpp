@@ -15,18 +15,7 @@ void SolveFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP) {
 
-	int K_num = Lists.cutting_stock_cols.size();
-	int P_num = Lists.cutting_strip_cols.size();
-
-	int J_num = Values.strip_types_num;
-	int N_num = Values.item_types_num;
-
-	int all_cols_num = K_num + P_num;
-	int all_rows_num = J_num + N_num;
-
-	
-
-	/*			      pattern columns
+	/*               pattern columns
 	---------------------------------------------
 	|          P_num         |          K_num         |
 	|  cut-stk-ptn cols  |  cut-stp-ptn cols  |
@@ -41,20 +30,28 @@ void SolveFirstMasterProblem(
 	---------------------------------------------------------
 	*/
 
+	int K_num = Lists.Y_cols_list.size();
+	int P_num = Lists.X_cols_list.size();
+
+	int J_num = Values.strip_types_num;
+	int N_num = Values.item_types_num;
+
+	int all_cols_num = K_num + P_num;
+	int all_rows_num = J_num + N_num;
+
 	IloNumArray  con_min(Env_MP);
 	IloNumArray  con_max(Env_MP);
 
 	for (int row = 0; row < J_num + N_num; row++) {
 		if (row < J_num) {
-			// con >= 0
-			con_min.add(IloNum(0)); // con LB
+			con_min.add(IloNum(0)); // con LB = 0
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
 		if (row >= J_num) {
-			// con >= item_type demand
+			
 			int row_pos = row - J_num;
 			double demand_val = Lists.all_item_types_list[row_pos].demand;
-			con_min.add(IloNum(demand_val)); // con LB
+			con_min.add(IloNum(demand_val)); // con LB = item_type demand
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
 	}
@@ -63,14 +60,14 @@ void SolveFirstMasterProblem(
 	con_min.end();
 	con_max.end();
 
-	printf("\n\t MP-1 model:\n");
-	DisplayMasterProblem(Values, Lists);
+	OutputMasterProblem(Values, Lists);
+	OutputDualMasterProblem(Values, Lists);
 
 	// Matrix C & Matrix  0
-	for (int col = 0; col < K_num; col++) {  // col 1 -> col K_num
+	for (int col = 0; col < K_num; col++) { // col 1 -> col K_num
 		IloNum obj_para = 1; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
-		for (int row = 0; row < J_num + N_num; row++) {   // row 1 -> row J_num+N_num // row 1 -> row J_num+N_num
+		for (int row = 0; row < J_num + N_num; row++) {  // row(1) -> row(J_num+N_num)
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
@@ -87,10 +84,10 @@ void SolveFirstMasterProblem(
 
 
 	// Matrix D & Matrix  B
-	for (int col = K_num; col < K_num + P_num; col++) {  // col K_num+1 -> col K_num+P_num
+	for (int col = K_num; col < K_num + P_num; col++) { // col K_num+1 -> col K_num+P_num
 		IloNum obj_para = 0; // 
 		IloNumColumn CplexCol = Obj_MP(obj_para); // 
-		for (int row = 0; row < J_num + N_num; row++) {  // row 1 -> row J_num+N_num
+		for (int row = 0; row < J_num + N_num; row++) { // row 1 -> row J_num+N_num
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
@@ -118,6 +115,7 @@ void SolveFirstMasterProblem(
 		printf("\n\t MP_1 has feasible solution\n");
 		printf("\n\t Obj = %f\n",MP_cplex.getValue(Obj_MP));
 
+		double sum_vars = 0;
 		int Y_fsb_num = 0;
 		int X_fsb_num = 0;
 		printf("\n\t Y solns:\n\n");
@@ -125,6 +123,7 @@ void SolveFirstMasterProblem(
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) {
 				Y_fsb_num++;
+				sum_vars= sum_vars+ soln_val;
 				printf("\t var_y_%d = %f\n", col + 1, soln_val);
 			}
 		}
@@ -134,6 +133,7 @@ void SolveFirstMasterProblem(
 			double soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) {
 				X_fsb_num++;
+				sum_vars = sum_vars + soln_val;
 				printf("\t var_x_%d = %f\n", col + 1 - K_num, soln_val);
 			}
 		}
@@ -162,6 +162,7 @@ void SolveFirstMasterProblem(
 
 		printf("\n\t MP-1:\n");
 		printf("\n\t Lower Bound = %f", MP_cplex.getValue(Obj_MP));
+		printf("\n\t Sum of all solns = %f", sum_vars);
 		printf("\n\t Number of all solns = %d", K_num + P_num);
 		printf("\n\t Number of Y fsb-solns = %d", Y_fsb_num);
 		printf("\n\t Number of X fsb-solns = %d", X_fsb_num);
