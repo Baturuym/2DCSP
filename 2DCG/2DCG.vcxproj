@@ -137,7 +137,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="output_final.cpp" />
-    <ClCompile Include="output_heuristic.cpp" />
+    <ClCompile Include="output_figure.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
     <ClCompile Include="sub_problem.cpp" />
     <ClCompile Include="update_master_problem.cpp" />

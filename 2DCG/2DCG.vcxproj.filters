@@ -30,7 +30,7 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="output_heuristic.cpp">
+    <ClCompile Include="output_figure.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="primal_heuristic.cpp">
