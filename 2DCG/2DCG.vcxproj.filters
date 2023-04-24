@@ -24,7 +24,7 @@
     <ClCompile Include="first_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="input.cpp">
+    <ClCompile Include="input_data_txt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -42,7 +42,7 @@
     <ClCompile Include="update_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="output_models.cpp">
+    <ClCompile Include="output_model_txt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="output_final.cpp">
@@ -62,6 +62,9 @@
       <Filter>数据</Filter>
     </Text>
     <Text Include="Dual Master Problem.txt">
+      <Filter>数据</Filter>
+    </Text>
+    <Text Include="Stock_0.txt">
       <Filter>数据</Filter>
     </Text>
   </ItemGroup>

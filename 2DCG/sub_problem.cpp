@@ -121,7 +121,7 @@ int SolveStageOneSubProblem(All_Values& Values, All_Lists& Lists) {
 						printf("\n\t SP_%d_%d obj = %f > strip con_%d dual = %f:\n",
 							Values.iter, k + 1, Values.SP2_obj_val, k + 1, a_val);
 
-						vector<double> temp_col;
+						vector<int> temp_col;
 						for (int j = 0; j < J_num; j++) { //  all current stp-cut-patterns 
 							if (k == j) {  // this stp-cut-pattern p is USED in stk-cut-pattern k
 								temp_col.push_back(-1); // used
@@ -136,12 +136,12 @@ int SolveStageOneSubProblem(All_Values& Values, All_Lists& Lists) {
 							if (soln_val == - 0) {
 								soln_val = 0;
 							}
-							temp_col.push_back(soln_val); // 
+							temp_col.push_back(int(soln_val)); // 
 						}
 
 						printf("\n\t SP_%d_%d new col:\n\n", Values.iter, k + 1);
 						for (int row = 0; row < J_num + N_num; row++) {
-							printf("\t row_%d = %f\n", row + 1, temp_col[row]); // 输出SP2的新列
+							printf("\t row_%d = %d\n", row + 1, temp_col[row]); // 输出SP2的新列
 						}
 						printf("\n\t Add SP_%d_%d new col to MP\n\n", Values.iter, k + 1);
 

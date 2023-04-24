@@ -36,7 +36,7 @@ using namespace std;
 
 // stock --> strip --> item
 
-struct Item_Type_Stc {
+struct One_Item_Type {
 	int item_type_idx = -1;
 	double demand = -1;
 
@@ -45,7 +45,7 @@ struct Item_Type_Stc {
 	int this_item_type_num = 0;
 };
 
-struct Strip_Type_Stc {
+struct One_Strip_Type {
 	int strip_type_idx = -1;
 
 	int width = -1;
@@ -53,12 +53,12 @@ struct Strip_Type_Stc {
 	int this_strip_type_num = 0;
 };
 
-struct Stock_Type_Stc {
+struct One_Stock_Type {
 	int stock_type_idx = -1;
 	int this_stock_type_num = 0;
 };
 
-struct Item_Stc {
+struct One_Item {
 	int item_idx = -1;
 	int item_type_idx = -1;
 	int demand = -1;
@@ -73,19 +73,19 @@ struct Item_Stc {
 	int strip_idx = -1;
 	int stock_idx = -1;
 
-	int occupied = 0;
+	int occupied_flag = 0;
 
 	int cutting_distance = -1;
 	int material_cutting_loss = -1;
 };
 
-struct Strip_Stc {
+struct One_Strip {
 	int strip_idx = -1;
 	int strip_type_idx = -1;
 	int pattern = -1;
 
-	vector<Item_Stc> items_in_strip_list;
-	vector<Item_Type_Stc> item_types_list;
+	vector<One_Item> items_list;
+	vector<One_Item_Type> item_types_list;
 
 	int length = -1;
 	int width = -1;
@@ -103,13 +103,13 @@ struct Strip_Stc {
 	int material_area_loss = -1;
 };
 
-struct Stock_Stc {
+struct One_Stock {
 	int stock_idx = -1;
 	int stock_type_idx = 0;
 	int pattern = -1;
 
-	vector<Strip_Stc> strips_list;
-	vector<Strip_Type_Stc> strip_types_list;
+	vector<One_Strip> strips_list;
+	vector<One_Strip_Type> strip_types_list;
 
 	int length = -1;
 	int width = -1;
@@ -162,8 +162,8 @@ struct Node {
 
 	/*-------------------------------------*/
 
-	vector<Stock_Stc> Y_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
-	vector<Strip_Stc> X_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
+	vector<One_Stock> Y_patterns_list; // 存储每种第一阶段方案（母板）的详细信息
+	vector<One_Strip> X_patterns_list; // 存储每种第二阶段方案（中间板）的详细信息
 
 	vector<vector<double>> Y_cols_list; // 存储第一阶段方案的所有列
 	vector<vector<double>> X_cols_list; // 存储第二阶段方案的所有列
@@ -227,15 +227,15 @@ struct All_Values {
 struct All_Lists {
 	vector<Node> all_nodes_list; // list of all Nodes generated
 
-	vector<Stock_Stc> all_stocks_list;
-	vector<Strip_Stc> all_strips_list;
-	vector<Item_Stc> all_items_list;
+	vector<One_Stock> all_stocks_list;
+	vector<One_Strip> all_strips_list;
+	vector<One_Item> all_items_list;
 
-	vector<Strip_Type_Stc> all_strip_types_list;
-	vector<Item_Type_Stc> all_item_types_list;
+	vector<One_Strip_Type> all_strip_types_list;
+	vector<One_Item_Type> all_item_types_list;
 
-	vector<Stock_Stc> occupied_stocks_list;
-	vector<Item_Stc> occupied_items_list;
+	vector<One_Stock> occupied_stocks_list;
+	vector<One_Item> occupied_items_list;
 };
 
 void SplitString(const string& s, vector<string>& v, const string& c);

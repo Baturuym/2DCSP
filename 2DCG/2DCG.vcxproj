@@ -132,9 +132,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="column_generation.cpp" />
-    <ClCompile Include="output_models.cpp" />
+    <ClCompile Include="output_model_txt.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
-    <ClCompile Include="input.cpp" />
+    <ClCompile Include="input_data_txt.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="output_final.cpp" />
     <ClCompile Include="output_figure.cpp" />
@@ -149,6 +149,7 @@
     <Text Include="cutdata1207.txt" />
     <Text Include="Dual Master Problem.txt" />
     <Text Include="Master Problem.txt" />
+    <Text Include="Stock_0.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Length Sub Problem.lp" />

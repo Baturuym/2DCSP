@@ -21,7 +21,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 		Lists.all_stocks_list.erase(Lists.all_stocks_list.begin()); // Ä¸°å³ØÖÐ³ýÈ¥Ä¸°å0
 
 		// Init one stock
-		Stock_Stc new_stock;
+		One_Stock new_stock;
 		new_stock.length = Lists.all_stocks_list[0].length; // 
 		new_stock.width = Lists.all_stocks_list[0].width; // 
 		new_stock.area = new_stock.length * new_stock.width; // 
@@ -31,13 +31,13 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 
 		// Init all strip_types in each stock
 		for (int k = 0; k < strip_types_num; k++) {
-			Strip_Type_Stc this_strip_type;
+			One_Strip_Type this_strip_type;
 			this_strip_type.strip_type_idx = k + 1;
 			new_stock.strip_types_list.push_back(this_strip_type);
 		}
 
 		// Init a new stock
-		Item_Stc stock_remain;
+		One_Item stock_remain;
 
 		stock_remain.length = new_stock.length;
 		stock_remain.width = new_stock.width;
@@ -46,17 +46,17 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 		stock_remain.pos_y = new_stock.pos_y;
 
 		stock_remain.stock_idx = new_stock.stock_idx;
-		stock_remain.occupied = 0;
+		stock_remain.occupied_flag = 0;
 
 		int all_items_num = Lists.all_items_list.size();
 		for (int j = 0; j < all_items_num; j++) {
 			if (Lists.all_items_list[j].length <= stock_remain.length
 				&& Lists.all_items_list[j].width <= stock_remain.width
-				&& Lists.all_items_list[j].occupied == 0) { // ×Ó°å j ÄÜ²»ÄÜ·ÅÈë±»ÇÐÄ¸°åÊ£ÏÂµÄÇøÓò
+				&& Lists.all_items_list[j].occupied_flag == 0) { // ×Ó°å j ÄÜ²»ÄÜ·ÅÈë±»ÇÐÄ¸°åÊ£ÏÂµÄÇøÓò
 
 				// Init first item in a this_strip, though may not use them all
-				Item_Stc first_item;
-				Lists.all_items_list[j].occupied = 1;
+				One_Item first_item;
+				Lists.all_items_list[j].occupied_flag = 1;
 
 				first_item.item_type_idx = Lists.all_items_list[j].item_type_idx;
 				first_item.item_idx = Lists.all_items_list[j].item_idx;
@@ -70,12 +70,12 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 
 				first_item.stock_idx = stock_remain.stock_idx;
 				first_item.strip_idx = strip_index;
-				first_item.occupied = 1;
+				first_item.occupied_flag = 1;
 
 				Lists.occupied_items_list.push_back(first_item); // È·¶¨µÄ×Ó°å·ÅÈë½á¹û±í
 
 				// Init a this_strip acoording to its first item
-				Strip_Stc new_strip;
+				One_Strip new_strip;
 				new_strip.strip_idx = strip_index;
 				new_strip.strip_type_idx = first_item.item_type_idx;
 
@@ -86,11 +86,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 				new_strip.pos_y = first_item.pos_y;
 
 				new_strip.stock_idx = stock_remain.stock_idx;
-				new_strip.items_in_strip_list.push_back(first_item); // a this_strip's first item defined this this_strip
+				new_strip.items_list.push_back(first_item); // a this_strip's first item defined this this_strip
 
 				// Init all item_types in each this_strip, though may not use them all
 				for (int k = 0; k < item_types_num; k++) {
-					Item_Type_Stc this_item_type;
+					One_Item_Type this_item_type;
 					this_item_type.item_type_idx = k + 1;
 					new_strip.item_types_list.push_back(this_item_type);
 				}
@@ -99,7 +99,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 				new_strip.item_types_list[type_pos].this_item_type_num++;
 
 				// ºáÏòÇÐ¶ÏÊ½ÇÐ¸îºó£¬µÚÒ»¸ö×Ó°åµÄÓÒ²àÇøÓò
-				Item_Stc first_item_right_side;
+				One_Item first_item_right_side;
 
 				first_item_right_side.length = stock_remain.length - first_item.length; // ÇøÓò³¤¶È = Ä¸°å³¤¶È - µÚÒ»¿é×Ó°å³¤¶È
 				first_item_right_side.width = first_item.width; // ÇøÓò¿í¶È = µÚÒ»¿é×Ó°å¿í¶È
@@ -109,18 +109,18 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 
 				first_item_right_side.stock_idx = stock_remain.stock_idx; // ÇøÓòËùÊôÄ¸°å
 				first_item_right_side.item_type_idx = -1;
-				first_item_right_side.occupied = 0;
+				first_item_right_side.occupied_flag = 0;
 
 				// ÔÚµÚÒ»¸ö×Ó°åµÄÓÒ²àÇøÓò£¬¼´ÖÐ¼ä°åÄÚ²¿¼ÌÐøÌî³ä×Ó°å
 				// Ö±µ½µ±Ç°ÖÐ¼ä°åÔÙÒ²ÎÞ·¨·ÅÈë×Ó°åÎªÖ¹
 				for (int m = 0; m < all_items_num; m++) {
 					if (Lists.all_items_list[m].length <= first_item_right_side.length
 						&& Lists.all_items_list[m].width <= first_item_right_side.width
-						&& Lists.all_items_list[m].occupied == 0) { // Èç¹ûµ±Ç°×Ó°åÄÜ¹»·ÅÈëµÚÒ»¸ö×Ó°åÓÒ²àÇøÓò
+						&& Lists.all_items_list[m].occupied_flag == 0) { // Èç¹ûµ±Ç°×Ó°åÄÜ¹»·ÅÈëµÚÒ»¸ö×Ó°åÓÒ²àÇøÓò
 
 						// ÐÂµÄ×Ó°å·ÅÈëÖÐ¼ä°å
-						Item_Stc new_item;
-						Lists.all_items_list[m].occupied = 1;
+						One_Item new_item;
+						Lists.all_items_list[m].occupied_flag = 1;
 
 						new_item.item_type_idx = Lists.all_items_list[m].item_type_idx; // ×Ó°å±àºÅ
 						new_item.item_idx = Lists.all_items_list[m].item_idx; // ×Ó°å±àºÅ
@@ -134,10 +134,10 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 
 						new_item.stock_idx = stock_remain.stock_idx; // ËùÊôÄ¸°å±àºÅ
 						new_item.strip_idx = strip_index;
-						new_item.occupied = 1;
+						new_item.occupied_flag = 1;
 
 						Lists.occupied_items_list.push_back(new_item); // ×Ó°å·ÅÈë½á¹û±í
-						new_strip.items_in_strip_list.push_back(new_item);
+						new_strip.items_list.push_back(new_item);
 
 						int itm_pos = new_item.item_type_idx - 1;
 						new_strip.item_types_list[itm_pos].this_item_type_num++;
@@ -203,7 +203,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 				int occupied_items_num = 0;
 				int all_items_num = Lists.all_items_list.size();
 				for (int k = 0; k < all_items_num; k++) {
-					occupied_items_num += Lists.all_items_list[k].occupied;
+					occupied_items_num += Lists.all_items_list[k].occupied_flag;
 				}
 				if (occupied_items_num == all_items_num) { // Èç¹ûËùÓÐ×Ó°å¶¼±»Ê¹ÓÃÁË
 					Values.Finish = true;
@@ -216,11 +216,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 		int strips_num_in_stock = new_stock.strips_list.size();
 		for (int j = 0; j < strips_num_in_stock; j++) {
 
-			Strip_Stc this_strip = new_stock.strips_list[j];
+			One_Strip this_strip = new_stock.strips_list[j];
 			int item_total_cut_distance = 0;
-			int items_num_in_strip = this_strip.items_in_strip_list.size();
+			int items_num_in_strip = this_strip.items_list.size();
 			for (int k = 0; k < items_num_in_strip; k++) {
-				Item_Stc this_item = this_strip.items_in_strip_list[k];
+				One_Item this_item = this_strip.items_list[k];
 
 				if (this_item.width < this_strip.width) {
 					this_item.cutting_distance = this_item.length + this_item.width;
@@ -249,11 +249,11 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 		//********¼ÆËãÄ¸°å×ÜÃæ»ýÀË·Ñ³É±¾********//
 		int strip_total_waste_area = 0;
 		for (int j = 0; j < strips_num_in_stock; j++) {
-			Strip_Stc this_strip = new_stock.strips_list[j];
+			One_Strip this_strip = new_stock.strips_list[j];
 			int item_total_used_area = 0;
-			int items_num_in_strip = this_strip.items_in_strip_list.size();
+			int items_num_in_strip = this_strip.items_list.size();
 			for (int k = 0; k < items_num_in_strip; k++) {
-				item_total_used_area = item_total_used_area + this_strip.items_in_strip_list[k].area;
+				item_total_used_area = item_total_used_area + this_strip.items_list[k].area;
 			}
 
 			this_strip.wasted_area = this_strip.area - item_total_used_area;
@@ -439,7 +439,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) // Ç
 	}
 
 	for (int k = 0; k < item_types_num; k++) {
-		Strip_Type_Stc temp_stp;
+		One_Strip_Type temp_stp;
 		temp_stp.width = Lists.all_item_types_list[k].width;
 		temp_stp.length = Values.stock_length;
 

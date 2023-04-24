@@ -58,10 +58,9 @@ void SolveUpdateMasterProblem(
 
 		CplexCol.end(); // must end this IloNumColumn object
 
-		vector<double>new_col;
-		double val;
+		vector<int>new_col;
 		for (int row = 0; row < all_rows_num; row++) {
-			val = Lists.new_Y_col[row];
+			int val = Lists.new_Y_col[row];
 			new_col.push_back(val);
 		}
 	
@@ -71,13 +70,10 @@ void SolveUpdateMasterProblem(
 	}
 
 	if (Values.Y_col_flag == 0) {
-
 		int new_cols_num = Lists.new_X_cols_list.size();
 		for (int col = 0; col < new_cols_num; col++) {
-
 			IloNum obj_para = 0; // 
 			IloNumColumn CplexCol = (Obj_MP)(obj_para); // 
-
 			for (int row = 0; row < all_rows_num; row++) {
 				IloNum row_para = Lists.new_X_cols_list[col][row];
 				CplexCol += (Cons_MP)[row](row_para); //
@@ -92,9 +88,9 @@ void SolveUpdateMasterProblem(
 
 			CplexCol.end(); // must end this IloNumColumn object
 
-			vector<double>temp_col;
+			vector<int>temp_col;
 			for (int row = 0; row < all_rows_num; row++) {
-				double val = Lists.new_X_cols_list[col][row];
+				int val = Lists.new_X_cols_list[col][row];
 				temp_col.push_back(val);
 			}
 
@@ -220,7 +216,6 @@ void SolveFinalMasterProblem(
 			IloNum row_para = Lists.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para);
 		}
-
 		string var_name = "Y_" + to_string(col + 1);
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
@@ -259,23 +254,68 @@ void SolveFinalMasterProblem(
 	double sum_vars = 0;
 	int Y_fsb_num = 0;
 	int X_fsb_num = 0;
+	int new_stocks_num = 0;
+	Lists.all_stocks_list.clear();
 	printf("\n\t Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
 		if (soln_val > 0) {
 			Y_fsb_num++;
 			sum_vars = sum_vars + soln_val;
+
+			for (int k = 0; k<int(soln_val); k++) {
+
+				One_Stock new_stock;
+				new_stock.stock_idx = k+1;
+				new_stock.pos_x = 0;
+				new_stock.pos_y = 0;
+				new_stock.length = Values.stock_length;
+				new_stock.width = Values.stock_width;
+				Lists.all_stocks_list.push_back(new_stock);
+			}
+
 			printf("\t var_Y_%d = %f\n", col + 1, soln_val);
 		}
 	}
+
 	printf("\n\t X Solns (this_strip cutting patterns):\n\n");
+	int new_strips_num = 0;
+	int new_items_num = 0;
+	Lists.all_strips_list.clear();
 	for (int col = K_num; col < K_num + P_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
 		if (soln_val > 0) {
 			X_fsb_num++;
 			sum_vars = sum_vars + soln_val;
-			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 
+			for (int k = 0; k<int(soln_val); k++) {	
+				One_Strip new_strip;
+				new_strips_num++;
+				for (int row = 0; row < all_rows_num; row++) {
+					int col_pos = col - K_num;
+					int val = Lists.X_cols_list[col_pos][row];
+					if (val == -1) {
+						new_strip.strip_idx = new_strips_num;
+						new_strip.strip_type_idx = row;	
+						new_strip.width = Lists.all_strip_types_list[row].width;
+						new_strip.length = Values.stock_length;
+					}
+					if (val > 0) {
+						for (int v = 0; v < val; v++) {
+							One_Item new_item;
+							new_items_num++;
+							new_item.item_idx = new_items_num;
+							new_item.strip_idx = new_strip.strip_idx;
+							new_item.item_type_idx = row - J_num;
+							new_item.width = Lists.all_item_types_list[row-J_num].width;
+							new_item.length = Lists.all_item_types_list[row - J_num].length;
+							new_strip.items_list.push_back(new_item);
+						}
+					}
+				}
+				Lists.all_strips_list.push_back(new_strip);
+			}
+			printf("\t var_X_%d = %f\n", col + 1 - K_num, soln_val);
 		}
 	}
 
