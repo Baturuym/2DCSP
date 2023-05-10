@@ -6,14 +6,14 @@ using namespace std;
 
 void OutputHeuristicResults(All_Values& Values, All_Lists& Lists) {
 
-	int K_num = Lists.Y_cols_list.size();
+	/*int K_num = Lists.Y_cols_list.size();
 	int P_num = Lists.X_cols_list.size();
 
 	int J_num = Values.strip_types_num;
 	int N_num = Values.item_types_num;
 
 	int all_cols_num = K_num + P_num;
-	int all_rows_num = J_num + N_num;
+	int all_rows_num = J_num + N_num;*/
 
 	int stocks_num = Lists.all_stocks_list.size();
 	int strips_num = Lists.all_strips_list.size();

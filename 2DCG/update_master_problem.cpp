@@ -256,6 +256,7 @@ void SolveFinalMasterProblem(
 	int X_fsb_num = 0;
 	int new_stocks_num = 0;
 	Lists.all_stocks_list.clear();
+
 	printf("\n\t Y Solns (stock cutting patterns):\n\n");
 	for (int col = 0; col < K_num; col++) {
 		double soln_val = MP_cplex.getValue(Vars_MP[col]);
@@ -289,12 +290,14 @@ void SolveFinalMasterProblem(
 			sum_vars = sum_vars + soln_val;
 
 			for (int k = 0; k<int(soln_val); k++) {	
+
 				One_Strip new_strip;
 				new_strips_num++;
 				for (int row = 0; row < all_rows_num; row++) {
 					int col_pos = col - K_num;
 					int val = Lists.X_cols_list[col_pos][row];
 					if (val == -1) {
+
 						new_strip.strip_idx = new_strips_num;
 						new_strip.strip_type_idx = row;	
 						new_strip.width = Lists.all_strip_types_list[row].width;
@@ -302,6 +305,7 @@ void SolveFinalMasterProblem(
 					}
 					if (val > 0) {
 						for (int v = 0; v < val; v++) {
+
 							One_Item new_item;
 							new_items_num++;
 							new_item.item_idx = new_items_num;
