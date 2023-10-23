@@ -5,7 +5,6 @@
 using namespace std;
 
 
-
 void SolveFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -17,7 +16,7 @@ void SolveFirstMasterProblem(
 
 	/*               pattern columns
 	---------------------------------------------
-	|          P_num         |          K_num         |
+	|          K_num         |          H_num         |
 	|  cut-stk-ptn cols  |  cut-stp-ptn cols  |
 	--------------------------------------------------------
 	|                             |                              |             |

@@ -1,0 +1,27 @@
+***************配置属性*******************
+
+配置：Debug；平台：x64
+
+****************C/C++******************
+
+常规――附加包含目录：
+
+C:\Program Files\IBM\ILOG\CPLEX_Studio221\cplex\include;C:\Program Files\IBM\ILOG\CPLEX_Studio221\concert\include;
+
+预处理器――预处理器定义：
+
+NDEBUG;_CONSOLE;IL_STD;
+
+代码生成—运行库：
+
+多线程 DLL (/MD)
+
+*****************链接器********************
+
+常规――附加库目录：
+
+C:\Program Files\IBM\ILOG\CPLEX_Studio221\concert\lib\x64_windows_msvc14\stat_mda;C:\Program Files\IBM\ILOG\CPLEX_Studio221\cplex\lib\x64_windows_msvc14\stat_mda;
+
+输入――附加依赖项：
+
+C:\Program Files\IBM\ILOG\CPLEX_Studio221\cplex\lib\x64_windows_msvc14\stat_mda\cplex2210.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio221\cplex\lib\x64_windows_msvc14\stat_mda\ilocplex.lib;C:\Program Files\IBM\ILOG\CPLEX_Studio221\concert\lib\x64_windows_msvc14\stat_mda\concert.lib
