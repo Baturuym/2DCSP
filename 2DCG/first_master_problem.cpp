@@ -54,6 +54,7 @@ void SolveFirstMasterProblem(
 			con_max.add(IloNum(IloInfinity)); // con UB
 		}
 	}
+
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);
 	Model_MP.add(Cons_MP);
 	con_min.end();
@@ -80,7 +81,6 @@ void SolveFirstMasterProblem(
 
 		CplexCol.end();
 	}
-
 
 	// Matrix D & Matrix  B
 	for (int col = K_num; col < K_num + P_num; col++) { // col K_num+1 -> col K_num+P_num

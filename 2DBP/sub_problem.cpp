@@ -227,6 +227,9 @@ int SolveStageTwoSubProblem(All_Values& Values, All_Lists& Lists, Node& this_nod
 		Obj_SP2 = IloMaximize(Env_SP2, obj_sum);
 		Model_SP2.add(Obj_SP2);
 		Model_SP2.add(sum_1 <= Values.stock_length);
+		for (int i = 0; i < N_num; i++) {
+			Lists.all_item_types_list[i].width* De_Vars[i] <= Lists.all_strip_types_list[strip_type_idx - 1].length;
+		}
 		obj_sum.end();
 		sum_1.end();
 		final_return = 1;
