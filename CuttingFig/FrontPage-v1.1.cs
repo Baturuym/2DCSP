@@ -29,7 +29,7 @@ namespace CuttingFig
 			OpenFileDialog dialog = new OpenFileDialog();
 			dialog.Multiselect = true;
 
-			dialog.InitialDirectory = @"C:/Users/YMZhao/Desktop/2DCSP";
+			dialog.InitialDirectory = @"C:/Users/zym60/OneDrive/2DCSP";
 
 			dialog.Filter = "txt文件(*.*)|*.txt*";
 			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
